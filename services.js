@@ -99,5 +99,45 @@ module.exports = {
       });
     
     }
-  } // eof dbpedia services
+  }, // eof dbpedia services
+  // yagoaida single service
+  yagoaida: {
+    disambiguate: function(options, next) {
+      if(!settings.yagoaida || !settings.yagoaida.disambiguate || !settings.yagoaida.disambiguate.endpoint) {
+        next('settings.yagoaida.disambiguate.endopoint not found')
+        return;
+      }
+      // console.log('AIDA')
+      request
+        .post({
+          url: settings.yagoaida.disambiguate.endpoint,
+          json: true,
+          headers: {
+            'Accept': '*/*'
+          },
+          form: {
+            text: options.text
+          }
+        }, function (err, res, body) {
+          if(err)
+            next(err);
+          // FLATTEN YAGO entities by providing only entitites having "best entity"
+          var entities = body.mentions.filter(function (d) {
+            return d.bestEntity && d.bestEntity.kbIdentifier;
+          }).map(function (d) {
+            var _d = _.merge({
+              startingPos: d.offset,
+              endingPos: d.offset + d.length,
+              matchedText: d.name
+            }, body.entityMetadata[d.bestEntity.kbIdentifier]);
+            
+            if(_d.url)
+              _d.wikiLink = path.basename(_d.url);
+            // console.log(body.entityMetadata[d.bestEntity.kbIdentifier])
+            return _d;
+          });
+          next(null, entities);
+        });
+    }
+  }
 };
