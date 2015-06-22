@@ -33,8 +33,8 @@ async.waterfall([
       .replace(/<\/?i>/g, '_'), function (err, contents) {
       if(err)
         throw err;
-      var limit = 5;
-      next(null, _.take(contents.people.person, limit || contents.people.person.length));
+      //var limit = 5;
+      next(null, _.take(contents.people.person, contents.people.person.length));
     })
   },
   
