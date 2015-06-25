@@ -42,15 +42,79 @@ module.exports = {
     },
   },
   /*
-    Some text extractor
+    Some cypher extractor
   */
-  extract: {
+  cypher: {
+    query:function(cypherQuery, filters) {
+      var _concatenate = false,
+          methods = {
+            lt: '<=',
+            gt: '>=',
+            slt: '<', 
+            sgt: '>',
+            equals: '=',
+            differs: '<>',
+            pattern: '=~' // MUST be replaced by a neo4j valid regexp.
+          };
+      
+      
+      return cypherQuery
+        // .replace(/\{each:([a-zA-Z_])\sin\s([a-zA-Z_])(.*){\\each}/g, function (m, item, collection, repeater) {
+        //   // replace each loop {each:language in languages} .. {/each} with join. the variable will be used.
+        //   // return something that has to be replaced later.
+        //   return filters[collection].map(function (d) {
+        //     return repeater
+        //   }).join(' ');
+        // })
+        .replace(/\{:([a-z_A-Z%\(\)\s]+)\}/g, function (m, placeholder){
+          // replace dynamic variables, e.g to write ent.title_en WHERE 'en' is dynaically assigned,
+          // write as query
+          // ent.{sub:title_%(language) % language}
+          // and provide the filters with language
+          return placeholder.replace(/%\(([a-z_A-Z]+)\)/g, function (m, property) {
+            return filters[property]
+          });
+        })
+        .replace(/\{(AND|OR)?\?([a-z_A-Z]+):([a-z_A-Z]+)__([a-z_A-Z]+)\}/g, function (m, operand, node, property, method) {
+          // replace WHERE clauses
+          var chunk = '';
+          
+          if(!methods[method])  
+            throw method + ' method is not available supported method, choose between ' + JSON.stringify(methods);
+          
+          if(!filters[property])
+            return '';
+          
+          if(_concatenate && operand == undefined)
+            _concatenate = false; // start with WHERE
+          
+          if(!_concatenate)
+            chunk = ['WHERE', node + '.' + property, methods[method], filters[property]].join(' ') 
+          else 
+            chunk = [operand, node + '.' + property, methods[method], filters[property]].join(' ');
+          
+          _concatenate = true;
+          return chunk;
+        })
+    },
+  },
+  
+  extract:{
+    slug: function(text) {
+      return text.toLowerCase()
+        .replace(/[^a-z]/g, '-')
+        .replace(/-{1,}/g,'-')
+        .replace(/-$/,'')
+        .split('-')
+        .sort()
+        .join('-');
+    },
     /**/
     years: function(text) {
-      var spans = text.replace('–', '-').match(/(\d{4}[\d\;\-\s]*)/) // match parenthesis ()
+      var spans = text.replace('–', '-').match(/(\d{4}[\d\;\,\-\s]*)/) // match parenthesis ()
       if(!spans)
         return [];
-      return spans[spans.length - 1].split(';').map(function (couple) {
+      return spans[spans.length - 1].split(/[;,]/g).map(function (couple) {
         return couple.split('-').map(function(di) {
           return +_.first(di.match(/\d+/));
         })

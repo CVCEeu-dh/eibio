@@ -42,4 +42,29 @@ describe('helpers: date parser', function() {
     should.equal(y[0][0], 1945);
     done();
   });
+  
+  it('should parse multiple dates correctly, with comma', function (done) {
+    var y = helpers.extract.years("Chairman of the EPP Group in the European Parliament (1977-1982, 1984-1992)");
+    should.equal(y[0][0], 1977);
+    should.equal(y[0][1], 1982);
+    should.equal(y[1][0], 1984);
+    should.equal(y[1][1], 1992);
+    done();
+  });
+  
+  it('should parse the enricherd cypher query correctly', function (done) {
+    var y = helpers.cypher.query('MATCH (ent {{:title_%(language)}:"english title", slug: {slug}}) RETURN ent', {
+      language: 'en'
+    });
+    var z = helpers.cypher.query('ON MERGE SET ent.{:name_%(language)} = {{:name_%(language)}}', {
+      language: 'fr'
+    })
+    
+    should.equal(y, 'MATCH (ent {title_en:"english title", slug: {slug}}) RETURN ent');
+    should.equal(z, 'ON MERGE SET ent.name_fr = {name_fr}');
+    done();
+  });
+  
+  
+  
 })
