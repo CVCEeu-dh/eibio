@@ -10,6 +10,7 @@ var fs       = require('fs'),
     
     xml      = require('xml2js'),
     _        = require('lodash'),
+    moment   = require('moment'),
     
     IS_EMPTY = 'is_empty',
     LIMIT_REACHED = 'LIMIT_REACHED', // when limit of request for free /pauid webservices has been reached.
@@ -109,6 +110,21 @@ module.exports = {
         .sort()
         .join('-');
     },
+    smartSlug: function(text) {
+      var from = 'àáäâèéëêìíïîòóöôùúüûñç',
+          to   = 'aaaaeeeeiiiioooouuuunc',
+          text = text.toLowerCase();
+          
+      for (var i=0, l=from.length ; i<l ; i++) {
+        text = text.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+      }
+      
+      return text.toLowerCase()
+        .replace(/[^a-z]/g, '-')
+        .replace(/-{1,}/g,'-')
+        .replace(/-$/,'')
+        .replace(/^-/, '');
+    },
     /**/
     years: function(text) {
       var spans = text.replace('–', '-').match(/(\d{4}[\d\;\,\-\s]*)/) // match parenthesis ()
@@ -120,6 +136,13 @@ module.exports = {
         })
         
       });
+    },
+    dates: function(text, format) {
+      var _d = moment.utc(text, format);
+      return {
+        date: _d.format(format),
+        time:  _d.format('X'),
+      }
     },
     entities: function(text, next) {
       console.log('entities', text.length)

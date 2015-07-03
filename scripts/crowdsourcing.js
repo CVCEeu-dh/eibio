@@ -76,6 +76,8 @@ if(options.dates) {
       })
     });
   
+} else if (options.aliases){
+    
 } else {
   console.log(clc.redBright('function not found. Please append to the cmd one function: dates'))
 }

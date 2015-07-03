@@ -34,3 +34,5 @@ settings.js
 *.csv
 *.xml
 *.zip
+*.txt
+__*.js
