@@ -14,6 +14,15 @@ var helpers = require('../helpers.js'),
     should  = require('should');
 
 describe('helpers: date parser', function() {
+  it('should parse a date correctly', function (done) {
+    var valid    = helpers.extract.dates('1927-07-13', 'YYYY-mm-DD'),
+        notValid = helpers.extract.dates('', 'YYYY-mm-DD');
+    
+    should.equal(valid.date, '1927-01-13');
+    should.not.exist(notValid.date);
+    done();
+  });
+  
   it('should parse multiple dates correctly', function (done) {
     var y = helpers.extract.years("Député conservateur (1924-1929; 1931-1945)");
     should.equal(y[0][0], 1924);

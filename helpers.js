@@ -46,7 +46,7 @@ module.exports = {
     Some cypher extractor
   */
   cypher: {
-    query:function(cypherQuery, filters) {
+    query: function(cypherQuery, filters) {
       var _concatenate = false,
           methods = {
             lt: '<=',
@@ -55,51 +55,84 @@ module.exports = {
             sgt: '>',
             equals: '=',
             differs: '<>',
-            pattern: '=~' // MUST be replaced by a neo4j valid regexp.
+            pattern: '=~', // MUST be replaced by a neo4j valid regexp.
+            
+            ID: 'id(node) ='
           };
       
-      
       return cypherQuery
-        // .replace(/\{each:([a-zA-Z_])\sin\s([a-zA-Z_])(.*){\\each}/g, function (m, item, collection, repeater) {
-        //   // replace each loop {each:language in languages} .. {/each} with join. the variable will be used.
-        //   // return something that has to be replaced later.
-        //   return filters[collection].map(function (d) {
-        //     return repeater
-        //   }).join(' ');
-        // })
-        .replace(/\{:([a-z_A-Z%\(\)\s]+)\}/g, function (m, placeholder){
-          // replace dynamic variables, e.g to write ent.title_en WHERE 'en' is dynaically assigned,
-          // write as query
-          // ent.{sub:title_%(language) % language}
-          // and provide the filters with language
-          return placeholder.replace(/%\(([a-z_A-Z]+)\)/g, function (m, property) {
-            return filters[property]
-          });
-        })
-        .replace(/\{(AND|OR)?\?([a-z_A-Z]+):([a-z_A-Z]+)__([a-z_A-Z]+)\}/g, function (m, operand, node, property, method) {
-          // replace WHERE clauses
-          var chunk = '';
-          
-          if(!methods[method])  
-            throw method + ' method is not available supported method, choose between ' + JSON.stringify(methods);
-          
-          if(!filters[property])
-            return '';
-          
-          if(_concatenate && operand == undefined)
-            _concatenate = false; // start with WHERE
-          
-          if(!_concatenate)
-            chunk = ['WHERE', node + '.' + property, methods[method], filters[property]].join(' ') 
-          else 
-            chunk = [operand, node + '.' + property, methods[method], filters[property]].join(' ');
-          
-          _concatenate = true;
-          return chunk;
-        })
+          .replace(/[\n\r]/g, ' ')
+          .replace(/\{if:([a-zA-Z_]+)\}((?:(?!\{\/if).)*)\{\/if\}/g, function (m, item, contents) {
+            // replace if template.
+            // console.log(arguments)
+            if(filters[item])
+              return module.exports.cypher.query(contents, filters);
+            else 
+              return '';
+          })
+          .replace(/\{each:([a-zA-Z_]+)\sin\s([a-zA-Z_]+)\}((?:(?!\{\/each).)*)\{\/each\}/g, function (m, item, collection, contents) {
+            // replace loop {each:language in languages} {:title_%(language)} = {{:title_%(language)}} {/each} with join.
+            // produce something like
+            // title_en = {title_en}, title_fr = {title_fr}
+            // which should be cypher compatible.
+            // This function call recursively cypher.query() 
+            var template = [];
+            for(var i in filters[collection]) {
+              var f = {};
+              f[item] = filters[collection][i];
+              template.push(module.exports.cypher.query(contents, f));
+            }
+            return template.join(', ');
+          })
+          .replace(/\{:([a-z_A-Z%\(\)\s]+)\}/g, function (m, placeholder) {
+            // replace dynamic variables, e.g to write ent.title_en WHERE 'en' is dynaically assigned,
+            // write as query
+            // ent.{sub:title_%(language) % language}
+            // and provide the filters with language
+            return placeholder.replace(/%\(([a-z_A-Z]+)\)/g, function (m, property) {
+              return filters[property]
+            });
+          })
+          .replace(/\{(AND|OR)?\?([a-z_A-Z]+):([a-z_A-Z]+)__([a-z_A-Z]+)\}/g, function (m, operand, node, property, method) {
+            // replace WHERE clauses
+            var chunk = '',
+                segments = [
+                  node + '.' + property,
+                  methods[method],
+                  filters[property]
+                ];
+            
+            if(!methods[method])
+              throw method + ' method is not available supported method, choose between ' + JSON.stringify(methods);
+              
+            if(!filters[property])
+              return '';
+            
+            if(method == 'ID')
+              segments = [methods[method].replace('node', node), filters[property]];
+            
+            if(_concatenate && operand == undefined)
+              _concatenate = false; // start with WHERE
+            
+            
+            if(!_concatenate)
+              chunk = ['WHERE'].concat(segments).join(' ') 
+            else 
+              chunk = [operand].concat(segments).join(' ');
+            
+            _concatenate = true;
+            return chunk;
+          })
     },
   },
-  
+  now: function() {
+    var now = moment.utc(),
+        result = {};
+    
+    result.date = now.format();
+    result.time = +now.format('X');
+    return result;
+  },
   extract:{
     slug: function(text) {
       return text.toLowerCase()
@@ -137,12 +170,15 @@ module.exports = {
         
       });
     },
-    dates: function(text, format) {
-      var _d = moment.utc(text, format);
-      return {
-        date: _d.format(format),
-        time:  _d.format('X'),
-      }
+    dates: function(text, format, strict) {
+      var _d = moment.utc(text, format, strict);
+      
+      if(_d.isValid())
+        return {
+          date: _d.format(format),
+          time:  +_d.format('X'),
+        }
+      else return false;
     },
     entities: function(text, next) {
       console.log('entities', text.length)
