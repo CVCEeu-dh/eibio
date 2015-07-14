@@ -12,13 +12,20 @@
 
 var helpers = require('../helpers.js'),
     should  = require('should');
+    
+describe('helpers: slugs', function() {
+  it('should translate the name into a proper slug', function (done) {
+    should.equal(helpers.extract.smartSlug('Alexander MÖLLER'), 'alexander-moller');
+    done()
+  })
+})
 
 describe('helpers: date parser', function() {
   it('should parse a date correctly', function (done) {
     var valid    = helpers.extract.dates('1927-07-13', 'YYYY-mm-DD'),
         notValid = helpers.extract.dates('', 'YYYY-mm-DD');
     
-    should.equal(valid.date, '1927-01-13');
+    should.equal(valid.date, '1927-07-13');
     should.not.exist(notValid.date);
     done();
   });

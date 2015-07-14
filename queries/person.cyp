@@ -3,6 +3,8 @@
 MERGE (per:entity:person {slug: {slug}})
   ON CREATE SET
     per.name = {name},
+    per.original_slug = {original_slug},
+    per.original_doi  = {doi},
     per.first_name  = {first_name},
     per.last_name   = {last_name},
     per.birth_date  = {birth_date},
@@ -21,13 +23,15 @@ MERGE (per:entity:person {slug: {slug}})
     {/each}
   ON MATCH SET
     per.name = {name},
+    per.original_slug = {original_slug},
+    per.original_doi  = {doi},
     per.first_name  = {first_name},
     per.last_name   = {last_name},
     per.birth_date  = {birth_date},
     per.birth_time  = {birth_time},
     per.birth_place = {birth_place},
     per.last_modification_date = {creation_date},
-    per.last_modification_date = {creation_time},
+    per.last_modification_time = {creation_time},
     {if:death_date}
       per.death_date  = {death_date},
       per.death_time  = {death_time},
