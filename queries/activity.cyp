@@ -8,7 +8,8 @@ MERGE (act:activity {slug: {slug}})
     act.description_en = {description_en},
     act.country        = {country}
 WITH act
-MERGE (per:person {slug:{person_slug}})-[r:employed_as]->(act)
+MATCH (per:person {slug:{person_slug}})
+MERGE (per)-[r:employed_as]->(act)
   ON CREATE SET
     r.start_date = {start_date},
     r.start_time = {start_time},

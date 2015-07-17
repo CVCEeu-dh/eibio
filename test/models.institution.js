@@ -65,11 +65,12 @@ describe('models:institution', function() {
   });
   
   it('should create a brand new institution', function (done) {
+    this.timeout(5000)
     institution.merge({ 
       name: 'European Parliament',
       name_en: 'European Parliament',
       name_fr: 'Parlement Europeen',
-      country: 'ITA',
+      country: '',
       wiki_id: 'European Parliament'
     }, function (err, ins) {
       if(err)
@@ -89,10 +90,14 @@ describe('models:institution', function() {
   
   
   it('should enrich the institution with the wiki_id', function (done) {
-    // institution.discover(__institution, function (err, ins) {
-      
-    // });
-    done();
+    institution.discover(__institution, function (err, ins) {
+      if(err)
+        throw err;
+      should.equal(ins.id, __institution.id)
+      should.exist(ins.props.wiki_description);
+      done();
+    });
+    
   })
   
   it('should remove a person', function (done) {
@@ -109,11 +114,11 @@ describe('models:institution', function() {
     })
   });
   
-  it('should remove the institution', function (done) {
-    activity.remove(__activity, function (err) {
-      should.not.exist(err);
-      done()
-    })
-  });
+  // it('should remove the institution', function (done) {
+  //   activity.remove(__activity, function (err) {
+  //     should.not.exist(err);
+  //     done()
+  //   })
+  // });
   
 })

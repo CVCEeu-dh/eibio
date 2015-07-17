@@ -26,10 +26,8 @@ module.exports = {
     @to be tested, ideed
   */
   dbpedia:{
-    lookup: function (query, next) {
-      services.dbpedia.lookup({
-        query: query
-      }, function (err, wiki) {
+    lookup: function (options, next) {
+      services.dbpedia.lookup(options, function (err, wiki) {
         if(err) {
           next(err);
           return;
@@ -139,6 +137,7 @@ module.exports = {
         .replace(/[^a-z]/g, '-')
         .replace(/-{1,}/g,'-')
         .replace(/-$/,'')
+        .replace(/^-/,'')
         .split('-')
         .sort()
         .join('-');

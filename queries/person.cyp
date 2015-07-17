@@ -17,6 +17,12 @@ MERGE (per:entity:person {slug: {slug}})
       per.death_time  = {death_time},
       per.death_place = {death_place},
     {/if}
+    {if:viaf}
+      per.viaf  = {viaf},
+    {/if}
+    {if:wiki_id}
+      per.wiki_id  = {wiki_id},
+    {/if}
     per.languages   = {languages},
     {each:language in languages}
       per.{:abstract_%(language)} = {{:abstract_%(language)}}
@@ -37,12 +43,28 @@ MERGE (per:entity:person {slug: {slug}})
       per.death_time  = {death_time},
       per.death_place = {death_place},
     {/if}
+    {if:viaf}
+      per.viaf  = {viaf},
+    {/if}
+    {if:wiki_id}
+      per.wiki_id  = {wiki_id},
+    {/if}
     per.languages   = {languages},
     {each:language in languages}
       per.{:abstract_%(language)} = {{:abstract_%(language)}}
     {/each}
   RETURN per
-  
+
+// name: merge_incomplete_person
+// create a placeholder for a person when we do not have first_name or last_name information
+MERGE (per:entity:person {original_slug: {original_slug}})
+  ON CREATE SET
+    per.name        = {name},
+    per.languages   = {languages},
+    per.doi         = {doi},
+    per.dois        = {dois}
+  RETURN per
+    
 // name: remove_person
 // delete a person and its links, completely
 MATCH (per:person {slug: {slug}})

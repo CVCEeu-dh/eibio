@@ -70,7 +70,7 @@ module.exports = {
       };
       var options = _.assign({
         query: '',
-        class: 'person', // e.g. person
+        QueryClass: 'person', // e.g. person
         limit: 1
       }, options);
       
@@ -83,7 +83,7 @@ module.exports = {
         qs: {
           QueryString: options.query,
           MaxHits: options.limit,
-          QueryClass: options.class,
+          QueryClass: options.QueryClass,
         },
         json: true,
         headers: {

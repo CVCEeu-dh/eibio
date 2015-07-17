@@ -43,23 +43,32 @@ async.waterfall([
   function importPeopleFromSource(next) {
     if(!options.source) { // skip this step is no source has been specified
       console.log(clc.blackBright('source file not specified,', clc.yellowBright('skipping'), 'import people from source file'))
-      next();
       return;
     }
-    csv.parse(''+fs.readFileSync(options.source), {columns : true, delimiter: '\t'}, function (err, data) {
+    // read options.source tsv file
+    csv.parse(''+fs.readFileSync(options.source), {
+      columns : true,
+      delimiter: '\t'
+    }, function (err, data) {
       if(err)
         throw err;
-      // clean data here
-      var people = _.filter(data, function (d) {
-        return d.status != 'Rien trouvé' && d.status != 'Duplicate' && (d.wiki_id.length > 0 || d.viaf_id.length > 0);
-      });
+      // filter by people having wiki or viaf
+      var people = _.sortBy(_.filter(data, function (d) {
+        return d.status != 'Rien trouvé'
+            && d.status != 'Duplicate'
+            && (d.wiki_id.trim().length > 0 || d.viaf_id.trim().length > 0)
+            && (d.first_name + d.last_name).trim().length
+            && d.birth_date.trim().length;
+      }), 'slug');
+      console.log(people)
       // check for duplicates
       var clones = _.difference(_.map(people, 'slug'), _.compact(_.map(people, 'slug')).length);
       if(clones > 0) {
         console.log(clones)
         throw 'duplicates detected in file ...'
       }
-      console.log(clc.blackBright(clc.yellowBright(people.length), 'people found having validated viaf_id or wiki_id'))
+      console.log(clc.blackBright(clc.yellowBright(people.length), 'people found having validated viaf_id or wiki_id'));
+      
       next(null, people);
     });
   },
@@ -75,13 +84,13 @@ async.waterfall([
     var slugs = [];
     
     people = _.map(people, function (d) {
-      var slug = helpers.extract.smartSlug(d.first_name + ' ' + d.last_name);
+      var slug = d.smart_slug || helpers.extract.smartSlug(d.first_name + ' ' + d.last_name);
       console.log('  ', clc.yellowBright(slug), 'for' , d.first_name + ' ' + d.last_name)
       if(slugs.indexOf(slug) !== -1 || !(d.first_name + d.last_name).trim().length) {
         console.log(d);
         throw 'dup' + slug; // @todo
       }
-        
+      
       slugs.push(slug);
       slugs.sort();
       

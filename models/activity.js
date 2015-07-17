@@ -53,16 +53,16 @@ module.exports = {
     
     neo4j.query(queries.merge_activity, {
       slug: helpers.extract.smartSlug(properties.description_en + ' ' + properties.country),
-      person_slug:    properties.person.original_slug,
+      person_slug:    properties.person.slug,
       description_en: properties.description_en,
       description_fr: properties.description_fr,
       country:        properties.country,
-      start_date:     properties.start_date,
-      start_time:     properties.start_time,
-      end_date:       properties.end_date,
-      end_time:       properties.end_time, 
+      start_date:     +properties.start_date,
+      start_time:     +properties.start_time,
+      end_date:       +properties.end_date,
+      end_time:       +properties.end_time, 
       creation_date:  now.date,
-      creation_time:  now.time
+      creation_time:  +now.time
     }, function (err, node) {
       if(err) {
         next(err);
