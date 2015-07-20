@@ -53,10 +53,10 @@ module.exports = {
       person_slug:  properties.person.slug,
       country:      properties.country,
       caption:      properties.caption || '',
-      start_date:   +properties.start_date,
-      start_time:   +properties.start_time,
-      end_date:     +properties.end_date,
-      end_time:     +properties.end_time, 
+      start_date:   properties.start_date,
+      start_time:   properties.start_time,
+      end_date:     properties.end_date,
+      end_time:     properties.end_time, 
       creation_date:  now.date,
       creation_time:  +now.time
     }, function (err, node) {

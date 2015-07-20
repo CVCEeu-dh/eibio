@@ -227,6 +227,7 @@ async.waterfall([
                 return;
               };
               if(!nodes.length > 0) {
+                console.log(nodes)
                 throw 'duplicate person slug!'
               };
               //console.log(people[slug].activities)

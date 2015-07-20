@@ -132,7 +132,8 @@ async.waterfall([
     
     
     var Person      = require('../models/person'),
-        Nationality = require('../models/nationality');
+        Nationality = require('../models/nationality'),
+        errors = [];
     
     var q = async.queue(function (person, nextPerson) {
           console.log(clc.blackBright('person: ', clc.yellowBright(person.original_slug)), 'aliases:', person.dois.length, 'nationalitites', person.nationalities);
@@ -144,8 +145,15 @@ async.waterfall([
             if(err)
               throw err;
             
-            if(nodes.length == 1) { // save different nationalities, save doi and dois
+            if(nodes.length == 1) {
+              
+              
+              // save doi and dois if needed
+              
+              
               nodes[0].doi = (nodes[0].doi || person.doi || '').trim();
+              nodes[0].abstract_fr = nodes[0].abstract_fr || person.abstract_fr
+              nodes[0].abstract_en = nodes[0].abstract_en || person.abstract_en
               nodes[0].dois = _.unique((nodes[0].dois || [])
                 .concat([nodes[0].doi.trim()] || [])
                 .concat(person.dois)
@@ -153,10 +161,27 @@ async.waterfall([
               if(nodes[0].dois.length > 1)
                 console.log(nodes[0].doi, nodes[0].dois)
               
-              neo4j.save(nodes[0], function (err) {
+              neo4j.save(nodes[0], function (err, node) {
                 if(err)
                   throw err;
-                nextPerson();
+                // save different nationalities
+                var qi = async.queue(function(nationality, nextNationality) {
+                  console.log("save", nationality)
+                  Nationality.merge({
+                    country: nationality,
+                    person: node
+                  }, function (err, node) {
+                    // if(err)
+                    //   throw err;
+                    if(err)
+                      errors.push(nodes[0])
+                     nextNationality();
+                  });
+                 
+                })
+                  
+                qi.push(person.nationalities)
+                qi.drain = nextPerson;
               })
               
               
@@ -182,7 +207,10 @@ async.waterfall([
           });
         }, 1);
     q.push(_.values(persons));
-    q.drain(next)
+    q.drain = function() {
+      console.log(errors)
+      next()
+    }
   }
   
 ], function(err) {
