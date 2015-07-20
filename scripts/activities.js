@@ -100,14 +100,14 @@ async.waterfall([
             duties_en: [],
             activities: {}
           };
-          
+        console.log(d)
         if(!d.pos_0_start.trim().length)
           return;
         
         // add duties
         for(var j = 0; j < 10; j++) {
           if(!d['pos_' + j + '_start'])
-            break;
+            continue;
           var start_date = d['pos_' + j + '_start'].replace(/[^0-9]/g, ''),
               end_date = d['pos_' + j + '_end'].replace(/[^0-9]/g, ''),
               country = '',
@@ -206,7 +206,8 @@ async.waterfall([
       console.log(toberealigned)
       console.log('aligned:    ', aligned.length)
       console.log('NOT aligned:', toberealigned.length);
-      var notyetaperson = [];
+      var notyetaperson = [],
+          tobecompleted = [];
       
       var q = async.queue(function (slug, nextSlug) {
           neo4j.query('MATCH (n:person) WHERE n.original_slug = {slug} RETURN n', {
@@ -244,8 +245,9 @@ async.waterfall([
                   end_time: act.end_time, // 1980-01-01
                   country: act.country
                 }, function(err) {
-                  if(err)
-                    throw err;
+                  if(err) {
+                    tobecompleted.push(nodes[0])
+                  }//  throw err;
                   nextActivity();
                 });
               }, 1);
@@ -258,8 +260,10 @@ async.waterfall([
       //console.log(people)
       q.push(_.unique(_.map(aligned, 'slug')));
       q.drain = function() {
-        fs.writeFileSync('script.activities.report.json', JSON.stringify(notyetaperson.map(function(slug) { return people[slug] }), null, 2));
+        fs.writeFileSync('script.activities.missing-people.json', JSON.stringify(notyetaperson.map(function(slug) { return people[slug] }), null, 2));
+        fs.writeFileSync('script.activities.incompleted-people.json', JSON.stringify(tobecompleted, null, 2));
         console.log(clc.blackBright('missing people'), notyetaperson.length)
+        console.log(clc.blackBright('incomplete people'), tobecompleted.length)
         console.log(clc.cyanBright('completed'))
       }
       
