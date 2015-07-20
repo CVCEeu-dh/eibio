@@ -60,6 +60,12 @@ async.waterfall([
             name: aliases[0].name,
             doi: aliases[0].doi,
             dois: _.map(aliases, 'doi'),
+            abstract_en: _.compact(_.map(aliases, function (d) {
+              return (d.abstract_en || '').trim()
+            })).join(' --- '),
+            abstract_fr: _.compact(_.map(aliases, function (d) {
+              return (d.abstract_fr || '').trim()
+            })).join(' --- '),
             languages: ['en', 'fr'],
             nationalities: _.flatten(_.union(_.map(aliases, function (alias) {
               return _.compact(LANGUAGES.map(function (d) {
@@ -129,7 +135,7 @@ async.waterfall([
         Nationality = require('../models/nationality');
     
     var q = async.queue(function (person, nextPerson) {
-          console.log(clc.blackBright('person: ', clc.yellowBright(person.original_slug)), 'aliases:', person.dois.length);
+          console.log(clc.blackBright('person: ', clc.yellowBright(person.original_slug)), 'aliases:', person.dois.length, 'nationalitites', person.nationalities);
           
           neo4j.query('MATCH (per:person) WHERE per.original_slug = {original_slug} OR per.original_slug={old_slug} return per', {
             original_slug: person.original_slug,
@@ -138,14 +144,27 @@ async.waterfall([
             if(err)
               throw err;
             
-            
-            if(nodes.length == 1) { // save different nationalities
-              nextPerson()
+            if(nodes.length == 1) { // save different nationalities, save doi and dois
+              nodes[0].doi = (nodes[0].doi || person.doi || '').trim();
+              nodes[0].dois = _.unique((nodes[0].dois || [])
+                .concat([nodes[0].doi.trim()] || [])
+                .concat(person.dois)
+                .concat([person.doi.trim()]))
+              if(nodes[0].dois.length > 1)
+                console.log(nodes[0].doi, nodes[0].dois)
+              
+              neo4j.save(nodes[0], function (err) {
+                if(err)
+                  throw err;
+                nextPerson();
+              })
+              
+              
             } else if(nodes.length > 1) {
               console.log(nodes)
               throw 'resolve duplicates MANUALLY...'
             } else {
-              console.log('creating record')
+              console.log('creating record', person.original_slug)
               Person.merge_incomplete({
                 original_slug: person.original_slug,
                 name: person.name,
@@ -161,7 +180,7 @@ async.waterfall([
             }
             //nextPerson()
           });
-        });
+        }, 1);
     q.push(_.values(persons));
     q.drain(next)
   }

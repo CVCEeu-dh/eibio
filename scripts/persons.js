@@ -27,10 +27,62 @@ console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
 console.log('==================================oOO==(_)==OOo=======================\n');
 
+
+/*
+  Printout all the metadata needed
+*/
+if(options.metadata) {
+  async.waterfall([
+        
+    function getPersonsFromNeo4j (next) {
+      neo4j.query('MATCH (n:person) RETURN n', function (err, nodes) {
+        if(err) {
+          next(err);
+          return;
+        }
+        
+        next(null, {
+          records: nodes,
+          filepath: 'contents/persons-metadata.csv',
+          fields: [
+            'original_slug',
+            'slug',
+            'doi',
+            'name',
+            'first_name',
+            'last_name',
+            'birth_date',
+            'death_date',
+            'birth_place',
+            'death_place',
+            'viaf_id',
+            'wiki_id',
+            'wiki_description',
+            'abstract',
+            'thumbnail'
+          ]
+        });
+      });
+    },
+    
+    helpers.CSV.stringify
+  
+  ], function(err){
+    if(err) {
+      console.log(err);
+      console.log('metadata task', clc.redBright('error'));
+    } else
+      console.log('metadata task', clc.cyanBright('completed'));
+    }); 
+  return;
+}
+
+
 if(!options.source) {
   console.log('Please specify', clc.redBright('--source=/path/to/source.tsv OR/AND --activities=/path/to/activities.tsv'));
   return;
 }
+
 
 async.waterfall([
   /**

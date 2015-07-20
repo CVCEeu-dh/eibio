@@ -3,6 +3,7 @@
   Helpers file
 */
 var fs       = require('fs'),
+    csv       = require('csv'),
     path     = require('path'),
     async    = require('async'),
     settings = require('./settings'),
@@ -123,6 +124,33 @@ module.exports = {
           })
     },
   },
+  
+  CSV: {
+    /*
+      helper to print out a csv file, to be used in a waterfall, with err.
+      require as options
+        filepath
+        records
+        fields
+    */
+    stringify: function(options, next) {
+      csv.stringify(options.records, {
+        delimiter: options.delimiter || '\t',
+        columns:   options.fields,
+        header:    true
+      }, function (err, data) {
+        fs.writeFile(options.filepath,
+           data, function (err) {
+          if(err) {
+            next(err);
+            return
+          }
+          next(null, options.filepath);
+        })
+      });
+    }
+  },
+  
   now: function() {
     var now = moment.utc(),
         result = {};
