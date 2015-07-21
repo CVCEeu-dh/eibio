@@ -62,6 +62,13 @@ describe('models:activity', function() {
     })
   });
   
+  it('should get the person along with its Master and commander activity timeline', function (done) {
+    person.get({slug: __person.slug}, function (err, node) {
+      should.not.exist(err);
+      done()
+      console.log(node)
+    })
+  })
   
   it('should remove a person', function (done) {
     person.remove(__person, function (err) {

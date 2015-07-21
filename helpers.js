@@ -22,6 +22,62 @@ module.exports = {
   IS_IOERROR: IS_IOERROR,
   IS_LIMIT_REACHED: LIMIT_REACHED,
   
+  /*
+    helpers for express API response (cfr. models/)
+    @param err
+    @param res    - express response
+    @param items  - array of items to return
+    @param params - the validated params describing the result
+    
+  */
+  models:{
+    getOne: function (err, res, item, info) {
+      if(err == IS_EMPTY)
+        return res.error(404);
+      if(err)
+        return module.exports.models.cypherQueryError(err, res);
+      return res.ok({
+        item: item
+      }, info || {});
+    },
+    getMany: function (err, res, items, params, warnings) {
+      if(err && err != IS_EMPTY)
+        return module.exports.models.cypherQueryError(err, res);
+      return res.ok({
+        items: items || []
+      }, {
+        params: params,
+        warnings: warnings
+      });
+    },
+    /**
+      Handle Form errors (Bad request)
+    */
+    formError: function(err, res) {
+      return res.error(400, err);
+    },
+    /**
+      Handle causes and stacktraces provided by seraph Query and rawQuery.
+      @err the err OBJECT provided by cypher
+      @res the express response object
+    */
+    cypherQueryError: function(err, res) {
+      // for(i in err)
+      //   console.log(i)
+      // console.log('@helpers.cypherQueryError', err.neo4jException, err.statusCode, err.neo4jCause)
+      switch(err.neo4jException) {
+        case 'EntityNotFoundException':
+          return res.error(404, {
+            message:  err.neo4jCause.message,
+            exception: err.neo4jException
+          });
+        default:
+          return res.error(err.statusCode, err);
+      };
+    }
+  
+  }, 
+  
   /**
     Call dbpedia lookup service and translate its xml to a more human json content
     @to be tested, ideed
@@ -41,10 +97,29 @@ module.exports = {
       });
     },
   },
+   /**
+    Call yagoaida neo4j service for people/place/institution reconciliation.
+    If there are no entities, res will contain an empty array but no error will be thrown.
+    @return err, res
+   */
+  yagoaida: function (options, next) {
+    //console.log(options.contents);
+    services.yagoaida.disambiguate({
+      text: options.contents
+    }, function (err, candidates) {
+      if(err) {
+        next(err)
+        return
+      }
+      console.log(candidates);
+      next(null, candidates);
+    })
+  },
   /*
     Some cypher extractor
   */
   cypher: {
+    
     query: function(cypherQuery, filters) {
       var _concatenate = false,
           methods = {

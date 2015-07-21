@@ -20,6 +20,13 @@ describe('helpers: slugs', function() {
   })
 })
 
+describe('helpers: geo', function() {
+  it('should get the address for the University of Munich', function (done) {
+    should.equal(helpers.extract.smartSlug('Alexander MÖLLER'), 'alexander-moller');
+    done()
+  })
+})
+
 describe('helpers: date parser', function() {
   it('should parse a date correctly', function (done) {
     var valid    = helpers.extract.dates('1927-07-13', 'YYYY-mm-DD'),

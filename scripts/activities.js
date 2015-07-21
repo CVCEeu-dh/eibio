@@ -132,9 +132,9 @@ async.waterfall([
             country = _.result(_.find(COUNTRY_CODES, {'value': d.country}), 'code');
             if(!country)
               throw 'country "' + d.country + '" does not have a proper ISO code, at line ' + i + ', please check'; 
-            
           }
           
+          // disambiguate position according to the 
           people[d.slug]['duties_' + d.language].push({
             position: d.position,
             country: country,

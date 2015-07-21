@@ -10,6 +10,64 @@ var path     = require('path'),
     _        = require('lodash');
     
 module.exports = {
+  geonames: {
+    search: function(options, next) {
+      if(!settings.geonames || !settings.geonames.username) {
+        next('settings.geonames.username not found')
+        return;
+      };
+      if(!settings.geonames || !settings.geonames.search || !settings.geonames.search.endpoint ) {
+        next('settings.geonames.search.endpoint not found')
+        return;
+      };
+      request.get({
+        url: settings.geonames.search.endpoint,
+        qs: options,
+        json:true
+      }, function (err, res, body) {
+        if(err) {
+          next(err);
+          return;
+        }
+
+        if(!body.geonames || !body.geonames.length) {
+          next(IS_EMPTY);
+          return;
+        };
+        return body.geonames;
+      });
+    }
+  },
+  
+  geocoding: {
+    search: function(options, next) {
+      if(!settings.geonames || !settings.geonames.username) {
+        next('settings.geonames.username not found')
+        return;
+      };
+      if(!settings.geonames || !settings.geonames.search || !settings.geonames.search.endpoint ) {
+        next('settings.geonames.search.endpoint not found')
+        return;
+      };
+      request.get({
+        url: settings.geonames.search.endpoint,
+        qs: options,
+        json:true
+      }, function (err, res, body) {
+        if(err) {
+          next(err);
+          return;
+        }
+
+        if(!body.geonames || !body.geonames.length) {
+          next(IS_EMPTY);
+          return;
+        };
+        return body.geonames;
+      });
+    }
+  },
+  
   dbpedia:{
     /*
       dbpedia data service, with automagic redirect.

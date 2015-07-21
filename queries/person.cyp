@@ -1,3 +1,32 @@
+// name: get_person
+// get person with the list of its activities. By SLUG
+MATCH (per:person {slug: {slug}})
+  OPTIONAL MATCH (per)-[r:employed_as]->(act:activity)
+WITH per, collect(act) as activities, collect(r) as rels
+RETURN {
+  slug: per.slug,
+  props: per,
+  activities: activities,
+  rels: rels
+}
+
+// name: get_persons
+// get just a list of persons
+MATCH (per:person)
+WITH per
+ORDER BY per.last_name ASC
+SKIP {offset}
+LIMIT {limit}
+WITH per
+OPTIONAL MATCH (per)-[r:has_nationality]->(nat:nationality)
+WITH per, collect(nat) as nationalities, collect(r) as rels
+RETURN {
+  slug: per.slug,
+  props: per,
+  nationalities: nationalities,
+  rels: rels 
+} ORDER BY per.last_name
+
 // name: merge_person
 // simple merge person.
 MERGE (per:entity:person {original_slug: {original_slug}})

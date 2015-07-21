@@ -27,7 +27,18 @@ console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
 console.log('==================================oOO==(_)==OOo=======================\n');
 
-
+if(options.discover) {
+  if(!options.slug) {
+    console.log('Please specify', clc.redBright('--slug=person-slug'));
+    return;
+  }
+  Person.discover({slug: options.slug}, function(err, per){
+    if(err)
+      throw err;
+    console.log(per)
+  });
+  return; 
+}
 /*
   Printout all the metadata needed
 */

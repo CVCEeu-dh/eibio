@@ -32,11 +32,64 @@ var settings  = require('../settings'),
     neo4j     = require('seraph')(settings.neo4j.host),
     queries   = require('decypher')('./queries/person.cyp'),
     
-    _         = require('lodash');
+    _         = require('lodash'),
+    
+    COUNTRIES = require('../ISO_3166-1');
 
 
 
 module.exports = {
+  /*
+    Get a single person out of the list by person slug.
+    It come with activitites related information
+  */
+  get: function (person, next) {
+    neo4j.query(queries.get_person, {
+      slug: person.slug
+    }, function (err, nodes) {
+      if(err) {
+        next(err);
+        return
+      }
+      if(!nodes.length) {
+        next(helpers.IS_EMPTY);
+        return;
+      }
+      var per  = {
+            slug: nodes[0].slug,
+            props: nodes[0].props
+          },
+          rels = _.groupBy(nodes[0].rels, 'id');
+      
+      per.activities = nodes[0].activities.map(function (d) {
+        var _d = {
+          slug:           d.slug,
+          country_code:   d.country,
+          description_fr: d.description_fr,
+          description_en: d.description_en
+        };
+        _d.country_code = d.country;
+        _d.country = _.find(COUNTRIES, {code: d.country}).value;
+        return _d;
+      });
+      
+      next(null, per)
+    });
+  },
+  
+  getMany: function(params, next) {
+    var query = helpers.cypher.query(queries.get_persons, params);
+    
+    neo4j.query(query, params, function (err, nodes) {
+      if(err) {
+        next(err);
+        return;
+      }
+      
+      // select current abstract based on the language chosen, fallback to english
+      next(null, nodes);
+    })
+  },
   merge: function(properties, next) {
     var now = helpers.now(),
         query = helpers.cypher.query(queries.merge_person, properties);
@@ -58,6 +111,28 @@ module.exports = {
   
   discover: function(person, next) {
     // collect all the activities, then find stuff
+    
+    neo4j.query(queries.get_person, person, function (err, nodes) {
+      if(err) {
+        next(err);
+        return;
+      }
+      if(!nodes.length) {
+        next(helpers.IS_EMPTY);
+        return;
+      }
+      var node = nodes[0];
+      
+      var contents = node.activities.map(function(d) {
+        return d.description_en;
+      }).join('; ')
+      console.log(node.props.name + ' ' + contents)
+      helpers.yagoaida({
+        contents: contents
+      }, function (err, entities) {
+        next(null, node);
+      })
+    })
     
   },
   
