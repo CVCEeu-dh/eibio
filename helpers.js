@@ -40,15 +40,23 @@ module.exports = {
         item: item
       }, info || {});
     },
-    getMany: function (err, res, items, params, warnings) {
+    getMany: function (err, res, items, info) {
       if(err && err != IS_EMPTY)
         return module.exports.models.cypherQueryError(err, res);
-      return res.ok({
-        items: items || []
-      }, {
-        params: params,
-        warnings: warnings
-      });
+      
+      var response = {
+            items: items || []
+          },
+          _info = {};
+      
+      if(info.item)
+        response.item = info.item ;
+      if(info.params)
+        _info.params= info.params;
+      if(info.warnings)
+        _info.warnings= info.warnings;
+      
+      return res.ok(response, _info);
     },
     /**
       Handle Form errors (Bad request)

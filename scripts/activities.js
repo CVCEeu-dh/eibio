@@ -57,13 +57,48 @@ if(options.realign) {
   //
   if(!options.source) { // skip this step is no source has been specified
     console.log(clc.blackBright('source file not specified, you can modify', clc.yellowBright('data/activities.tsv.example')));
-    next();
     return;
   }
+  
+  async.waterfall([
+    function importDisambiguatedPositions(next) {
+      csv.parse(''+fs.readFileSync(options.source), {
+        columns : true,
+        delimiter: '\t',
+        quote: '´'
+      }, function (err, data) {
+        if(err)
+          throw err;
+        // clean data here
+        next(null, data);
+      });
+    },
+    
+    function saveActivitiesIntoNeo4j(activities, next) {
+      var q = async.queue(function (activity, nextActivity) {
+        neo4j.query(queries.merge_activity_lite, activity, function (err, node) {
+          if(err)
+            throw err;
+          console.log(clc.greenBright(' V '), activity.slug, clc.blackBright('\n    ~>', activity.position), q.length(), 'remaining');
+          
+          nextActivity();
+        })
+      }, 1);
+      q.push(activities);
+      q.drain = next;
+    }
+  ], function(err){
+    if(err) {
+      console.log(err);
+      console.log('realign task', clc.redBright('error'));
+    } else
+      console.log('realign task', clc.cyanBright('completed'));
+  }); 
+  return;
 }
 
 if(options.stringify) {
-   async.waterfall([
+  async.waterfall([
         
     function getPositionsFromNeo4j (next) {
       neo4j.query(queries.get_positions, function (err, nodes) {

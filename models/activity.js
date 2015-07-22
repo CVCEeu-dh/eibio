@@ -43,6 +43,79 @@ var settings  = require('../settings'),
 
 module.exports = {
   /*
+    Get a single activity by activity slug.
+    It comes with a list of person concerned.
+  */
+  get: function (activity, next) {
+    neo4j.query(queries.get_activity, {
+      slug: activity.slug
+    }, function (err, nodes) {
+      if(err) {
+        next(err);
+        return
+      }
+      if(!nodes.length) {
+        next(helpers.IS_EMPTY);
+        return;
+      }
+      var act  = {
+            uri:   nodes[0].uri,
+            slug:  nodes[0].slug,
+            props: nodes[0].props
+          };
+      
+      next(null, act)
+    });
+  },
+  
+  getRelatedPersons: function (activity, params, next) {
+    neo4j.query(queries.get_activity_related_persons, {
+      slug:   activity.slug,
+      offset: params.offset,
+      limit:  params.limit
+    }, function (err, nodes) {
+      if(err) {
+        next(err);
+        return
+      }
+      if(!nodes.length) {
+        next(helpers.IS_EMPTY);
+        return;
+      }
+      var act  = {
+            uri:   nodes[0].uri,
+            slug:  nodes[0].slug,
+            props: nodes[0].props
+          },
+          rels = _.groupBy(nodes[0].rels, 'start');
+      // console.log(nodes[0].rels)
+      act.persons = _.values(_.indexBy(nodes[0].persons.map(function (d) {
+        var _d = {
+          slug:           d.slug,
+          props:          d,
+          timeline: _.map(rels[d.id], 'properties')
+        };
+        return _d;
+      }), 'slug'));
+      
+      next(null, act)
+    });
+  },
+  
+  getMany: function(params, next) {
+    var query = helpers.cypher.query(queries.get_activities, params);
+    neo4j.query(query, params, function (err, nodes) {
+      if(err) {
+        next(err);
+        return;
+      }
+      
+      // select current abstract based on the language chosen, fallback to english
+      next(null, nodes);
+    })
+  },
+  
+  /*
     Require as properties:
     person, description_en, description_fr, country
     Country NUST be provided as 3 letters ISO 3166 country code.
@@ -52,7 +125,7 @@ module.exports = {
         query = helpers.cypher.query(queries.merge_activity, properties);
     
     neo4j.query(queries.merge_activity, {
-      slug: helpers.extract.smartSlug(properties.description_en + ' ' + properties.country),
+      slug: helpers.extract.smartSlug(properties.position + ' ' + properties.country),
       person_slug:    properties.person.slug,
       position:       properties.position,
       description_en: properties.description_en,
@@ -66,6 +139,7 @@ module.exports = {
       creation_time:  +now.time
     }, function (err, node) {
       if(err) {
+        console.log(err)
         next(err);
         return;
       }

@@ -69,6 +69,7 @@ describe('controllers:person init', function() {
   it('should create a brand new activity for him/her', function (done) {
     Activity.merge({ 
       person: __person,
+      position: 'Master and commander - The Far side of the World',
       description_en: 'Master and commander - The Far side of the World (1980-1987)',
       description_fr: 'Master & Commander : de l\'autre côté du monde (1980-1987)',
       start_date: '1980',

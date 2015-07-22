@@ -154,14 +154,30 @@ apiRouter.route('/').
 
 /*
 
-  Controller: inquiry
+  Controller: person
   -------------------
   
-  Cfr. controllers/inquiry.js
-  Cfr Neo4j queries: queries/inquiry.cyp
+  Cfr. controllers/person.js
+  Cfr Neo4j queries: queries/person.cyp
   
 */
 apiRouter.route('/person')
   .get(ctrl.person.getItems)
 apiRouter.route('/person/:slug([\\da-z-]+)')
   .get(ctrl.person.getItem)
+
+/*
+
+  Controller: activity
+  --------------------
+  
+  Cfr. controllers/activity.js
+  Cfr Neo4j queries: queries/activity.cyp
+  
+*/
+apiRouter.route('/activity')
+  .get(ctrl.activity.getItems)
+apiRouter.route('/activity/:slug([\\da-z-]+)')
+  .get(ctrl.activity.getItem)
+apiRouter.route('/activity/:slug([\\da-z-]+)/related/:model(person|activity)')
+  .get(ctrl.activity.getRelatedItems)

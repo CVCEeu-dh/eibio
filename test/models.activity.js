@@ -11,8 +11,8 @@
 
 
 var helpers = require('../helpers'),
-    activity  = require('../models/activity'),
-    person  = require('../models/person'),
+    Activity  = require('../models/activity'),
+    Person  = require('../models/person'),
     should  = require('should');
     
 describe('models:activity', function() {
@@ -21,7 +21,7 @@ describe('models:activity', function() {
   
   it('should create a brand new person (merge with non-existing person)', function (done) {
     this.timeout(5000)
-    person.merge({ 
+    Person.merge({ 
       slug: 'TEST-SLUG-HANDLE-WITH-CARE',
       original_slug: 'TEST-SLUG-HANDLE-WITH-CARE',
       first_name: 'Simone',
@@ -44,8 +44,9 @@ describe('models:activity', function() {
   });
   
   it('should create a brand new activity for him/her', function (done) {
-    activity.merge({ 
+    Activity.merge({ 
       person: __person,
+      position: 'Master and commander - The Far side of the World',
       description_en: 'Master and commander - The Far side of the World (1980-1987)',
       description_fr: 'Master & Commander : de l\'autre côté du monde (1980-1987)',
       start_date: '1980',
@@ -62,22 +63,43 @@ describe('models:activity', function() {
     })
   });
   
-  it('should get the person along with its Master and commander activity timeline', function (done) {
-    person.get({slug: 'konrad-adenauer'}, function (err, node) {
+  it('should return the person along with its Master and commander activity timeline', function (done) {
+    Person.get({slug: __person.slug}, function (err, node) {
       should.not.exist(err);
+      done()
+    })
+  })
+  it('should return the activity', function (done) {
+    Activity.get({slug: __activity.slug}, function (err, node) {
+      should.not.exist(err);
+      should.equal(node.slug, __activity.slug);
+      should.exist(node.uri);
+      // console.log(node)
+      done()
+    })
+  })
+  it('should return the activity along with its person', function (done) {
+    Activity.getRelatedPersons({slug: __activity.slug}, {
+      limit:  5,
+      offset: 0
+    }, function (err, node) {
+      should.not.exist(err);
+      should.equal(node.slug, __activity.slug);
+      should.exist(node.uri);
+      // console.log(node)
       done()
     })
   })
   
   it('should remove a person', function (done) {
-    person.remove(__person, function (err) {
+    Person.remove(__person, function (err) {
       should.not.exist(err);
       done()
     })
   });
   
   it('should remove the activity', function (done) {
-    activity.remove(__activity, function (err) {
+    Activity.remove(__activity, function (err) {
       should.not.exist(err);
       done()
     })

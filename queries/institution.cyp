@@ -2,18 +2,21 @@
 MERGE (ins:institution {slug: {slug}})
   ON CREATE SET
     ins.name           = {name},
-    ins.creation_date  = {creation_date},
-    ins.creation_time  = {creation_time},
     {if:name_fr}
-    ins.name_fr        = {name_fr},
+      ins.name_fr      = {name_fr},
+    {/if},
+    {if:address}
+      ins.address      = {address},
     {/if}
     {if:name_fr}
-    ins.name_en        = {name_en},
+      ins.name_en      = {name_en},
     {/if}
     ins.wiki_id        = {wiki_id},
     {if:country}
-    ins.country        = {country}
+      ins.country      = {country},
     {/if}
+    ins.creation_date  = {creation_date},
+    ins.creation_time  = {creation_time}
 RETURN {
   id: id(ins),
   props: ins,
