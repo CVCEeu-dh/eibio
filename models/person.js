@@ -59,19 +59,21 @@ module.exports = {
             slug: nodes[0].slug,
             props: nodes[0].props
           },
-          rels = _.groupBy(nodes[0].rels, 'id');
-      
-      per.activities = nodes[0].activities.map(function (d) {
+          rels = _.groupBy(nodes[0].rels, 'end');
+      //console.log(nodes[0].rels)
+      per.activities = _.values(_.indexBy(nodes[0].activities.map(function (d) {
         var _d = {
           slug:           d.slug,
           country_code:   d.country,
           description_fr: d.description_fr,
-          description_en: d.description_en
+          description_en: d.description_en,
+          timeline: _.map(rels[d.id], 'properties')
         };
+        
         _d.country_code = d.country;
         _d.country = _.find(COUNTRIES, {code: d.country}).value;
         return _d;
-      });
+      }), 'slug'));
       
       next(null, per)
     });

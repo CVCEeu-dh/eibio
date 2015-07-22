@@ -31,7 +31,9 @@ var express       = require('express'),        // call express
                         return f(io);
                       }
                     }),
-  
+    
+    _             = require('lodash'),
+    
     clientRouter  = express.Router(),
     apiRouter     = express.Router();
 

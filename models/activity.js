@@ -54,6 +54,7 @@ module.exports = {
     neo4j.query(queries.merge_activity, {
       slug: helpers.extract.smartSlug(properties.description_en + ' ' + properties.country),
       person_slug:    properties.person.slug,
+      position:       properties.position,
       description_en: properties.description_en,
       description_fr: properties.description_fr,
       country:        properties.country,
