@@ -11,7 +11,7 @@
 
 
 var helpers = require('../helpers'),
-    person  = require('../models/person'),
+    Person  = require('../models/person'),
     should  = require('should');
     
 describe('models:person', function() {
@@ -19,7 +19,7 @@ describe('models:person', function() {
       __unknown;
   
   it('should create a brand new person (merge with non-existing person)', function (done) {
-    person.merge({ 
+    Person.merge({ 
       slug: 'TEST-SLUG-HANDLE-WITH-CARE',
       original_slug: 'ATEST-BSLUG-CHANDLE-DWITH-ECARE',
       first_name: 'Simone',
@@ -42,7 +42,7 @@ describe('models:person', function() {
   });
   
   it('should create a brand new INCOMPLETE person. Incomplete peope do not have slugs', function (done) {
-    person.merge_incomplete({ 
+    Person.merge_incomplete({ 
       original_slug: 'TEST-INCOMPLETE-SLUG-HANDLE-WITH-CARE',
       name: 'Simone Veil',
       doi: 'DOI FOR THAT ORIGINAL SLUG',
@@ -55,8 +55,20 @@ describe('models:person', function() {
     })
   });
   
+  it('should return some colleague', function (done) {
+    Person.getRelatedPersons({slug: 'egon-bahr'}, {
+      limit:  10,
+      offset: 0
+    }, function (err, pers) {
+      should.not.exist(err);
+      
+      //console.log(pers)
+      done()
+    })
+  })
+  
   it('should remove a person', function (done) {
-    person.remove(__person, function (err) {
+    Person.remove(__person, function (err) {
       should.not.exist(err);
       done()
     })

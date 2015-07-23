@@ -86,3 +86,5 @@ Once the URI has been loaded, it can be enriched with the corresponding dbpedia 
 	    RETURN colleague
 	    ORDER BY colleague.colleagueness DESC
 		```
+    
+    

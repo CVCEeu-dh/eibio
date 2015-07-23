@@ -117,7 +117,49 @@ MERGE (per:entity:person {original_slug: {original_slug}})
     per.doi         = {doi},
     per.dois        = {dois}
   RETURN per
-    
+
+// name: get_related_persons_by_activity
+// by activity only
+MATCH (per:person {slug: {slug}})
+OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)-[r2:employed_as]-(per2:person)
+WHERE id(per) <> id(per2)
+RETURN {
+   slug: per2.slug,
+   props: per2,
+   amount: count(DISTINCT act),
+   activities:  extract(n IN collect(DISTINCT act) | {slug: n.slug, props: n}) ,
+   dt: min(abs(r1.start_time - r2.start_time))
+  } as shared_activity
+ORDER BY shared_activity.amount DESC, shared_activity.dt ASC
+SKIP {offset}
+LIMIT {limit}
+
+
+// name: get_related_persons_by_institution
+//
+MATCH (per:person {slug: {slug}})
+OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)--(ins:institution)--(act2:activity)<-[r2:employed_as]-(per2:person)
+RETURN {
+  slug: per2.slug,
+  props: per2,
+  amount: count(DISTINCT ins),
+  institutions:  extract(n IN collect(DISTINCT ins) | {slug: n.slug, props: n}),
+  dt: min(abs(r1.start_time - r2.start_time))
+} as institution
+ORDER BY institution.amount DESC, institution.dt ASC
+SKIP {offset}
+LIMIT {limit}
+
+
+// name: get_related_persons_by_everything
+// demo only: IT MUST BE DONE WITH PATHS MATCH p=(per:person {slug: 'konrad-adenauer'})-[*1..3]-(per2:person) ...
+MATCH p=(per:person)-[*1..3]-(per2:person)
+RETURN DISTINCT {
+   slug:per2.slug,
+   types: EXTRACT(n in nodes(p)|last(labels(n)))
+}
+
+
 // name: remove_person
 // delete a person and its links, completely
 MATCH (per:person {slug: {slug}})

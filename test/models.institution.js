@@ -77,7 +77,9 @@ describe('models:institution', function() {
       if(err)
         throw err;
       __institution = ins;
-      console.log(__institution)
+      should.equal(ins.type, 'institution')
+      should.not.exist(err);
+      // console.log(__institution)
       done()
     })
   })
@@ -96,7 +98,7 @@ describe('models:institution', function() {
       if(err)
         throw err;
       should.equal(ins.id, __institution.id)
-      should.exist(ins.props.wiki_description);
+      should.exist(ins.props.wiki_id);
       done();
     });
     

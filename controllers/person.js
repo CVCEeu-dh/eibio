@@ -39,5 +39,28 @@ module.exports = function(io) {
         return helpers.models.getMany(err, res, items, {params: form.params});
       });
     },
+    
+    /*
+      get a list of related items, according to the model specified.
+    */
+    getRelatedItems: function (req, res) {
+      var form = validator.request(req, {
+        limit: 10,
+        offset: 0
+      });
+      if(!form.isValid)
+        return helpers.formError(form.errors, res);
+      var related = {
+        person: 'getRelatedPersons'
+      }
+      
+      Person[related[form.params.model]]({
+        slug: form.params.slug
+      }, form.params, function (err, items) {
+        return helpers.models.getMany(err, res, items, {
+          params: form.params
+        });
+      });
+    }
   }
 };

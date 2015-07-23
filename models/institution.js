@@ -98,6 +98,7 @@ module.exports = {
           next(err);
           return;
         }
+        // console.log(wiki)
         // get the most similar by "slug"
         for(var i in wiki) {
           if(helpers.extract.smartSlug(wiki[i].label) == helpers.extract.smartSlug(institution.props.name)) {

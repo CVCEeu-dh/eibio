@@ -34,7 +34,7 @@ var settings  = require('../settings'),
     queries   = require('decypher')('./queries/person.cyp'),
     
     _         = require('lodash'),
-    
+    async     = require('async'),
     COUNTRIES = require('../ISO_3166-1');
 
 
@@ -93,6 +93,54 @@ module.exports = {
       next(null, nodes);
     })
   },
+  
+  getRelatedPersons: function(person, params, next) {
+    async.parallel({
+      by_activity: function(callback) {
+        neo4j.query(queries.get_related_persons_by_activity, {
+          slug:   person.slug,
+          offset: params.offset,
+          limit:  params.limit
+        }, function(err, nodes) {
+          if(err)
+            return callback(err);
+          return callback(err, nodes);
+        })
+      },
+      by_institution: function(callback) {
+        neo4j.query(queries.get_related_persons_by_institution, {
+          slug:   person.slug,
+          offset: params.offset,
+          limit:  params.limit
+        }, function(err, nodes) {
+          if(err)
+            return callback(err);
+          return callback(err, nodes);
+        })
+      }
+    }, function (err, results) {
+      if(err)
+        return next(err);
+      var persons = _.values(_.groupBy(results.by_activity.concat(results.by_institution), 'slug'))
+            .map(function (d) {
+              var person = {
+                slug: d[0].slug,
+                uri: 'person/' + d[0].slug,
+                score: _.sum(d, function(e) { // calculate also in term of time proximity
+                  return e.activities? e.amount*2: e.amount;
+                }),
+                activities: _.flatten(_.compact(_.map(d, 'activities'))),
+                institution: _.flatten(_.compact(_.map(d, 'institutions')))
+              };
+              return person;
+            });
+      
+      next(null, persons);
+    })
+    
+  },
+  
+  
   merge: function(properties, next) {
     var now = helpers.now(),
         query = helpers.cypher.query(queries.merge_person, properties);

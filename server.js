@@ -165,7 +165,9 @@ apiRouter.route('/person')
   .get(ctrl.person.getItems)
 apiRouter.route('/person/:slug([\\da-z-]+)')
   .get(ctrl.person.getItem)
-
+apiRouter.route('/person/:slug([\\da-z-]+)/related/:model(person|activity)')
+  .get(ctrl.person.getRelatedItems)
+  
 /*
 
   Controller: activity

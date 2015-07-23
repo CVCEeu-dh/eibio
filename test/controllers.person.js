@@ -111,6 +111,18 @@ describe('controllers:person API', function() {
         done();
       });
   });
+  it('should show person colleagues', function (done) {
+    session
+      .get('/api/person/egon-bahr/related/person')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.exist(res.body.result.items)
+        should.not.exist(err)
+        
+        done();
+      });
+  });
 });
 
 describe('controllers:person finish', function() {
