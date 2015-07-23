@@ -6,6 +6,7 @@
 */
 module.exports = {
   debug: true,
+  port: 8000,
   /*
     
     secret and keys
