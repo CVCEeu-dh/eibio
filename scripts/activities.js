@@ -35,12 +35,25 @@ var fs         = require('fs'),
     Institution = require('../models/institution'),
     Role        = require('../models/role'),
     
-    async      = require('async'),
-    _          = require('lodash'),
-    clc        = require('cli-color'),
+    async       = require('async'),
+    _           = require('lodash'),
+    clc         = require('cli-color'),
     
-    queries    = require('decypher')('./queries/activity.cyp'),
-    options    = require('minimist')(process.argv.slice(2));
+    queries     = require('decypher')('./queries/activity.cyp'),
+    options     = require('minimist')(process.argv.slice(2)),
+    
+    
+    COLUMNS     = {
+                    stringify: [
+                      'person__slug',
+                      'person__original_slug',
+                      'start_date',
+                      'end_date',
+                      'activity__slug',
+                      'activity__country',
+                      'activity__position'
+                    ]
+                  };
     
 
 console.log('\n\n                                      __^__');
@@ -100,7 +113,7 @@ if(options.realign) {
   return;
 }
 
-if(options.stringify) {
+if(options.prepare) { // prepare the export for the realign task (aka correction).
   async.waterfall([
         
     function getPositionsFromNeo4j (next) {
@@ -136,7 +149,48 @@ if(options.stringify) {
   return;
 }
 
+if(options.stringify) {
+  async.waterfall([
+        
+    function getPositionsFromNeo4j (next) {
+      neo4j.query('MATCH (per:person)-[r]-(act:activity) RETURN {person__slug: per.slug, person__original_slug:per.original_slug, start_date: r.start_date, end_date: r.end_date, activity__slug: act.slug, activity__country:act.country, activity__position: act.position}', function (err, paths) {
+        if(err) {
+          next(err);
+          return;
+        }
+        
+        console.log(paths)
+        
+        next(null, {
+          records: paths,
+          filepath: 'data/persons__activities.tsv',
+          fields: COLUMNS.stringify
+        });
+      });
+    },
+    
+    helpers.CSV.stringify
+  
+  ], function(err){
+    if(err) {
+      console.log(err);
+      console.log('stringify task', clc.redBright('error'));
+    } else
+      console.log('stringify task', clc.cyanBright('completed'));
+  }); 
+  return;
+}
+  
+
 if(options.parse) {
+  if(!options.source) {
+    console.log('Please specify the tsv path', clc.redBright('--source=/path/to/source.tsv'));
+    return;
+  }
+  return;
+};
+
+if(options.FOOparse) {
   
   var missing_positions = [
     {
