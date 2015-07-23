@@ -32,18 +32,19 @@ RETURN {
 // name: create_person
 // It takes into account the slug unicity
 CREATE (per:person {
-  slug:       {slug},
-  first_name: {first_name},
-  last_name : {last_name},
+  slug:          {slug},
+  name:          {name},
+  first_name:    {first_name},
+  last_name :    {last_name},
   {if:birth_date}
-    birth_date: {birth_date},
-    birth_time: {birth_time},
+    birth_date:  {birth_date},
+    birth_time:  {birth_time},
   {/if}
   {if:viaf_id}
-    per.viaf_id  = {viaf_id},
+    viaf_id:     {viaf_id},
   {/if}
   {if:wiki_id}
-    per.wiki_id  = {wiki_id},
+    wiki_id:     {wiki_id},
   {/if}
   creation_date: {creation_date},
   creation_time: {creation_time}
@@ -52,6 +53,13 @@ RETURN {
   slug: per.slug,
   props: per
 }
+
+
+// name: get_slugs
+// get just a list of persons
+MATCH (per:person)
+WHERE has(per.slug)
+RETURN per.slug as slug
 
 
 // name: merge_person

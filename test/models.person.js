@@ -16,6 +16,7 @@ var helpers = require('../helpers'),
     
 describe('models:person', function() {
   var __person,
+      __homonymn,
       __unknown;
   
   it('should create a brand new person (merge with non-existing person)', function (done) {
@@ -66,6 +67,59 @@ describe('models:person', function() {
       done()
     })
   })
+  
+  
+  it('should create (NOT merge) a new person with SMART slug', function (done) {
+    Person.create({ 
+      first_name: 'Luca',
+      last_name: 'Malaspina',
+      name: 'Luca Malaspina',
+      birth_date: '1927-07-13',
+      birth_time: -1355961180,
+      birth_place: 'Nice, Provence, France',
+      viaf_id: '120689047'
+    }, function (err, per) {
+      should.not.exist(err);
+      
+      console.log(err,  per)
+      done()
+    })
+  })
+  
+  it('should FAIL to create (NOT merge) a new person with slug, it is a real duplicate', function (done) {
+    Person.create({ 
+      first_name: 'Luca',
+      last_name: 'Malaspina',
+      name: 'Giacomo Malaspina',
+      birth_date: '1927-07-13',
+      birth_time: -1355961180,
+      birth_place: 'Nice, Provence, France',
+      viaf_id: '120689047'
+    }, function (err, per) {
+      should.exist(err); // err is duplicate
+      
+      // console.log(err, per)
+      done()
+    })
+  })
+  
+  it('should create (NOT merge) a new person with slug, it is an homonym', function (done) {
+    Person.create({ 
+      first_name: 'Luca',
+      last_name: 'Malaspina',
+      name: 'Giacomo Malaspina',
+      birth_date: '1927-07-13',
+      birth_time: -1355961180,
+      birth_place: 'Nice, Provence, France',
+      viaf_id: '120689047'
+    }, function (err, per) {
+      should.exist(err); // err is duplicate
+      
+      console.log(per)
+      done()
+    })
+  })
+  
   
   it('should remove a person', function (done) {
     Person.remove(__person, function (err) {

@@ -144,17 +144,37 @@ module.exports = {
     Create a person, take into account the unicity of the person as well.
   */
   create: function(person, next) {
+    if(!person.slug) { // get the first empty slug...
+      neo4j.query(queries.get_slugs, function (err, slugs){
+        // take the very first, non existing slug, then create it.
+        if(err) {
+          return next(err)
+        }
+        var slugs = _.values(slugs);
+        
+        person.slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
+        
+        if(slugs.indexOf(person.slug) == -1) {
+          module.exports.create(person, next);
+          return;
+        }
+          
+        next('surely duplicate');
+        // console.log(slugs.length, slug)
+      });
+      return;
+    }
     var now = helpers.now(),
-        query = helpers.cypher.query(queries.merge_person, properties);
+        query = helpers.cypher.query(queries.create_person, person);
+    // i you have provided a slugs that means that is has to be unique...
     neo4j.query(query, _.assign(person, {
       creation_date: now.date,
       creation_time: now.time
     }), function (err, node) {
       if(err)
-        return next(err)
-      console.log(node)
-    })
-    // create_person
+        return next(err);
+      next(null, nodes[0]);
+    });
   },
   
   merge: function(properties, next) {
