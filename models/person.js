@@ -150,17 +150,15 @@ module.exports = {
         if(err) {
           return next(err)
         }
-        var slugs = _.values(slugs);
-        
-        person.slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
-        
-        if(slugs.indexOf(person.slug) == -1) {
-          module.exports.create(person, next);
-          return;
+        var slugs = _.map(slugs, 'slug'),
+            slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
+        console.log('test with', slug, slugs.indexOf(slug))
+        if(slugs.indexOf(slug) !== -1) {
+          slug = slug + person.birth_date.substr(0,4);
+          console.log('test twice with', slug, person.birth_date.substr(0,4),slugs.indexOf(slug))
         }
-          
-        next('surely duplicate');
-        // console.log(slugs.length, slug)
+        
+        module.exports.create(_.assign(person, {slug: slug}), next);
       });
       return;
     }
@@ -170,7 +168,7 @@ module.exports = {
     neo4j.query(query, _.assign(person, {
       creation_date: now.date,
       creation_time: now.time
-    }), function (err, node) {
+    }), function (err, nodes) {
       if(err)
         return next(err);
       next(null, nodes[0]);

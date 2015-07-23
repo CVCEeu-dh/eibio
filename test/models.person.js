@@ -17,6 +17,7 @@ var helpers = require('../helpers'),
 describe('models:person', function() {
   var __person,
       __homonymn,
+      __homonymnOfHomonym,
       __unknown;
   
   it('should create a brand new person (merge with non-existing person)', function (done) {
@@ -69,57 +70,46 @@ describe('models:person', function() {
   })
   
   
-  it('should create (NOT merge) a new person with SMART slug', function (done) {
+  it('should create (NOT merge) a new person "test-luca-malaspina"', function (done) {
     Person.create({ 
-      first_name: 'Luca',
+      first_name: 'Test Luca',
       last_name: 'Malaspina',
-      name: 'Luca Malaspina',
+      name: 'Test Luca Malaspina',
       birth_date: '1927-07-13',
       birth_time: -1355961180,
       birth_place: 'Nice, Provence, France',
       viaf_id: '120689047'
     }, function (err, per) {
       should.not.exist(err);
-      
-      console.log(err,  per)
+      should.equal(per.slug, 'test-luca-malaspina');
+      __homonymn = per;
       done()
     })
   })
   
-  it('should FAIL to create (NOT merge) a new person with slug, it is a real duplicate', function (done) {
-    Person.create({ 
-      first_name: 'Luca',
+  it('should FAIL to create (NOT merge) a new person "test-luca-malaspina", it is a duplicate', function (done) {
+    Person.create({
+      first_name: 'Test Luca',
       last_name: 'Malaspina',
-      name: 'Giacomo Malaspina',
+      name: 'Test Giacomo Malaspina',
       birth_date: '1927-07-13',
       birth_time: -1355961180,
       birth_place: 'Nice, Provence, France',
       viaf_id: '120689047'
     }, function (err, per) {
       should.exist(err); // err is duplicate
-      
+      should.equal(err.neo4jCause.exception, 'UniqueConstraintViolationKernelException')
       // console.log(err, per)
       done()
     })
   })
   
-  it('should create (NOT merge) a new person with slug, it is an homonym', function (done) {
-    Person.create({ 
-      first_name: 'Luca',
-      last_name: 'Malaspina',
-      name: 'Giacomo Malaspina',
-      birth_date: '1927-07-13',
-      birth_time: -1355961180,
-      birth_place: 'Nice, Provence, France',
-      viaf_id: '120689047'
-    }, function (err, per) {
-      should.exist(err); // err is duplicate
-      
-      console.log(per)
+  it('should remove Test-Luca-Malaspina', function (done) {
+    Person.remove(__homonymn, function (err) {
+      should.not.exist(err);
       done()
     })
-  })
-  
+  });
   
   it('should remove a person', function (done) {
     Person.remove(__person, function (err) {
