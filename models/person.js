@@ -140,6 +140,22 @@ module.exports = {
     
   },
   
+  /*
+    Create a person, take into account the unicity of the person as well.
+  */
+  create: function(person, next) {
+    var now = helpers.now(),
+        query = helpers.cypher.query(queries.merge_person, properties);
+    neo4j.query(query, _.assign(person, {
+      creation_date: now.date,
+      creation_time: now.time
+    }), function (err, node) {
+      if(err)
+        return next(err)
+      console.log(node)
+    })
+    // create_person
+  },
   
   merge: function(properties, next) {
     var now = helpers.now(),

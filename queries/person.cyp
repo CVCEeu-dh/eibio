@@ -10,6 +10,7 @@ RETURN {
   rels: rels
 }
 
+
 // name: get_persons
 // get just a list of persons
 MATCH (per:person)
@@ -26,6 +27,32 @@ RETURN {
   nationalities: nationalities,
   rels: rels 
 } ORDER BY per.last_name
+
+
+// name: create_person
+// It takes into account the slug unicity
+CREATE (per:person {
+  slug:       {slug},
+  first_name: {first_name},
+  last_name : {last_name},
+  {if:birth_date}
+    birth_date: {birth_date},
+    birth_time: {birth_time},
+  {/if}
+  {if:viaf_id}
+    per.viaf_id  = {viaf_id},
+  {/if}
+  {if:wiki_id}
+    per.wiki_id  = {wiki_id},
+  {/if}
+  creation_date: {creation_date},
+  creation_time: {creation_time}
+})
+RETURN {
+  slug: per.slug,
+  props: per
+}
+
 
 // name: merge_person
 // simple merge person.
