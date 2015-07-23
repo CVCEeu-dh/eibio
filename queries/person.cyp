@@ -29,7 +29,7 @@ RETURN {
 
 // name: merge_person
 // simple merge person.
-MERGE (per:entity:person {original_slug: {original_slug}})
+MERGE (per:person {original_slug: {original_slug}})
   ON CREATE SET
     per.name = {name},
     per.first_name  = {first_name},
@@ -110,7 +110,7 @@ MERGE (per:entity:person {original_slug: {original_slug}})
 
 // name: merge_incomplete_person
 // create a placeholder for a person when we do not have first_name or last_name information
-MERGE (per:entity:person {original_slug: {original_slug}})
+MERGE (per:person {original_slug: {original_slug}})
   ON CREATE SET
     per.name        = {name},
     per.languages   = {languages},

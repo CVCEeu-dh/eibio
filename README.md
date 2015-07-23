@@ -22,7 +22,11 @@ Once neo4j is functional, __clone the eibio package__, then install the required
 
 Copy `settings.js.example` to `settings.js`, then modify neo4j section according to your configuration.
 
-Test it
+Execute the setup script that flushes all the constraints to the neo4j db
+
+    npm run-script setup
+
+Then test it
   
   	npm test
 
