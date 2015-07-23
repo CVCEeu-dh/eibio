@@ -37,3 +37,6 @@ settings.js
 *.zip
 *.txt
 __*.js
+
+#exceptions
+!package.json

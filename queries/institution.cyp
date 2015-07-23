@@ -4,23 +4,35 @@ MERGE (ins:institution {slug: {slug}})
     ins.name           = {name},
     {if:name_fr}
       ins.name_fr      = {name_fr},
-    {/if},
+    {/if}
+    {if:name_en}
+      ins.name_en      = {name_en},
+    {/if}
+    {if:abstract_fr}
+      ins.abstract_fr  = {abstract_fr},
+    {/if}
+    {if:abstract_en}
+      ins.abstract_en  = {abstract_en},
+    {/if}
     {if:address}
       ins.address      = {address},
     {/if}
-    {if:name_fr}
-      ins.name_en      = {name_en},
+    {if:url}
+      ins.url          = {url},
     {/if}
-    ins.wiki_id        = {wiki_id},
+    {if:wiki_id}
+      ins.wiki_id      = {wiki_id},
+    {/if}
     {if:country}
       ins.country      = {country},
     {/if}
     ins.creation_date  = {creation_date},
     ins.creation_time  = {creation_time}
 RETURN {
-  id: id(ins),
+  uri: 'institution/'+ins.slug,
+  slug:  ins.slug,
   props: ins,
-  type: last(labels(ins))
+  type:  last(labels(ins))
 } as institution
 
 // name: merge_institution_activity_relationship

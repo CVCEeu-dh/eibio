@@ -139,7 +139,6 @@ module.exports = {
       creation_time:  +now.time
     }, function (err, node) {
       if(err) {
-        console.log(err)
         next(err);
         return;
       }

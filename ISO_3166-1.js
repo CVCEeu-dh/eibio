@@ -68,6 +68,7 @@ module.exports = [
   }, 
   {
     "code":"AUT", 
+    "short": "AT",
     "value":"Austria", "nationality_fr": "autrichienne", "nationality_en": "Austrian", "nationality_de": "österreichisch"
   }, 
   {
@@ -79,7 +80,8 @@ module.exports = [
     "value":"Burundi", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
-    "code":"BEL", 
+    "code":"BEL",
+    "short": "BE", 
     "value":"Belgium", "nationality_fr": "belge", "nationality_en": "Belgian", "nationality_de": "belgisch"
   }, 
   {
@@ -172,6 +174,7 @@ module.exports = [
   }, 
   {
     "code":"CHE", 
+    "short": "CH",
     "value":"Switzerland", "nationality_fr": "suisse", "nationality_en": "Swiss", "nationality_de": "schweizerisch"
   }, 
   {
@@ -243,7 +246,8 @@ module.exports = [
     "value":"Czech Republic", "nationality_fr": "tchécoslovaque", "nationality_en": "Czech", "nationality_de": ""
   }, 
   {
-    "code":"DEU", 
+    "code":"DEU",
+    "short": "DE", 
     "value":"Germany", "nationality_fr": "allemande", "nationality_en": "German", "nationality_de": "deutsch"
   }, 
   {
@@ -256,6 +260,7 @@ module.exports = [
   }, 
   {
     "code":"DNK", 
+    "short": "DK",
     "value":"Denmark", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -264,6 +269,7 @@ module.exports = [
   }, 
   {
     "code":"DZA", 
+    "short": "DZ",
     "value":"Algeria", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -272,6 +278,7 @@ module.exports = [
   }, 
   {
     "code":"EGY", 
+    "short": "EG",
     "value":"Egypt", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -284,6 +291,7 @@ module.exports = [
   }, 
   {
     "code":"ESP", 
+    "short": "ES",
     "value":"Spain", "nationality_fr": "espagnole", "nationality_en": "Spanish", "nationality_de": "Spanisch"
   }, 
   {
@@ -307,7 +315,8 @@ module.exports = [
     "value":"Falkland Islands (Malvinas)", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
-    "code":"FRA", 
+    "code":"FRA",
+    "short": "FR", 
     "value":"France", "nationality_fr": "française", "nationality_en": "French", "nationality_de": "französisch"
   }, 
   {
@@ -323,7 +332,8 @@ module.exports = [
     "value":"Gabon", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
-    "code":"GBR", 
+    "code":"GBR",
+    "short": "GB",
     "value":"United Kingdom", "nationality_fr": "britannique", "nationality_en": "British", "nationality_de": "britisch"
   }, 
   {
@@ -404,6 +414,7 @@ module.exports = [
   }, 
   {
     "code":"HRV", 
+    "short": "HR",
     "value":"Croatia", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -432,6 +443,7 @@ module.exports = [
   }, 
   {
     "code":"IRL", 
+    "short": "IR",
     "value":"Ireland", "nationality_fr": "irlandaise", "nationality_en": "Irish", "nationality_de": "irisch"
   }, 
   {
@@ -451,7 +463,8 @@ module.exports = [
     "value":"Israel", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
-    "code":"ITA", 
+    "code":"ITA",
+    "short": "IT", 
     "value":"Italy", "nationality_fr": "italienne", "nationality_en": "Italian", "nationality_de": "italienisch"
   }, 
   {
@@ -540,6 +553,7 @@ module.exports = [
   }, 
   {
     "code":"LUX", 
+    "short": "LU",
     "value":"Luxembourg", "nationality_fr": "luxembourgeoise", "nationality_en": "Luxembourgish", "nationality_de": "luxemburgisch"
   }, 
   {
@@ -672,10 +686,12 @@ module.exports = [
   }, 
   {
     "code":"NLD", 
+    "short": "NL",
     "value":"Netherlands", "nationality_fr": "néerlandaise", "nationality_en": "Dutch", "nationality_de": "niederländisch"
   }, 
   {
     "code":"NOR", 
+    "short": "NO",
     "value":"Norway", "nationality_fr": "norvégienne", "nationality_en": "Norwegian", "nationality_de": "norwegisch"
   }, 
   {
@@ -724,6 +740,7 @@ module.exports = [
   }, 
   {
     "code":"POL", 
+    "short": "PL",
     "value":"Poland", "nationality_fr": "polonaise", "nationality_en": "Polish", "nationality_de": "polnisch"
   }, 
   {
@@ -736,6 +753,7 @@ module.exports = [
   }, 
   {
     "code":"PRT", 
+    "short": "PT",
     "value":"Portugal", "nationality_fr": "portugaise", "nationality_en": "Portuguese", "nationality_de": "portugisisch"
   }, 
   {
@@ -760,6 +778,7 @@ module.exports = [
   }, 
   {
     "code":"ROU", 
+    "short": "RO",
     "value":"Romania", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -912,6 +931,7 @@ module.exports = [
   }, 
   {
     "code":"TUR", 
+    "short": "TR",
     "value":"Turkey", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -924,6 +944,7 @@ module.exports = [
   }, 
   {
     "code":"TZA", 
+    "short": "TZ",
     "value":"Tanzania, United Republic of", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -943,7 +964,8 @@ module.exports = [
     "value":"Uruguay", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
-    "code":"USA", 
+    "code":"USA",
+    "short": "US", 
     "value":"United States", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {

@@ -24,13 +24,16 @@
   
 */
 var fs         = require('fs'),
+    path       = require('path'),
     csv        = require('csv'),
     
     settings   = require('../settings'),
     helpers    = require('../helpers'),
     
-    neo4j      = require('seraph')(settings.neo4j.host),
-    activity   = require('../models/activity'),
+    neo4j       = require('seraph')(settings.neo4j.host),
+    activity    = require('../models/activity'),
+    Institution = require('../models/institution'),
+    Role        = require('../models/role'),
     
     async      = require('async'),
     _          = require('lodash'),
@@ -245,6 +248,8 @@ if(options.parse) {
             var position = d.position,
                 disambiguated_position = disambiguated_positions[d.language][helpers.extract.smartSlug(d.position + ' ' + country)],
                 tags = [],
+                role,
+                institution,
                 url,
                 ambiguous_slug;
             
@@ -259,11 +264,17 @@ if(options.parse) {
               d.slug == 'anthony-eden' && console.log(clc.yellowBright(' ! '), clc.blackBright('~>', d.position), start_date, end_date)
               d.slug == 'anthony-eden' && console.log('   ', position)
             } else {
-              position  = disambiguated_position[0]['title_' + d.language];
-              tags      = _.compact([disambiguated_position[0]['tag'],disambiguated_position[0]['institution'], disambiguated_position[0]['secondary-tag']]);
-              url       = disambiguated_position[0]['url'];
-            
-            
+              position    = disambiguated_position[0]['title_' + d.language];
+              tags        = _.compact([disambiguated_position[0]['tag'],disambiguated_position[0]['institution'], disambiguated_position[0]['secondary-tag']]);
+              url         = disambiguated_position[0]['url'];
+              role        = disambiguated_position[0]['tag'];
+              if(disambiguated_position[0]['institution-address'].length)
+                institution = {
+                  name:     disambiguated_position[0]['institution'].trim(),
+                  address:  disambiguated_position[0]['institution-address'],
+                  location: disambiguated_position[0]['institution-location'],
+                  url:      disambiguated_position[0]['url']
+                };
               if(disambiguated_position.length == 1) { // unique disambiguatin, fine
                 d.slug == 'anthony-eden' && console.log(clc.greenBright(' V '), clc.blackBright('~>', d.position), start_date, end_date );
               } else { // further disambiguation needed
@@ -277,6 +288,8 @@ if(options.parse) {
               country: country,
               tags: tags,
               url: url,
+              institution: institution,
+              role: role,
               line: disambiguated_position? disambiguated_position[0].line: 0,
               ambiguous_slug: ambiguous_slug,
               start_date: start_date,
@@ -332,6 +345,8 @@ if(options.parse) {
                     people[slug].activities.push({
                       country: years_en[i][j].country,
                       position:        years_en[i][j].position,
+                      institution:     years_en[i][j].institution,
+                      role:            years_en[i][j].role,
                       start_date:      years_en[i][j].start_date,
                       start_time:      years_en[i][j].start_time,
                       end_date:        years_en[i][j].end_date,
@@ -355,6 +370,8 @@ if(options.parse) {
                 people[slug].activities.push({
                   country:         years_en[i][0].country,
                   position:        years_en[i][0].position,
+                  institution:     years_en[i][0].institution,
+                  role:            years_en[i][0].role,
                   start_date:      years_en[i][0].start_date,
                   start_time:      years_en[i][0].start_time,
                   end_date:        years_en[i][0].end_date,
@@ -403,7 +420,7 @@ if(options.parse) {
                   throw 'duplicate person slug!'
                 };
                 //console.log(people[slug].activities)
-                console.log(clc.blackBright('saving activities for'), clc.yellowBright(slug), nodes[0].original_slug, nodes[0].slug)
+                console.log(clc.blackBright('  saving activities for'), clc.yellowBright(slug), nodes[0].original_slug, nodes[0].slug)
                 
                 slug == 'anthony-eden' && console.log(slug, people[slug].activities)
                 
@@ -418,21 +435,82 @@ if(options.parse) {
                     end_date: act.end_date,
                     end_time: act.end_time, // 1980-01-01
                     country: act.country
-                  }, function(err) {
+                  }, function (err, _act) {
                     if(err) {
                       tobecompleted.push(nodes[0])
+                      nextActivity();
+                    } else if(act.institution) { // create institution, if everything is ok
+                      var country = act.institution.location.match(/\(([A-Z]{2})\)/)
+                      
+                      if(!country || !country.length) {
+                        console.log(act.institution, country[1]) // find country
+                        throw 'country not found for the given institution'
+                      }
+                        
+                      var country_code = _.result(_.find(COUNTRY_CODES, {short: country[1]}), 'code');
+                      if(!country_code) {
+                        console.log(act.institution, country[1]) // find country
+                        throw 'country CODE was not found for the given country: ' + country[1]
+                      }// console.log(country_code)
+                      if(act.institution.name == 'Municipality') {
+                        act.institution.name = act.institution.name + 'of ' + act.institution.location
+                      }
+                      
+                      async.parallel({
+                        mergeInstitution: function (callback) {
+                          Institution.merge({
+                            country: country_code,
+                            name: act.institution.name,
+                            address: act.institution.address,
+                            location: act.institution.location,
+                            url: act.institution.url.length? act.institution.url: undefined,
+                            wiki_id: act.institution.url.match('dbpedia.org')? path.basename(act.institution.url): undefined
+                          }, function (err, _ins) {
+                            if(err)
+                              throw err;
+                            console.log(clc.blackBright('  saving institution for'), _ins.props.name)
+                            Institution.addRelatedActivity(_ins, _act, function (err) {
+                              if(err)
+                                throw err;
+                              callback();
+                            })
+                            // console.log(err, node)
+                          });
+                        },
+                        mergeRole: function(callback) {
+                          if(!act.role.trim().length)
+                            return callback();
+                          Role.merge({
+                            name: act.role,
+                            name_en: act.role
+                          }, function (err, _rol) {
+                            if(err)
+                              throw err;
+                            Role.addRelatedActivity(_rol, _act, function (err) {
+                              if(err)
+                                throw err;
+                              callback();
+                            })
+                          })
+                        }
+                        
+                      }, function(err, results) {
+                        nextActivity();
+                      })
+                      
+                    } else {
+                      nextActivity();
                     }//  throw err;
-                    nextActivity();
                   });
                 }, 1);
                 
                 qi.push(people[slug].activities);
                 qi.drain = nextSlug;
               });
-            }, 1);
+            }, 4);
         
         //console.log(people)
-        q.push(_.unique(_.map(aligned, 'slug'))); // 
+        q.push(_.unique(_.map(aligned, 'slug'))); // q.push(['anthony-eden']) // 
         q.drain = function() {
           fs.writeFileSync('script.activities.missing-people.json', JSON.stringify(notyetaperson.map(function(slug) { return people[slug] }), null, 2));
           fs.writeFileSync('script.activities.missing-positions.json', JSON.stringify(missing_positions, null, 2));

@@ -57,13 +57,17 @@ module.exports = {
         query = helpers.cypher.query(queries.merge_institution, properties);
     
     neo4j.query(query, {
-      slug: helpers.extract.smartSlug(properties.name_en + ' ' + properties.country),
-      name: properties.name,
-      name_en: properties.name_en,
-      name_fr: properties.name_fr,
-      description_fr: properties.description_fr,
+      slug: helpers.extract.smartSlug(properties.name + ' ' + properties.country),
+      name:           properties.name,
+      name_en:        properties.name_en,
+      name_fr:        properties.name_fr,
+      abstract_en:    properties.abstract_en,
+      abstract_fr:    properties.abstract_fr,
       country:        properties.country || '',
       wiki_id:        properties.wiki_id || '',
+      address:        properties.address,
+      location:       properties.location,
+      url:            properties.url,
       creation_date:  now.date,
       creation_time:  now.time
     }, function (err, node) {
@@ -128,8 +132,8 @@ module.exports = {
     var now = helpers.now();
     
     neo4j.query(queries.merge_institution_activity_relationship, {
-      slug: institution.props.slug,
-      activity_slug: activity.props.slug
+      slug: institution.slug,
+      activity_slug: activity.slug
     }, function (err, node) {
       if(err) {
         next(err);
@@ -144,8 +148,8 @@ module.exports = {
   },
   
   remove: function(institution, next) {
-    neo4j.query(queries.remove_activities, {
-      slug: institution.props.slug
+    neo4j.query(queries.remove_institution, {
+      slug: institution.slug
     }, function (err, node) {
       if(err) {
         next(err);

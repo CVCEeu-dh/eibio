@@ -7,7 +7,8 @@
   The previous doi has been preserved for migration purposes.
   Its neo4j json representation should be at least:
   {
-    id:
+    slug: 'simone-veil',
+    uri:  'person/simone-veil',
     props: { 
       slug: 'simone-veil',
       first_name: 'Simone',

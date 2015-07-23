@@ -33,6 +33,7 @@ MERGE (act:activity {slug: {slug}})
     act.description_fr = {description_fr},
     act.description_en = {description_en},
     act.country        = {country}
+    
   ON MATCH SET
     act.position       = {position},
     act.description_fr = {description_fr},

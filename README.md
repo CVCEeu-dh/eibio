@@ -25,4 +25,23 @@ Once the URI has been loaded, it can be enriched with the corresponding dbpedia 
 
 
   
+# Some interesting queries
+1. Get the number of job activities per role:
+
+    MATCH (n:`role`)--(t:activity) with n, count(*) as total RETURN n.name, total ORDER BY total DESC
   
+1. Get the number of job activities per institution:
+
+    MATCH (n:`institution`)--(t:activity) with n, count(*) as total RETURN n.name, total ORDER BY total DESC
+  
+1. Get some direct collegue of a specific person
+
+    MATCH (per:person {slug:"wim-duisenberg"})
+    OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)-[r2:employed_as]-(per2:person)
+    WITH r1, act, per, {
+     slug: per2.slug,
+     colleagueness: count(DISTINCT act),
+     dt: min(abs(r1.start_time - r2.start_time))
+    } as colleague
+    RETURN colleague
+    ORDER BY colleague.colleagueness DESC

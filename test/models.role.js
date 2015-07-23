@@ -11,19 +11,20 @@
 
 
 var helpers = require('../helpers'),
-    institution  = require('../models/institution'),
-    activity  = require('../models/activity'),
-    person  = require('../models/person'),
+    Activity     = require('../models/activity'),
+    Person       = require('../models/person'),
+    Role         = require('../models/role'),
     should  = require('should');
+
+var __person,
+    __institution,
+    __activity,
+    __role;
     
-describe('models:institution', function() {
-  var __person,
-      __institution,
-      __activity;
-  
+describe('models:role init', function() {
   it('should create a brand new person (merge with non-existing person)', function (done) {
     this.timeout(5000)
-    person.merge({ 
+    Person.merge({ 
       slug: 'TEST-SLUG-HANDLE-WITH-CARE',
       original_slug: 'TEST-SLUG-HANDLE-WITH-CARE',
       first_name: 'Simone',
@@ -46,7 +47,7 @@ describe('models:institution', function() {
   });
   
   it('should create a brand new activity for him/her', function (done) {
-    activity.merge({ 
+    Activity.merge({ 
       person: __person,
       position: 'Master and commander - The Far side of the World',
       description_en: 'Master and commander - The Far side of the World (1980-1987)',
@@ -65,59 +66,52 @@ describe('models:institution', function() {
     })
   });
   
-  it('should create a brand new institution', function (done) {
-    this.timeout(5000)
-    institution.merge({ 
-      name: 'European Parliament',
-      name_en: 'European Parliament',
-      name_fr: 'Parlement Europeen',
-      country: '',
-      wiki_id: 'European Parliament'
-    }, function (err, ins) {
-      if(err)
-        throw err;
-      __institution = ins;
-      console.log(__institution)
-      done()
+});
+
+
+describe('models:role', function() {  
+  it('should create a brand new role', function (done) {
+    Role.merge({ 
+      name: 'Secretary General',
+      name_fr: 'Secrétaire général',
+      name_en: 'Secretary General'
+    }, function (err, rol) {
+      __role = rol;
+      should.equal(rol.slug, 'secretary-general')
+      should.equal(rol.props.name_fr, 'Secrétaire général')
+      should.equal(rol.props.name_en, 'Secretary General')
+      should.not.exist(err)
+      done();
     })
-  })
-  
-  it('should create a relationship between the institution and the activity', function (done) {
-    institution.addRelatedActivity(__institution, __activity, function (err, ins) {
+  });
+   it('should create a relationship between the role and the activity', function (done) {
+    Role.addRelatedActivity(__role, __activity, function (err, rol) {
       if(err)
         throw err
+      should.not.exist(err)
       done()
     })
   })
-  
-  
-  it('should enrich the institution with the wiki_id', function (done) {
-    institution.discover(__institution, function (err, ins) {
-      if(err)
-        throw err;
-      should.equal(ins.id, __institution.id)
-      should.exist(ins.props.wiki_description);
-      done();
-    });
-    
-  })
+});
+
+describe('models:role destroy', function() {  
   
   it('should remove a person', function (done) {
-    person.remove(__person, function (err) {
+    Person.remove(__person, function (err) {
       should.not.exist(err);
       done()
     })
   });
   
   it('should remove the activity', function (done) {
-    activity.remove(__activity, function (err) {
+    Activity.remove(__activity, function (err) {
       should.not.exist(err);
       done()
     })
   });
   
-  it('should remove the institution', function (done) {
-    institution.remove(__institution, function (err) {
+  it('should remove the role', function (done) {
+    Role.remove(__role, function (err) {
       should.not.exist(err);
       done()
     })
