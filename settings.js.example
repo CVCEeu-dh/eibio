@@ -1,0 +1,72 @@
+/*
+
+  EIBIO config file
+  ===
+
+*/
+module.exports = {
+  debug: true,
+  /*
+    
+    secret and keys
+    ---
+  */
+  secret: {
+    cookie: 'the pulcinella secret', // cookie salt
+    salt: 'the pulcinella secret salt', // password salt
+    activation: 'the pulcinella secret for activation', // password salt
+  },
+  /*
+    
+    neo4j connection
+    ---
+    
+  */
+  neo4j : { // v.2.2
+    host : {
+      server: 'http://localhost:7575',
+      user: '',
+      pass: ''
+    }
+  },
+  /*
+    
+    services section
+    ---
+  */
+  dbpedia: {
+    data: {
+      endpoint: 'http://dbpedia.org/data/'
+    },
+    lookup: {
+      endpoint: 'http://lookup.dbpedia.org/api/search.asmx/PrefixSearch'
+    }
+  },
+  
+  geonames: {
+    username: 'YOUR-GEONAMES-USERNAME',
+    search: {
+      endpoint: 'http://api.geonames.org/search'
+    }
+  },
+  
+  geocode: {
+    key: 'YOUR-GEOCODE-KEY',
+    search: {
+      endpoint: 'https://maps.googleapis.com/maps/api/geocode/json'
+    }
+  },
+  yagoaida: {
+    disambiguate: {
+      endpoint: 'https://gate.d5.mpi-inf.mpg.de/aida/service/disambiguate' 
+    }
+  },
+  /*
+    
+    logging
+    ---
+  */
+  logs: {
+    access: 'logs/access.log'
+  }
+};
