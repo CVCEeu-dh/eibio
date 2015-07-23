@@ -144,24 +144,26 @@ module.exports = {
     Create a person, take into account the unicity of the person as well.
   */
   create: function(person, next) {
-    if(!person.slug) { // get the first empty slug...
-      neo4j.query(queries.get_slugs, function (err, slugs){
-        // take the very first, non existing slug, then create it.
-        if(err) {
-          return next(err)
-        }
-        var slugs = _.map(slugs, 'slug'),
-            slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
-        console.log('test with', slug, slugs.indexOf(slug))
-        if(slugs.indexOf(slug) !== -1) {
-          slug = slug + person.birth_date.substr(0,4);
-          console.log('test twice with', slug, person.birth_date.substr(0,4),slugs.indexOf(slug))
-        }
+    if(!person.slug)
+      person.slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
+    // if(!person.slug) { // get the first empty slug...
+    //   neo4j.query(queries.get_slugs, function (err, slugs){
+    //     // take the very first, non existing slug, then create it.
+    //     if(err) {
+    //       return next(err)
+    //     }
+    //     var slugs = _.map(slugs, 'slug'),
+    //         slug = helpers.extract.smartSlug(person.first_name + ' ' + person.last_name);
+    //     console.log('test with', slug, slugs.indexOf(slug))
+    //     if(slugs.indexOf(slug) !== -1) {
+    //       slug = slug + person.birth_date.substr(0,4);
+    //       console.log('test twice with', slug, person.birth_date.substr(0,4),slugs.indexOf(slug))
+    //     }
         
-        module.exports.create(_.assign(person, {slug: slug}), next);
-      });
-      return;
-    }
+    //     module.exports.create(_.assign(person, {slug: slug}), next);
+    //   });
+    //   return;
+    // }
     var now = helpers.now(),
         query = helpers.cypher.query(queries.create_person, person);
     // i you have provided a slugs that means that is has to be unique...
