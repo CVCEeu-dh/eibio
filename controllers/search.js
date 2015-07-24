@@ -54,7 +54,10 @@ module.exports = function(io) {
           }, function (err, suggestions) {
             if(err)
               return callback(err);
-            callback(null, suggestions);
+            callback(null, suggestions.map(function (d) {
+              d.uri = d.type + '/' + d.slug
+              return d;
+            }));
           })
         }
       }, function (err, results) {
