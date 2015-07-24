@@ -102,7 +102,7 @@ module.exports = {
             return
           }
           if(!nodes.length) {
-            next(helpers.IS_EMPTY);
+            next(null, []);
             return;
           }
           callback(null, nodes.map(function (d) {

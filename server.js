@@ -199,3 +199,23 @@ apiRouter.route('/institution/:slug([\\da-z-]+)')
   .get(ctrl.institution.getItem)
 apiRouter.route('/institution/:slug([\\da-z-]+)/related/:model(person|activity)')
   .get(ctrl.institution.getRelatedItems)
+  
+  
+/*
+
+  Controller: search
+  --------------------
+  
+  Cfr. controllers/search.js
+  Cfr Neo4j queries: queries/search.cyp
+  Test test/controllers.search.js
+  Each route accept a GET param q= limit and offsets as well
+  fuzzy search return a list of possible candidates
+*/
+apiRouter.route('/search')
+  .get(ctrl.search.fuzzy)
+apiRouter.route('/search/suggest')
+  .get(ctrl.search.suggest)
+apiRouter.route('/search/:model(person|activity|institution)')
+  .get(ctrl.search.lookup)
+  

@@ -156,7 +156,7 @@ describe('controllers:institution API', function() {
   });
   it('should show the activity with some persons concerned', function (done) {
     session
-      .get('/api/institution/european-movement-international-emi-bel/related/person?limit=13')
+      .get('/api/institution/european-parliament-ita/related/person?limit=13')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function (err, res) { //
