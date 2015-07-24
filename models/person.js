@@ -51,7 +51,6 @@ module.exports = {
           props: person.props
         },
         rels = _.groupBy(person.rels, 'end');
-    //console.log(nodes[0].rels)
     per.activities = _.values(_.indexBy(person.activities.map(function (d) {
       var _d = {
         slug:           d.slug,
@@ -62,9 +61,9 @@ module.exports = {
       };
       
       _d.country_code = d.country;
-      _d.country = _.find(COUNTRIES, {
+      _d.country = d.country.length? _.find(COUNTRIES, {
         code: d.country
-      }).value;
+      }).value: '';
       return _d;
     }), 'slug'));
     return per

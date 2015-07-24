@@ -154,6 +154,20 @@ describe('controllers:institution API', function() {
         done();
       });
   });
+  it('should show the activity with some persons concerned', function (done) {
+    session
+      .get('/api/institution/european-movement-international-emi-bel/related/person?limit=13')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err)
+        should.equal(res.body.info.params.limit, 13);
+        // should.equal(res.body.info.total_count, 1);
+        should.exist(res.body.result.items)
+        done();
+      });
+  });
+  
 });
 
 describe('controllers:institution finish', function() {
