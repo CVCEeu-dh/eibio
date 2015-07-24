@@ -104,6 +104,15 @@ module.exports = {
             optional: true
           },
           {
+            field: 'q',
+            check: 'isLength',
+            args: [
+              2,
+              100
+            ],
+            error: 'should be at least 2 to 100 chars'
+          },
+          {
             field: 'description',
             check: 'isLength',
             args: [
@@ -123,7 +132,7 @@ module.exports = {
           }
         ],
         result;
-    
+    // console.log(params)
     result = module.exports.verify(params, fields);
     // errors?
     if(result !== true) {

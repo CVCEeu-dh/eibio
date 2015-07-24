@@ -29,7 +29,8 @@ module.exports = function(io) {
     suggest: function(req, res) {
       var form = validator.request(req, {
         limit: 10,
-        offset: 0
+        offset: 0,
+        q: ''
       });
       
       if(!form.isValid)
