@@ -1,4 +1,51 @@
+// name: get_institutions
+// get institutions
+MATCH(ins:institution)
+RETURN {
+  slug: ins.slug,
+  uri:  'institution/' + ins.slug,
+  props: ins,
+  type:  last(labels(ins))
+}
+SKIP {offset}
+LIMIT {limit}
+
+
+// name: get_institution
+// get single institution
+MATCH(ins:institution {slug: {slug}})
+RETURN {
+  slug: ins.slug,
+  props:ins,
+  type: last(labels(ins))
+}
+
+
+// name: count_institution_related_persons
+//
+MATCH (ins:institution {slug:{slug}})-[:appears_in]->(act:activity)<-[:employed_as]-(per:person)
+RETURN count(DISTINCT(per)) as total_count
+
+
+// name: get_institution_related_persons
+//
+MATCH (ins:institution {slug:{slug}})-[:appears_in]->(act:activity)<-[r:employed_as]-(per:person)
+WITH DISTINCT per, r, act
+RETURN {
+  slug: per.slug,
+  uri: 'person/' + per.slug,
+  props: per,
+  activities: collect(act),
+  rels:       collect(r),
+  start_time: max(r.start_time)
+} as person
+ORDER BY person.start_time DESC
+SKIP {offset}
+LIMIT {limit}
+
+
 // name: merge_institution
+//
 MERGE (ins:institution {slug: {slug}})
   ON CREATE SET
     ins.name           = {name},

@@ -41,6 +41,35 @@ var settings  = require('../settings'),
 
 module.exports = {
   /*
+    Given a cypher Person with some activities on it,
+    return the clean model. The person shoulkd have some relationships and activities. It should be linked to activity model scratch as well
+  */
+  scratch: function(person) {
+    var per  = {
+          slug: person.slug,
+          uri:  person.uri,
+          props: person.props
+        },
+        rels = _.groupBy(person.rels, 'end');
+    //console.log(nodes[0].rels)
+    per.activities = _.values(_.indexBy(person.activities.map(function (d) {
+      var _d = {
+        slug:           d.slug,
+        country_code:   d.country,
+        description_fr: d.description_fr,
+        description_en: d.description_en,
+        timeline: _.map(rels[d.id], 'properties')
+      };
+      
+      _d.country_code = d.country;
+      _d.country = _.find(COUNTRIES, {
+        code: d.country
+      }).value;
+      return _d;
+    }), 'slug'));
+    return per
+  },
+  /*
     Get a single person out of the list by person slug.
     It come with activitites related information
   */

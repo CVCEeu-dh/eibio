@@ -183,3 +183,19 @@ apiRouter.route('/activity/:slug([\\da-z-]+)')
   .get(ctrl.activity.getItem)
 apiRouter.route('/activity/:slug([\\da-z-]+)/related/:model(person|activity)')
   .get(ctrl.activity.getRelatedItems)
+  
+/*
+
+  Controller: institution
+  --------------------
+  
+  Cfr. controllers/institution.js
+  Cfr Neo4j queries: queries/institution.cyp
+  Test test/controllers.institution.js
+*/
+apiRouter.route('/institution')
+  .get(ctrl.institution.getItems)
+apiRouter.route('/institution/:slug([\\da-z-]+)')
+  .get(ctrl.institution.getItem)
+apiRouter.route('/institution/:slug([\\da-z-]+)/related/:model(person|activity)')
+  .get(ctrl.institution.getRelatedItems)

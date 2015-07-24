@@ -50,12 +50,13 @@ module.exports = {
           _info = {};
       
       if(info.item)
-        response.item = info.item ;
+        response.item     = info.item ;
       if(info.params)
-        _info.params= info.params;
+        _info.params      = info.params;
       if(info.warnings)
-        _info.warnings= info.warnings;
-      
+        _info.warnings    = info.warnings;
+      if(info.total_count)
+        _info.total_count = info.total_count;
       return res.ok(response, _info);
     },
     /**

@@ -42,11 +42,83 @@ var path      = require('path'),
     neo4j     = require('seraph')(settings.neo4j.host),
     queries   = require('decypher')('./queries/institution.cyp'),
     
-    _         = require('lodash');
+    _         = require('lodash'),
+    async     = require('async'),
+    
+    Person    = require('../models/person');
 
 
 
 module.exports = {
+  get: function (institution, next) {
+    neo4j.query(queries.get_institution, {
+      slug: institution.slug
+    }, function (err, nodes) {
+      if(err) {
+        next(err);
+        return
+      }
+      if(!nodes.length) {
+        next(helpers.IS_EMPTY);
+        return;
+      }
+      next(null, nodes[0])
+    });
+  },
+  
+  getMany: function(params, next) {
+    var query = helpers.cypher.query(queries.get_institutions, params);
+    neo4j.query(query, params, function (err, nodes) {
+      if(err) {
+        next(err);
+        return;
+      }
+      // select current abstract based on the language chosen, fallback to english
+      next(null, nodes);
+    })
+  },
+  /*
+    Return a list of institution related person (via their activities)
+  */
+  getRelatedPersons: function (institution, params, next) {
+    async.parallel({
+      count_persons: function (callback) {
+        neo4j.query(queries.count_institution_related_persons, {
+          slug:   institution.slug
+        }, function (err, result) {
+          if(err)
+            return callback(err);
+          callback(null, result.total_count)
+        })
+      },
+      get_persons: function (callback) {
+        neo4j.query(queries.get_institution_related_persons, {
+          slug:   institution.slug,
+          offset: params.offset,
+          limit:  params.limit
+        }, function (err, nodes) {
+          if(err) {
+            next(err);
+            return
+          }
+          if(!nodes.length) {
+            next(helpers.IS_EMPTY);
+            return;
+          }
+          callback(null, nodes.map(function (d) {
+            return Person.scratch(d);
+          }));
+        });
+      }
+    }, function (err, results) {
+      if(err)
+        return next(err);
+      next(null, {
+        items: results.get_persons,
+        total_count: results.count_persons
+      })
+    });
+  },
   /*
     Require as properties:
     name, name_en, name_fr
