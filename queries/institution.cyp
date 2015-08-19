@@ -122,3 +122,34 @@ RETURN {
 MATCH (ins:institution {slug: {slug}})
 OPTIONAL MATCH (ins)-[r]-()
 DELETE ins, r
+
+
+// name: get_related_institutions_by_activity
+// by activity only
+MATCH (ins:institution {slug: {slug}})-[r1:appears_in]->(act:activity)<-[r2:appears_in]-(ins2:institution)
+WHERE id(ins) <> id(ins2)
+RETURN {
+   slug: ins2.slug,
+   props: ins2,
+   amount: count(DISTINCT act),
+   activities:  extract(n IN collect(DISTINCT act) | {slug: n.slug, props: n}) ,
+   dt: min(abs(r1.start_time - r2.start_time))
+  } as shared_activity
+ORDER BY shared_activity.amount DESC, shared_activity.dt ASC
+SKIP {offset}
+LIMIT {limit}
+
+
+// name: get_related_institutions_by_person
+//
+MATCH (ins:institution {slug: {slug}})-[r1:appears_in]->(act:activity)--(per:person)--(act2:activity)<-[r2:appears_in]-(ins2:institution)
+RETURN {
+  slug: ins2.slug,
+  props: ins2,
+  amount: count(DISTINCT per),
+  persons:  extract(n IN collect(DISTINCT per) | {slug: n.slug, props: n}),
+  dt: min(abs(r1.start_time - r2.start_time))
+} as shared_activity
+ORDER BY shared_activity.amount DESC, shared_activity.dt ASC
+SKIP {offset}
+LIMIT {limit}

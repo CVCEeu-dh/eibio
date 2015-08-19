@@ -154,6 +154,18 @@ describe('controllers:institution API', function() {
         done();
       });
   });
+  it('should get closest institutions', function (done) {
+    session
+      .get('/api/institution/european-commission-bel/related/institution?limit=130')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err)
+        should.equal(res.body.info.params.limit, 130);
+        should.exist(res.body.result.items)
+        done();
+      });
+  });
   it('should show the activity with some persons concerned', function (done) {
     session
       .get('/api/institution/european-parliament-ita/related/person?limit=13')

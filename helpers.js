@@ -55,7 +55,7 @@ module.exports = {
         _info.params      = info.params;
       if(info.warnings)
         _info.warnings    = info.warnings;
-      if(info.total_count)
+      if(info.total_count !== undefined)
         _info.total_count = info.total_count;
       return res.ok(response, _info);
     },

@@ -5,7 +5,7 @@
   
   usage from command line:
   cd eibio
-  mocha -g 'models:activity' 
+  mocha -g 'models:institution' 
 */
 'use strict';
 
@@ -92,6 +92,18 @@ describe('models:institution', function() {
     })
   })
   
+  it('should find the closest institutions', function (done) {
+    institution.getRelatedInstitutions({slug: 'european-commission-bel'}, {
+      limit: 20,
+      offset: 0
+    }, function (err, ins) {
+      if(err)
+        throw err;
+      should.not.exist(err);
+      done();
+    });
+    
+  })
   
   it('should enrich the institution with the wiki_id', function (done) {
     institution.discover(__institution, function (err, ins) {

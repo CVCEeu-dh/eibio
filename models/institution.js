@@ -98,11 +98,11 @@ module.exports = {
           limit:  params.limit
         }, function (err, nodes) {
           if(err) {
-            next(err);
+            callback(err);
             return
           }
           if(!nodes.length) {
-            next(null, []);
+            callback(null, []);
             return;
           }
           callback(null, nodes.map(function (d) {
@@ -118,6 +118,54 @@ module.exports = {
         total_count: results.count_persons
       })
     });
+  },
+  
+  getRelatedInstitutions: function (institution, params, next) {
+    async.parallel({
+      by_activity: function(callback) {
+        neo4j.query(queries.get_related_institutions_by_activity, {
+          slug:   institution.slug,
+          offset: params.offset,
+          limit:  params.limit
+        }, function(err, nodes) {
+          if(err)
+            return callback(err);
+          return callback(err, nodes);
+        })
+      },
+      by_person: function(callback) {
+        neo4j.query(queries.get_related_institutions_by_person, {
+          slug:   institution.slug,
+          offset: params.offset,
+          limit:  params.limit
+        }, function(err, nodes) {
+          if(err)
+            return callback(err);
+          return callback(err, nodes);
+        })
+      }
+    }, function (err, results) {
+      if(err)
+        return next(err);
+      var institutions = _.sortByOrder(_.values(_.groupBy(results.by_activity.concat(results.by_person), 'slug'))
+            .map(function (d) {
+              var institution = {
+                slug: d[0].slug,
+                uri: 'institution/' + d[0].slug,
+                score: _.sum(d, function(e) { // calculate also in term of time proximity
+                  return e.activities? e.amount*2: e.amount;
+                }),
+                activities: _.flatten(_.compact(_.map(d, 'activities'))),
+                person: _.flatten(_.compact(_.map(d, 'persons')))
+              };
+              return institution;
+            }), 'score', 'desc');
+      next(null, {
+        items: institutions
+      });
+    })
+    
+    
   },
   /*
     Require as properties:

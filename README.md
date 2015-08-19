@@ -64,21 +64,31 @@ Once the URI has been loaded, it can be enriched with the corresponding dbpedia 
   
 # Some interesting queries
 1. Get the number of job activities per role:
-		```cypher
+		```
     	MATCH (n:`role`)--(t:activity)
-		WITH n, count(*) as total
-		RETURN n.name, total ORDER BY total DESC
+		    WITH n, count(*) as total
+		  RETURN n.name, total ORDER BY total DESC
 		```
   
 1. Get the number of job activities per institution:
-		```cypher
+		```
     	MATCH (n:`institution`)--(t:activity)
-		WITH n, count(*) as total
-		RETURN n.name, total ORDER BY total DESC
-  		```
+		    WITH n, count(*) as total
+		  RETURN n.name, total ORDER BY total DESC
+  	```
 
+1. Get the network of activities and person (direct "colleagueness")
+    ```
+      MATCH (t:activity)-[r2]-(p:person) RETURN t,r2,p LIMIT 10000;
+    ```
+
+1. Get closest institutions
+    ```
+    MATCH (ins:institution {slug: 'european-commission-bel'})-[r1:appears_in]->(act:activity)-[r3]-(per:person)-[r4]-(act2:activity)<-[r2:appears_in]-(ins2:institution)
+RETURN ins, r2, act, per, act2, r3, r4, ins2
+    ```
 1. Find some direct collegue of a specific person
-		```cypher
+		```
     	MATCH (per:person {slug:"wim-duisenberg"})
     	OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)-[r2:employed_as]-(per2:person)
     	WHERE id(per) <> id(per2)

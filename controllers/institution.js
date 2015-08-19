@@ -54,7 +54,7 @@ module.exports = function(io) {
         return helpers.formError(form.errors, res);
       var related = {
         person: 'getRelatedPersons',
-        activity: 'getRelatedActivities'
+        institution: 'getRelatedInstitutions'
       }
       
       Institution[related[form.params.model]]({
