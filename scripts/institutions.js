@@ -4,9 +4,12 @@
   
   Load JSON data into a proper neo4j db, v.2.2.
   
+  example usage
   
+  > node .\scripts\institutions.js --source=data\institutions.tsv
 */
 var fs         = require('fs'),
+    path       = require('path'),
     csv        = require('csv'),
     settings   = require('../settings'),
     helpers    = require('../helpers'),
@@ -19,7 +22,8 @@ var fs         = require('fs'),
     
     queries    = require('decypher')('./queries/entity.cyp'),
     ISO_CODES   = require('../ISO_3166-1'),
-    Person     = require('../models/person');
+    
+    Institution     = require('../models/institution');
 
 console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
@@ -33,6 +37,7 @@ if(options.parse) {
     console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
     return;
   }
+
   async.waterfall([
         
     function importInstitutionsFromCSV (next) {
@@ -44,28 +49,106 @@ if(options.parse) {
           next(err);
           return;
         }
-        var slugs = data.map(function (d) {
-          var _d = {};
-          // _.result(_.find(ISO_CODES, lookup), 'code');
+        var slugs = data.filter(function (d) {
+          return d.status != 'Error'  
+        }).map(function (d, i) {
+          var _d = {
+            viaf: d['viaf-institution'],
+            address: d['formatted-address'],
+            position: {
+              tag: d.tag,
+              
+              country: _.result(_.find(ISO_CODES, {value: d.country}), 'code')
+            },
+            c: i
+          };
+          
           if(d.institution == 'Ministry') {
-            _d.name = d.label;
-            _d.slug =  helpers.extract.smartSlug(d.institution + '-' + d.tag)
+            _d.name = _.compact([
+              d['url-label'],
+              d['tag'],
+              d['secondary-tag']
+            ]).join(', ');
           } else {
             _d.name = d.institution;
-            _d.slug =  helpers.extract.smartSlug(d.institution)
           }
-          if(d.url.match('dbpedia'))
-            _d.wiki_id = _d.url = d.url;
-          else
+          
+          if(!_.isEmpty(d['institution-location'])) {
+            _d.country = _.result(_.find(ISO_CODES, {
+              short: _.last(helpers.extract.smartSlug(d['institution-location']).split('-')).toUpperCase()
+            }), 'code');
+            if(!_d.country) {
+              console.log(d)
+              throw d['institution-location']
+            }
+          }
+            
+          _d.slug =  helpers.extract.smartSlug([
+            _d.name,
+            _d.country || ''
+          ].join(' '));
+          
+          _d.position.name = d.title_en.replace(/[\(\d;–\)]/g, ' ')
+                      .replace(/\s-\s/g, ' ')
+                      .replace(/\s+/g, ' ')
+                      .trim();
+                      
+          _d.position.slug = helpers.extract.smartSlug(_d.position.name + ' ' + (_d.position.country || ''));
+                      
+          if(!_.isEmpty(d.url)) {
             _d.url = d.url;
+            if(d.url.match('dbpedia'))
+            _d.wiki_id = path.basename(_d.url);
+          }
+          // latitude and longitude coordinates
+          if(d['geo-lat-lng']) {
+            _d.lat = d['geo-lat-lng'].split(',')[0].trim()
+            _d.lng = d['geo-lat-lng'].split(',')[1].trim()
+          }
           
           return _d
         }).sort().filter(function (d) {
           return d.slug.length > 0
         });
-        console.log(_.indexBy(slugs, 'slug'))
-        next()
+        var institutions = _.values(_.groupBy(slugs, 'slug'));
+        //console.log(_.take(institutions, 1))
+        next(null, institutions)
       })
+    },
+    
+    function saveInstitutions(institutions, next) {
+      var q = async.queue(function (positions, nextInstitution) {
+        //console.log(institution)
+        Institution.merge(_.first(positions), function (err, node) {
+          if(err)
+            throw err;
+          console.log("institution", clc.yellow(node.slug), clc.cyanBright('saved'), clc.blackBright(q.length(), 'remaining'));
+          var _q = async.queue(function (position, nextPosition) {
+            // hidden queue: add activity to institution, if any activity has been provided !
+            neo4j.query('MATCH (act:activity) WHERE act.slug = {slug} RETURN act', {
+              slug: position.slug
+            }, function (err, activities) {
+              if(activities.length) {
+                console.log("  --> ", clc.yellowBright(position.slug), activities.length, clc.cyanBright('saved'), clc.blackBright(q.length(), 'remaining'));
+                // save the link between the institution and the activity.
+                Institution.addRelatedActivity(node, activities[0], function (err) {
+                  if(err)
+                    throw err;
+                  nextPosition();
+                })
+                
+              } else{
+                console.log("  --> ", clc.yellowBright(position.slug), clc.redBright('failed'), clc.blackBright(q.length(), 'remaining'));
+                nextPosition();
+              }
+            })
+          });
+          _q.push(_.map(positions, 'position'));
+          _q.drain = nextInstitution;
+        })
+      }, 1);
+      q.push(_.take(institutions, institutions.length));
+      q.drain = next;
     }
     
   ], function (err) {

@@ -5,6 +5,7 @@ MATCH (per:person {slug: {slug}})
 WITH per, collect(act) as activities, collect(r) as rels
 RETURN {
   slug: per.slug,
+  uri: 'person/' + per.slug,
   props: per,
   activities: activities,
   rels: rels
@@ -23,6 +24,7 @@ OPTIONAL MATCH (per)-[r:has_nationality]->(nat:nationality)
 WITH per, collect(nat) as nationalities, collect(r) as rels
 RETURN {
   slug: per.slug,
+  uri: 'person/' + per.slug,
   props: per,
   nationalities: nationalities,
   rels: rels 
@@ -51,6 +53,7 @@ CREATE (per:person {
 })
 RETURN {
   slug: per.slug,
+  uri: 'person/' + per.slug,
   props: per
 }
 

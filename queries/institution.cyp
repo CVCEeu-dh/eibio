@@ -73,8 +73,32 @@ MERGE (ins:institution {slug: {slug}})
     {if:country}
       ins.country      = {country},
     {/if}
+    {if:lat}
+      ins.lat          = {lat},
+    {/if}
+    {if:lng}
+      ins.lng          = {lng},
+    {/if}
+    {if:viaf_id}
+      ins.viaf_id      = {viaf_id},
+    {/if}
     ins.creation_date  = {creation_date},
     ins.creation_time  = {creation_time}
+  ON MATCH SET
+    {if:address}
+      ins.address      = {address},
+    {/if}
+    {if:lat}
+      ins.lat          = {lat},
+    {/if}
+    {if:lng}
+      ins.lng          = {lng},
+    {/if}
+    {if:viaf_id}
+      ins.viaf_id      = {viaf_id},
+    {/if}
+    ins.last_modification_date  = {creation_date},
+    ins.last_modification_time  = {creation_time}
 RETURN {
   uri: 'institution/'+ins.slug,
   slug:  ins.slug,

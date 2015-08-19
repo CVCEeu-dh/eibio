@@ -4,8 +4,15 @@
   =============================
   
   code and values for ISO countries; it also contains inforlmation about the nationality
+  and iso codes for continents
 */
 module.exports = [
+  {
+    "code": "EU",
+    "short": "EU",
+    "value": "Europe",
+    "type" : "continent"
+  },
   {
     "code":"ABW", 
     "value":"Aruba", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
@@ -435,6 +442,7 @@ module.exports = [
   }, 
   {
     "code":"IND", 
+    "short": "IN",
     "value":"India", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -443,11 +451,12 @@ module.exports = [
   }, 
   {
     "code":"IRL", 
-    "short": "IR",
+    "short": "IE",
     "value":"Ireland", "nationality_fr": "irlandaise", "nationality_en": "Irish", "nationality_de": "irisch"
   }, 
   {
-    "code":"IRN", 
+    "code":"IRN",
+    "short": "IR", 
     "value":"Iran, Islamic Republic of", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -803,6 +812,7 @@ module.exports = [
   }, 
   {
     "code":"SGP", 
+    "short": "SG",
     "value":"Singapore", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {
@@ -867,6 +877,7 @@ module.exports = [
   }, 
   {
     "code":"SWE", 
+    "short": "SE",
     "value":"Sweden", "nationality_fr": "", "nationality_en": "", "nationality_de": ""
   }, 
   {

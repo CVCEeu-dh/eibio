@@ -140,6 +140,9 @@ module.exports = {
       address:        properties.address,
       location:       properties.location,
       url:            properties.url,
+      lat:            properties.lat,
+      lng:            properties.lng,
+      viaf_id:        properties.viaf_id,
       creation_date:  now.date,
       creation_time:  now.time
     }, function (err, node) {
