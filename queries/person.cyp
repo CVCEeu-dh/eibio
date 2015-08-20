@@ -15,14 +15,14 @@ WITH per, {
   uri: 'activity/' + act.slug,
   props: act,
   rel: r,
-  institutions: collect(institutions)
+  institutions: collect(DISTINCT institutions)
 } as activities
 
 RETURN {
   slug: per.slug,
   uri: 'person/' + per.slug,
   props: per,
-  activities: collect(activities)
+  activities: collect(DISTINCT activities)
 }
 
 
