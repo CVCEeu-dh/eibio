@@ -46,6 +46,7 @@ console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
 console.log('==================================oOO==(_)==OOo=======================\n');
 
+console.log(options)
 /*
   Printout all the metadata available for the institutions
 */
