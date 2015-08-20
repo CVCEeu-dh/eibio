@@ -21,6 +21,12 @@ RETURN {
   props: act
 }
 
+// name: count_activities
+// can be enriched with filters.
+MATCH (act:activity)
+RETURN count(act) as total_count
+
+
 // name: get_activity_related_persons
 //
 MATCH (act:activity {slug: {slug}})

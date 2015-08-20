@@ -29,7 +29,7 @@
 */
 var settings  = require('../settings'),
     helpers   = require('../helpers.js'),
-    
+    models    = require('../helpers/models'),
     neo4j     = require('seraph')(settings.neo4j.host),
     queries   = require('decypher')('./queries/person.cyp'),
     
@@ -86,40 +86,37 @@ module.exports = {
       }
       var per  = {
             slug: nodes[0].slug,
+            uri:  nodes[0].uri,
             props: nodes[0].props
-          },
-          rels = _.groupBy(nodes[0].rels, 'end');
-      //console.log(nodes[0].rels)
-      per.activities = _.values(_.indexBy(nodes[0].activities.map(function (d) {
-        var _d = {
-          slug:           d.slug,
-          country_code:   d.country,
-          description_fr: d.description_fr,
-          description_en: d.description_en,
-          timeline: _.map(rels[d.id], 'properties')
+          };
+      
+      // re write activities
+      per.activities = nodes[0].activities.map(function (d) {
+        var _d =  {
+          slug: d.slug,
+          uri: d.uri,
+          props: d.props,
+          timeline: d.rel.properties,
+          institutions: _.filter(d.institutions, 'id')
         };
+        _d.props.country_code = ''+d.props.country;
+        _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
         
-        _d.country_code = d.country;
-        _d.country = _.find(COUNTRIES, {code: d.country}).value;
-        return _d;
-      }), 'slug'));
+        return _d
+      });
       
       next(null, per)
     });
   },
   
   getMany: function(params, next) {
-    var query = helpers.cypher.query(queries.get_persons, params);
-    
-    neo4j.query(query, params, function (err, nodes) {
-      if(err) {
-        next(err);
-        return;
-      }
-      
-      // select current abstract based on the language chosen, fallback to english
-      next(null, nodes);
-    })
+    models.getMany({
+      queries:{
+        items: queries.get_persons,
+        total_count: queries.count_persons
+      },
+      params: params
+    }, next);
   },
   
   getRelatedPersons: function(person, params, next) {
@@ -163,7 +160,7 @@ module.exports = {
               return person;
             });
       
-      next(null, persons);
+      next(null, _.sortByOrder(persons, 'score', 'desc'));
     })
     
   },

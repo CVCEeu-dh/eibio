@@ -2,14 +2,29 @@
 // get person with the list of its activities. By SLUG
 MATCH (per:person {slug: {slug}})
   OPTIONAL MATCH (per)-[r:employed_as]->(act:activity)
-WITH per, collect(act) as activities, collect(r) as rels
+  OPTIONAL MATCH (ins:institution)-[r2:appears_in]->(act)
+
+WITH per, act, r, ins, r2, {
+  id: id(ins),
+  uri: 'institution/' + ins.slug,
+  props: ins
+} AS institutions
+
+WITH per, {
+  id: id(act),
+  uri: 'activity/' + act.slug,
+  props: act,
+  rel: r,
+  institutions: collect(institutions)
+} as activities
+
 RETURN {
   slug: per.slug,
   uri: 'person/' + per.slug,
   props: per,
-  activities: activities,
-  rels: rels
+  activities: collect(activities)
 }
+
 
 
 // name: get_persons
@@ -21,15 +36,20 @@ SKIP {offset}
 LIMIT {limit}
 WITH per
 OPTIONAL MATCH (per)-[r:has_nationality]->(nat:nationality)
-WITH per, collect(nat) as nationalities, collect(r) as rels
+WITH per, nat
 RETURN {
   slug: per.slug,
   uri: 'person/' + per.slug,
   props: per,
-  nationalities: nationalities,
-  rels: rels 
-} ORDER BY per.last_name
+  nationalities: extract(n in collect(nat)|{
+    slug: n.slug
+  })
+} as results ORDER BY results.props.last_name
 
+// name: count_persons
+//
+MATCH (per:person)
+RETURN count(per) as total_count
 
 // name: create_person
 // It takes into account the slug unicity

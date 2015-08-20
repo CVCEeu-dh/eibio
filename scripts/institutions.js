@@ -21,18 +21,75 @@ var fs         = require('fs'),
     options    = require('minimist')(process.argv.slice(2)),
     
     queries    = require('decypher')('./queries/entity.cyp'),
-    ISO_CODES   = require('../ISO_3166-1'),
+    ISO_CODES  = require('../ISO_3166-1'),
     
-    Institution     = require('../models/institution');
+    
+    COLUMNS    = [ // columns that HAVE TO BE PRESENT IN THE SOURCE TSV FILE!!!!
+      'slug',
+      'country', // ISO country code, three letters.
+      'name',
+      'title_en',
+      'title_fr',
+      'viaf_id',
+      'wiki_id',
+      'url',
+      'address', // the complete, well formatted address (geonames or geocoding api)
+      'lat',     // decimal, like 12.0988
+      'lng'      // decimal, too
+    ],
+    
+    Institution = require('../models/institution');
+    
 
 console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
 console.log('==================================oOO==(_)==OOo=======================\n');
 
 /*
-  Parse the tsv file and create the related institution according to the position.
+  Printout all the metadata available for the institutions
+*/
+if(options.stringify) {
+  async.waterfall([
+    function getInstitutionsFromNeo4j (next) {
+      neo4j.query('MATCH (n:institution) RETURN n', function (err, nodes) {
+        if(err) {
+          next(err);
+          return;
+        }
+        
+        next(null, {
+          records: nodes.map(function (d) {
+            d.title_en = d.name;
+            d.title_fr = d.title_fr || d.title_en;
+            return d
+          }),
+          filepath: 'contents/institutions.tsv',
+          fields: COLUMNS
+        });
+      });
+    },
+    
+    helpers.CSV.stringify
+  
+  ], function (err){
+    if(err) {
+      console.log(err);
+      console.log('stringify task', clc.redBright('error'));
+    } else
+      console.log('stringify task', clc.cyanBright('completed'));
+  }); 
+  return; 
+}
+/*
+  Parse the tsv file and create the lacking institutions.
 */
 if(options.parse) {
+  return;
+}
+/*
+  Parse the tsv file and create the related institution according to the position.
+*/
+if(options.FOOparse) {
   if(!options.source) {
     console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
     return;

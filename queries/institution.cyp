@@ -20,6 +20,11 @@ RETURN {
   type: last(labels(ins))
 }
 
+// name: count_institutions
+//
+MATCH (ins:institution)
+RETURN count(DISTINCT(ins)) as total_count
+
 
 // name: count_institution_related_persons
 //

@@ -38,6 +38,7 @@
 var path      = require('path'),
     settings  = require('../settings'),
     helpers   = require('../helpers.js'),
+    models    = require('../helpers/models'),
     ISO_CODES = require('../ISO_3166-1'),
     neo4j     = require('seraph')(settings.neo4j.host),
     queries   = require('decypher')('./queries/institution.cyp'),
@@ -67,15 +68,18 @@ module.exports = {
   },
   
   getMany: function(params, next) {
-    var query = helpers.cypher.query(queries.get_institutions, params);
-    neo4j.query(query, params, function (err, nodes) {
-      if(err) {
-        next(err);
-        return;
-      }
-      // select current abstract based on the language chosen, fallback to english
-      next(null, nodes);
-    })
+    models.getMany({
+      queries: {
+        total_count: queries.count_institutions,
+        items: queries.get_institutions
+      },
+      params: params
+    }, function (err, results) {
+      if(err)
+        next(err)
+      else
+        next(null, results);
+    });
   },
   /*
     Return a list of institution related person (via their activities)

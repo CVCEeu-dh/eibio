@@ -32,7 +32,9 @@
 */
 
 var settings  = require('../settings'),
-    helpers   = require('../helpers.js'),
+    helpers   = require('../helpers'),
+    models    = require('../helpers/models'),
+    
     ISO_CODES = require('../ISO_3166-1'),
     neo4j     = require('seraph')(settings.neo4j.host),
     queries   = require('decypher')('./queries/activity.cyp'),
@@ -103,16 +105,18 @@ module.exports = {
   },
   
   getMany: function(params, next) {
-    var query = helpers.cypher.query(queries.get_activities, params);
-    neo4j.query(query, params, function (err, nodes) {
-      if(err) {
-        next(err);
-        return;
-      }
-      
-      // select current abstract based on the language chosen, fallback to english
-      next(null, nodes);
-    })
+    models.getMany({
+      queries: {
+        items: queries.get_activities,
+        total_count: queries.count_activities
+      },
+      params: params
+    }, function (err, results) {
+      if(err)
+        next(err)
+      else
+        next(null, results);
+    });
   },
   
   /*

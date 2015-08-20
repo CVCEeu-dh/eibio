@@ -82,9 +82,10 @@ describe('models:activity', function() {
     Activity.getMany({
       limit: 10,
       offset: 0
-    }, function (err, nodes) {
+    }, function (err, results) {
       should.not.exist(err);
-      should.exist(nodes.length);
+      should.exist(results.total_count);
+      should.exist(results.items.length);
       done()
     })
   })

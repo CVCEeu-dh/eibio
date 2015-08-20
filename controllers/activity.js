@@ -36,7 +36,6 @@ module.exports = function(io) {
         return helpers.formError(err, res);
         
       Activity.getMany(form.params, function (err, items) {
-        console.log(err)
         return helpers.models.getMany(err, res, items, {
           params: form.params
         });

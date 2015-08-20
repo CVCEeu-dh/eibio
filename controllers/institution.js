@@ -35,8 +35,9 @@ module.exports = function(io) {
       if(!form.isValid)
         return helpers.formError(err, res);
         
-      Institution.getMany(form.params, function (err, items) {
-        return helpers.models.getMany(err, res, items, {
+      Institution.getMany(form.params, function (err, results) {
+        return helpers.models.getMany(err, res, results.items, {
+          total_count: results.total_count,
           params: form.params
         });
       });
