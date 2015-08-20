@@ -1,9 +1,22 @@
 // name: get_activity
 //
 MATCH (act:activity {slug: {slug}})
-OPTIONAL MATCH (per)-[r:employed_as]->(act)
 RETURN {
   slug: act.slug,
+  uri: 'activity/' + act.slug,
+  props: act
+}
+
+// name: get_activities
+// return a list of activities per position
+MATCH (act:activity)
+WITH act
+ORDER BY act.slug ASC
+SKIP {offset}
+LIMIT {limit}
+WITH act
+RETURN {
+  slug:     act.slug,
   uri: 'activity/' + act.slug,
   props: act
 }

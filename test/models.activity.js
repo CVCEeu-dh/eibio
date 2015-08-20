@@ -78,6 +78,16 @@ describe('models:activity', function() {
       done()
     })
   })
+  it('should return some activity (with related institutions)', function (done) {
+    Activity.getMany({
+      limit: 10,
+      offset: 0
+    }, function (err, nodes) {
+      should.not.exist(err);
+      should.exist(nodes.length);
+      done()
+    })
+  })
   it('should return the activity along with its person', function (done) {
     Activity.getRelatedPersons({slug: __activity.slug}, {
       limit:  5,
