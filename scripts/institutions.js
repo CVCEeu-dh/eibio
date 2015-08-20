@@ -25,6 +25,7 @@ var fs         = require('fs'),
     
     
     COLUMNS    = [ // columns that HAVE TO BE PRESENT IN THE SOURCE TSV FILE!!!!
+      'original_slug',    // changed slug 
       'slug',
       'country', // ISO country code, three letters.
       'name',
@@ -59,6 +60,7 @@ if(options.stringify) {
         
         next(null, {
           records: nodes.map(function (d) {
+            d.original_slug = d.slug;
             d.title_en = d.name;
             d.title_fr = d.title_fr || d.title_en;
             return d
@@ -81,15 +83,16 @@ if(options.stringify) {
   return; 
 }
 /*
-  Parse the tsv file and create the lacking institutions.
+  Parse the tsv file thus modifing the institutions (e.g, in order to better translate them).
 */
-if(options.parse) {
+if(options.nparse) {
+  
   return;
 }
 /*
   Parse the tsv file and create the related institution according to the position.
 */
-if(options.FOOparse) {
+if(options.parse) {
   if(!options.source) {
     console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
     return;
@@ -106,11 +109,12 @@ if(options.FOOparse) {
           next(err);
           return;
         }
+        console.log(data)
         var slugs = data.filter(function (d) {
           return d.status != 'Error'  
         }).map(function (d, i) {
           var _d = {
-            viaf: d['viaf-institution'],
+            viaf_id: d['viaf-institution'],
             address: d['formatted-address'],
             position: {
               tag: d.tag,
@@ -169,6 +173,7 @@ if(options.FOOparse) {
         });
         var institutions = _.values(_.groupBy(slugs, 'slug'));
         //console.log(_.take(institutions, 1))
+        console.log('importing', institutions.length, 'institutions over', data.length)
         next(null, institutions)
       })
     },

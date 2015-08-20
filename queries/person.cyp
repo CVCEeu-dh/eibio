@@ -6,12 +6,14 @@ MATCH (per:person {slug: {slug}})
 
 WITH per, act, r, ins, r2, {
   id: id(ins),
+  slug: ins.slug,
   uri: 'institution/' + ins.slug,
   props: ins
 } AS institutions
 
 WITH per, {
   id: id(act),
+  slug: act.slug,
   uri: 'activity/' + act.slug,
   props: act,
   rel: r,

@@ -82,7 +82,7 @@ Once the URI has been loaded, it can be enriched with the corresponding dbpedia 
       MATCH (t:activity)-[r2]-(p:person) RETURN t,r2,p LIMIT 10000;
     ```
 
-1. Get closest institutions
+1. Get the network of closest institutions
     ```
     MATCH (ins:institution {slug: 'european-commission-bel'})-[r1:appears_in]->(act:activity)-[r3]-(per:person)-[r4]-(act2:activity)<-[r2:appears_in]-(ins2:institution)
 RETURN ins, r2, act, per, act2, r3, r4, ins2
@@ -101,4 +101,11 @@ RETURN ins, r2, act, per, act2, r3, r4, ins2
 	    ORDER BY colleague.colleagueness DESC
 		```
     
+1. Manually attach an institution to an activity
     
+    ```
+      MATCH(act:activity {slug:'professor-at-yale-university'}), (ins:institution {slug:'yale-university-usa'})
+      WITH act, ins
+      MERGE (ins)-[r:appears_in]->(act)
+      RETURN act, ins
+    ```
