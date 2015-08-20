@@ -94,6 +94,7 @@ if(options.nparse) {
   Parse the tsv file and create the related institution according to the position.
 */
 if(options.parse) {
+  console.log(clc.cyanBright('parse'))
   if(!options.source) {
     console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
     return;
