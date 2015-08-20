@@ -222,4 +222,8 @@ if(options.parse) {
     } else
       console.log('parse task', clc.cyanBright('completed'));
   });
+  return;
 }
+
+console.log('task', clc.redBright('not found'));
+
