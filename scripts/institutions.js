@@ -46,7 +46,7 @@ console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
 console.log('==================================oOO==(_)==OOo=======================\n');
 
-console.log(options)
+
 /*
   Printout all the metadata available for the institutions
 */
@@ -93,7 +93,7 @@ if(options.nparse) {
 /*
   Parse the tsv file and create the related institution according to the position.
 */
-if(options.parse) {
+if(options.task && options.task=='parse') {
   console.log(clc.cyanBright('parse'))
   if(!options.source) {
     console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
@@ -224,6 +224,6 @@ if(options.parse) {
   });
   return;
 }
-
+console.log(options)
 console.log('task', clc.redBright('not found'));
 
