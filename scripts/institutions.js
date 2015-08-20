@@ -19,6 +19,7 @@ var fs         = require('fs'),
     clc        = require('cli-color'),
     
     options    = require('minimist')(process.argv.slice(2)),
+    prompt     = require('prompt'),
     
     queries    = require('decypher')('./queries/entity.cyp'),
     ISO_CODES  = require('../ISO_3166-1'),
@@ -41,6 +42,7 @@ var fs         = require('fs'),
     
     Institution = require('../models/institution');
     
+prompt.start();
 
 console.log('\n\n                                      __^__');
 console.log('                                     /(o o)\\');
@@ -50,7 +52,12 @@ console.log('==================================oOO==(_)==OOo====================
 /*
   Printout all the metadata available for the institutions
 */
-if(options.stringify) {
+if(options.task == 'stringify') {
+  if(!options.target) {
+    console.log('Please specify the file path', clc.redBright('--target=path/to/source.tsv'));
+    return;
+  }
+  
   async.waterfall([
     function getInstitutionsFromNeo4j (next) {
       neo4j.query('MATCH (n:institution) RETURN n', function (err, nodes) {
@@ -66,7 +73,7 @@ if(options.stringify) {
             d.title_fr = d.title_fr || d.title_en;
             return d
           }),
-          filepath: 'contents/institutions.tsv',
+          filepath: options.target,
           fields: COLUMNS
         });
       });
@@ -83,20 +90,14 @@ if(options.stringify) {
   }); 
   return; 
 }
+
 /*
-  Parse the tsv file thus modifing the institutions (e.g, in order to better translate them).
-*/
-if(options.nparse) {
-  
-  return;
-}
-/*
+  Note: for internal migration only.
   Parse the tsv file and create the related institution according to the position.
 */
-if(options.task && options.task=='parse') {
-  console.log(clc.cyanBright('parse'))
+if(options.task=='migration-parse') {
   if(!options.source) {
-    console.log('Please specify', clc.redBright('--source=/path/to/source.tsv'));
+    console.log('Please specify the source file path', clc.redBright('--source=/path/to/source.tsv'));
     return;
   }
 
@@ -225,5 +226,5 @@ if(options.task && options.task=='parse') {
   return;
 }
 console.log(options)
-console.log('task', clc.redBright('not found'));
+console.log('task', clc.redBright('not found'), 'please specify --task=stringify|parse');
 
