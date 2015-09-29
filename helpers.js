@@ -281,14 +281,22 @@ module.exports = {
         
       });
     },
-    dates: function(text, format, strict) {
+    dates: function(text, format, strict, round) {
       var _d = moment.utc(text, format, strict);
-      
-      if(_d.isValid())
+        
+      if(_d.isValid()) {
+        if(round)
+          _d.set({
+            'hour': 0,
+            'minute': 0,
+            'second': 0,
+            'millisecond': 0
+          })
         return {
           date: _d.format(format),
           time:  +_d.format('X'),
         }
+      }
       else return false;
     },
     entities: function(text, next) {
