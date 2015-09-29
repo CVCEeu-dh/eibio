@@ -271,15 +271,27 @@ module.exports = {
     },
     /**/
     years: function(text) {
-      var spans = text.replace('–', '-').match(/(\d{4}[\d\;\,\-\s]*)/) // match parenthesis ()
+      var spans = text.split(/[–‒]/).join("-").match(/(\d{4}[\d\;\,\-\s]*)/g) // match parenthesis ()
+      // console.log(spans)
       if(!spans)
         return [];
-      return spans[spans.length - 1].split(/[;,]/g).map(function (couple) {
-        return couple.split('-').map(function(di) {
-          return +_.first(di.match(/\d+/));
-        })
-        
+      var results = [];
+      
+      spans.forEach(function (matching) {
+        results = results.concat(matching.split(/[;,]/g).map(function (couple) {
+          return couple.split('-').map(function(di) {
+            return +_.first(di.match(/\d+/));
+          });
+        }));
+        // console.log(results)
       });
+      return results;
+      // return spans[spans.length - 1].split(/[;,]/g).map(function (couple) {
+      //   return couple.split('-').map(function(di) {
+      //     return +_.first(di.match(/\d+/));
+      //   })
+        
+      // });
     },
     dates: function(text, format, strict, round) {
       var _d = moment.utc(text, format, strict);

@@ -78,6 +78,8 @@ module.exports = {
           return;
         }
         var node = _.first(nodes);
+        if(!node)
+          console.log(person, node)
         console.log(clc.blackBright('   verify person: ', node.slug, 'remaining', q.length()));
         
         // calculate differences, prompt if any changes occurred
@@ -232,7 +234,7 @@ module.exports = {
                 person.positions.push({
                   position: d,
                   language: language,
-                  years: years,
+                  years: couple,
                   doi: doi
                 });
               })
@@ -267,14 +269,11 @@ module.exports = {
           language: d.language,
           birth_date: options.person.birth_date,
           death_date: options.person.death_date,
-          description: d.position
+          description: d.position,
+          start_date: d.years[0],
+          end_date: d.years[1]
         };
         
-        for(var k in d.years) {
-          record['position_' + k +'_start_date'] = d.years[k][0];
-          record['position_' + k +'_end_date']   = d.years[k][1]
-          max_activities = Math.max(max_activities, k);
-        }
         options.records.push(record)
         
         
@@ -286,11 +285,13 @@ module.exports = {
         'language',
         'birth_date',
         'death_date',
+        'position',
         'description',
+        'start_date',
+        'end_date'
       ];
-      for(var i = 0; i < max_activities + 1; i++)
-        options.fields.push('position_' + i +'_start_date', 'position_' + i +'_end_date')
-   
+      
+      options.records = _.sortByOrder(options.records, ['start_date', 'end_date', 'language'], ['asc', 'asc', 'asc'])
       callback(null, options);
     }
     q1.push(options.person.languages);

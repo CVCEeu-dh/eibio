@@ -68,12 +68,24 @@ describe('helpers: date parser', function() {
   
   it('should parse multiple dates correctly, with comma', function (done) {
     var y = helpers.extract.years("Chairman of the EPP Group in the European Parliament (1977-1982, 1984-1992)");
+
     should.equal(y[0][0], 1977);
     should.equal(y[0][1], 1982);
     should.equal(y[1][0], 1984);
     should.equal(y[1][1], 1992);
+    
     done();
   });
+  
+  it('should parse nl dates', function (done) {
+    var y = helpers.extract.years("Assistant Director (1967‒1974) then Director of the Treasury (1974‒1978)");
+ 
+    should.equal(y[0][0], 1967);
+    should.equal(y[0][1], 1974);
+    should.equal(y[1][0], 1974);
+    should.equal(y[1][1], 1978);
+    done();
+  })
   
   it('should parse the enricherd cypher query correctly', function (done) {
     var y = helpers.cypher.query('MATCH (ent {{:title_%(language)}:"english title", slug: {slug}}) RETURN ent', {
