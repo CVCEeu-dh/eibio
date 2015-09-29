@@ -27,8 +27,18 @@ var fs          = require('fs'),
         tasks.helpers.tick.start,
         tasks.helpers.tick.end
       ],
+      'parse-bio': [
+        tasks.helpers.checkId,
+        tasks.helpers.checkTarget,
+        tasks.helpers.tick.start,
+        tasks.person.getOne,
+        tasks.person.parseBio,
+        tasks.helpers.csv.stringify,
+        tasks.helpers.tick.end
+        
+      ],
       'stringify-people': [
-        tasks.helpers.csv.checkTarget,
+        tasks.helpers.checkTarget,
         tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.helpers.csv.stringify,
@@ -46,11 +56,18 @@ var fs          = require('fs'),
         tasks.person.getOne,
         tasks.helpers.tick.end
       ],
+      /*
+        Specify a target as well, a place where it will backup a local copy.
+      */
       'update-people': [
-        tasks.helpers.csv.checkSource,
+        tasks.helpers.checkSource,
+        tasks.helpers.checkTarget,
+        tasks.person.getMany,
+        tasks.helpers.csv.stringify,
         tasks.helpers.tick.start,
         tasks.helpers.csv.parse,
         tasks.helpers.prompt.confirm,
+        tasks.person.updateMany,
         tasks.helpers.tick.end
       ]
     };

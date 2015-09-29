@@ -3,7 +3,7 @@
   npm manage --task=
 */
 var settings   = require('../../settings'),
-    inquirer     = require('inquirer')
+    inquirer     = require('inquirer'),
     fs         = require('fs'),
     csv        = require('csv'),
 
@@ -42,6 +42,24 @@ module.exports = {
     }
   },
   
+  checkId: function(options, callback) {
+    if(!options.id) {
+      return callback(' Please specify the neo4J node ID --id=1234');
+    }
+    callback(null, options);
+  },
+  checkTarget: function(options, callback) {
+    if(!options.target) {
+      return callback(' Please specify the OUTPUT file path with WRITE permissions with --target=path/to/target');
+    }
+    callback(null, options);
+  },
+  checkSource: function(options, callback) {
+    if(!options.source) {
+      return callback(' Please specify the INPUT file path with READ permissions with --source=path/to/source');
+    }
+    callback(null, options);
+  },
   /*
     Print out a csv file, to be used in a waterfall, with err.
     require as options
@@ -50,18 +68,7 @@ module.exports = {
       fields
   */
   csv: {
-    checkTarget: function(options, callback) {
-      if(!options.target) {
-        return callback(' Please specify the OUTPUT file path with WRITE permissions with --target=path/to/target.csv');
-      }
-      callback(null, options);
-    },
-    checkSource: function(options, callback) {
-      if(!options.source) {
-        return callback(' Please specify the INPUT file path with READ permissions with --source=path/to/source.csv');
-      }
-      callback(null, options);
-    },
+    
     stringify: function(options, callback) {
       console.log(clc.yellowBright('\n   tasks.helpers.csv.stringify'));
       csv.stringify(options.records, {
@@ -97,7 +104,8 @@ module.exports = {
         }
         console.log(clc.blackBright('   parsing csv file completed, example:'));
         console.log(_.first(data));
-        console.log(clc.blackBright('   ', clc.magentaBright(data.length), 'records found'));
+        
+        console.log(clc.blackBright('   ', clc.magentaBright(data.length), 'lines'));
         options.data = data;
         callback(null, options);
       });
