@@ -69,6 +69,37 @@ var fs          = require('fs'),
         tasks.helpers.prompt.confirm,
         tasks.person.updateMany,
         tasks.helpers.tick.end
+      ],
+      
+      'link-people-activities': [
+        tasks.helpers.checkSource,
+        tasks.helpers.tick.start,
+        tasks.helpers.csv.parse,
+        tasks.person.linkActivities,
+        tasks.helpers.tick.end
+      ],
+      
+      'stringify-activities': [
+        tasks.helpers.checkTarget,
+        tasks.helpers.tick.start,
+        tasks.activity.getMany,
+        tasks.helpers.csv.stringify,
+        tasks.helpers.tick.end
+      ],
+      /*
+        Require: id and slug field to be present. cfr stringify-activities.
+        It writes a backup file in target
+      */
+      'merge-activities': [
+        tasks.helpers.checkSource,
+        tasks.helpers.checkTarget,
+        tasks.helpers.tick.start,
+        tasks.activity.getMany,
+        tasks.helpers.csv.stringify,
+        tasks.helpers.csv.parse,
+        // tasks.helpers.prompt.confirm,
+        tasks.activity.mergeMany,
+        tasks.helpers.tick.end
       ]
     };
 
