@@ -167,6 +167,11 @@ module.exports = {
             }
             return template.join(', ');
           })
+           .replace(/\{:([a-z_A-Z]+)\}/g, function (m, placeholder) {
+          // replace dynamic variables (used for label)
+          // e.g. `MATCH (ent:{:type})` becomes `MATCH (ent:person)` if type = 'person'
+          return filters[placeholder]
+        })
           .replace(/\{:([a-z_A-Z%\(\)\s]+)\}/g, function (m, placeholder) {
             // replace dynamic variables, e.g to write ent.title_en WHERE 'en' is dynaically assigned,
             // write as query
