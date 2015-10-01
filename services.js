@@ -39,32 +39,63 @@ module.exports = {
     }
   },
   
-  geocoding: {
+  geocode: {
+    /*
+      params: options.address
+    */
     search: function(options, next) {
-      if(!settings.geonames || !settings.geonames.username) {
-        next('settings.geonames.username not found')
+      if(!settings.geocode || !settings.geocode.search || !settings.geocode.search.endpoint) {
+        next('settings.geocode not enabled, or mispelled')
         return;
-      };
-      if(!settings.geonames || !settings.geonames.search || !settings.geonames.search.endpoint ) {
-        next('settings.geonames.search.endpoint not found')
+      }
+      if(!settings.geocode.key) {
+        next('settings.geocode.key not found')
         return;
       };
       request.get({
-        url: settings.geonames.search.endpoint,
-        qs: options,
-        json:true
+        url: settings.geocode.search.endpoint,
+        qs: _.assign({
+          key: settings.geocode.key
+        }, options),
+        json: true
       }, function (err, res, body) {
         if(err) {
           next(err);
           return;
         }
-
-        if(!body.geonames || !body.geonames.length) {
-          next(IS_EMPTY);
-          return;
-        };
-        return body.geonames;
+        
+        next(null, body.results);
       });
+    }
+  },
+  
+  /*
+    Viaf link provider (worldCat and ISNI among the others)
+  */
+  viaf: {
+    links: function(options, next) {
+      if(!settings.viaf) {
+        next('settings.viaf not found')
+        return;
+      };
+      
+      var url =  settings.viaf.links.endpoint + options.link + '/justlinks.json';
+      console.log(clc.blackBright('   viaf links:'), url);
+
+      request
+        .get({
+          url: url,//url,
+          json: true,
+          headers: {
+            'Accept':  'application/json'
+          }
+        }, function (err, res, body) {
+          if(err) {
+            next(err);
+            return;
+          }
+          next(null, body)
+        });
     }
   },
   
