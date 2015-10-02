@@ -26,4 +26,17 @@ describe('services: viaf', function() {
     
   })
 })
+
+describe('services: wikidata', function() {
+  it('should get the proper WIKIDATA info', function (done) {
+    services.wikidata.entity({
+      link: 'Q789848'
+    }, function (err, results) {
+      console.log(results)
+      should.not.exist(err);
+      should.exists(results);
+      done()
+    })
     
+  })
+})
