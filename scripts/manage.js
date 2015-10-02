@@ -24,62 +24,53 @@ var fs          = require('fs'),
     
     availableTasks = {
       'demo': [
-        tasks.helpers.tick.start,
-        tasks.helpers.tick.end
+        
       ],
       'parse-bio': [
         tasks.helpers.checkId,
         tasks.helpers.checkTarget,
-        tasks.helpers.tick.start,
         tasks.person.getOne,
         tasks.person.parseBio,
         tasks.helpers.csv.stringify,
-        tasks.helpers.tick.end
+        
         
       ],
       'stringify-people': [
         tasks.helpers.checkTarget,
-        tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.helpers.csv.stringify,
-        tasks.helpers.tick.end
+        
       ],
       
       'remove-person': [
-        tasks.helpers.tick.start,
         tasks.person.getOne,
         tasks.helpers.prompt.confirm,
         tasks.person.removeOne,
-        tasks.helpers.tick.end
+        
       ],
       'get-person': [
-        tasks.helpers.tick.start,
         tasks.person.getOne,
-        tasks.helpers.tick.end
+        
       ],
       'viaf-people': [
-        tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.services.viaf,
-        tasks.helpers.tick.end
+        
       ],
       'dbpedia-people': [
-        tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.services.dbpedia,
-        tasks.helpers.tick.end
+        
       ],
       'wikidata-people': [
-        tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.services.wikidata,
-        tasks.helpers.tick.end
+        
       ],
       'alternatenames-people': [
-        tasks.helpers.tick.start,
         tasks.person.getMany,
         tasks.services.alternatenames,
-        tasks.helpers.tick.end
+        
       ],
       /*
         Specify a target as well, a place where it will backup a local copy.
@@ -89,80 +80,80 @@ var fs          = require('fs'),
         tasks.helpers.checkTarget,
         tasks.person.getMany,
         tasks.helpers.csv.stringify,
-        tasks.helpers.tick.start,
         tasks.helpers.csv.parse,
         tasks.helpers.prompt.confirm,
         tasks.person.updateMany,
-        tasks.helpers.tick.end
+        
       ],
       
       'link-people-activities': [
         tasks.helpers.checkSource,
-        tasks.helpers.tick.start,
         tasks.helpers.csv.parse,
         tasks.person.linkActivities,
-        tasks.helpers.tick.end
+        
       ],
       
       'stringify-activities': [
         tasks.helpers.checkTarget,
-        tasks.helpers.tick.start,
         tasks.activity.getMany,
         tasks.helpers.csv.stringify,
-        tasks.helpers.tick.end
+        
       ],
       
       'stringify-institutions': [
         tasks.helpers.checkTarget,
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.helpers.csv.stringify,
-        tasks.helpers.tick.end
+        
       ],
       
       /*
         Require a compiled address field for the institution
       */
       'geocode-institutions': [
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.services.geocode,
-        tasks.helpers.tick.end
+        
       ],
       
       'dbpedia-institutions': [
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.services.dbpedia,
-        tasks.helpers.tick.end
+        
       ],
       
       'viaf-institutions': [
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.services.viaf,
-        tasks.helpers.tick.end
+        
       ],
       
       'wikidata-institutions': [
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.services.wikidata,
-        tasks.helpers.tick.end
+        
       ],
       
       'alternatenames-institutions': [
-        tasks.helpers.tick.start,
         tasks.institution.getMany,
         tasks.services.alternatenames,
-        tasks.helpers.tick.end
+        
       ],
       
       'alternatenames-institution': [
-        tasks.helpers.tick.start,
         tasks.institution.getOne,
         tasks.services.alternatenames,
-        tasks.helpers.tick.end
+        
+      ],
+      'update-institutions': [
+        tasks.helpers.checkSource,
+        // tasks.helpers.checkTarget,
+        tasks.institution.getMany,
+        // tasks.helpers.csv.stringify,
+        tasks.helpers.csv.parse,
+        tasks.helpers.prompt.confirm,
+        tasks.institution.updateMany,
+        
       ],
       /*
         BEWARE: FOR MIGRATION ONLY
@@ -172,13 +163,13 @@ var fs          = require('fs'),
       'merge-activities': [
         tasks.helpers.checkSource,
         tasks.helpers.checkTarget,
-        tasks.helpers.tick.start,
+        
         tasks.activity.getMany,
         tasks.helpers.csv.stringify,
         tasks.helpers.csv.parse,
-        // tasks.helpers.prompt.confirm,
+        tasks.helpers.prompt.confirm,
         tasks.activity.mergeMany,
-        tasks.helpers.tick.end
+        
       ]
     };
 
@@ -198,8 +189,10 @@ async.waterfall([
   // send initial options
   function init(callback) {
     callback(null, options);
-  }
-].concat(availableTasks[options.task]), function (err) {
+  },
+  tasks.helpers.tick.start
+  
+].concat(availableTasks[options.task]).concat([tasks.helpers.tick.end]), function (err) {
   if(err) {
     console.warn(err);
     console.log(clc.blackBright('\n task'), clc.whiteBright(options.task), clc.redBright('exit with error'));

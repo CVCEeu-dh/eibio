@@ -69,14 +69,64 @@ module.exports = {
     });
     
     if(overlappings.length > 0) {
-      console.log(overlappings);
+      console.log(_.map(overlappings, 'slug'));
       callback('Beware, you have duplicated slugs in your file!');  
       return;
     }
       
     
     var q = async.queue(function (record, next) {
-      next();
+      neo4j.read(+record.id, function (err, node) {
+        if(err){
+          q.kill();
+          callback(err);
+          return;
+        }
+        
+         
+        console.log(clc.blackBright('   id:',  clc.cyanBright(node.id)));
+        var needupdate = false,
+            replaces = {};
+            
+        module.exports.UPDATABLE.forEach(function (d) {
+          if(record[d] && record[d] != node[d]) {
+            replaces[d] = record[d]
+            console.log(clc.yellowBright('    ',d), clc.blackBright('replace'), node[d], clc.blackBright('with'), record[d])
+            needupdate = true;
+          }
+        });
+        
+        if(needupdate) {
+          inquirer.prompt([{
+            type: 'confirm',
+            name: 'YN',
+            message: ' Press enter to UPDATE the selected fields, otherwise exit by typing "n"',
+          }], function( answers ) {
+            // Use user feedback for... whatever!! 
+            if(answers.YN) {
+              neo4j.save(_.assign(node, replaces), function (err) {
+                if(err) {
+                  q.kill();
+                  callback(err);
+                } else {
+                  console.log(clc.greenBright('     saved'), clc.blackBright('remaining', q.length()));
+                  next();
+                }
+              })
+              
+            } else {
+              q.kill();
+              callback('exit on prompt');
+              return;
+            }
+              
+          });
+          
+        } else {
+          console.log(clc.blackBright('   nothing to update, skipping. Remaining', q.length()));
+          next();
+        }
+      });
     }, 1)
     
     q.push(_.filter(options.data, 'slug'));
