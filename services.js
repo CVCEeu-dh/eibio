@@ -99,6 +99,58 @@ module.exports = {
     }
   },
   
+  wikidata: {
+    entity: function(options, next) {
+      if(!settings.wikidata) {
+        next('settings.wikidata not found')
+        return;
+      };
+      
+      var url =  settings.wikidata.entity.endpoint + options.link + '.json';
+      console.log(clc.blackBright('   wikidata links:'), url);
+
+      request
+        .get({
+          url: url,//url,
+          json: true,
+          headers: {
+            'Accept':  'application/json'
+          }
+        }, function (err, res, body) {
+          if(err) {
+            next(err);
+            return;
+          }
+          if(!body.entities[options.link])
+            next('IS_EMPTY');
+          else
+            next(null, body.entities[options.link])
+        });
+    }
+  },
+  
+  importio: {
+    custom: function(options, next) {
+      if(!options.endpoint || options.link)
+      // rewrite url according to options
+      var url = options.endpoint.replace('[[____]]', options.link);
+      request
+        .get({
+          url: url,//url,
+          json: true,
+          headers: {
+            'Accept':  'application/json'
+          },
+        }, function (err, res, body) {
+          if(err) {
+            next(err);
+            return;
+          }
+          next(null, body)
+        })
+    }
+  },
+  
   dbpedia:{
     /*
       dbpedia data service, with automagic redirect.
@@ -137,7 +189,7 @@ module.exports = {
             }
             console.log(clc.blackBright('following redirection, level'), clc.cyan(level), clc.blackBright('link'), clc.cyan(link))
             setTimeout(function(){
-              module.exports.dbpedia({
+              module.exports.dbpedia.data({
                 link: link,
                 level: level + 1
               }, next);
@@ -148,6 +200,7 @@ module.exports = {
           next(null, body)
         }); // eof request
     },
+    
     /*
       dbpedia lookup PrefixSearch service
       @param options.query
