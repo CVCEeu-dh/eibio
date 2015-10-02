@@ -78,6 +78,18 @@ MERGE (ins:institution {slug: {slug}})
     {if:country}
       ins.country      = {country},
     {/if}
+    {if:short_country}
+      ins.short_country = {short_country},
+    {/if}
+    {if:city}
+      ins.city         = {city},
+    {/if}
+    {if:geocode_id}
+      ins.geocode_id   = {geocode_id},
+    {/if}
+    {if:city}
+      ins.city         = {city},
+    {/if}
     {if:lat}
       ins.lat          = {lat},
     {/if}
@@ -92,6 +104,15 @@ MERGE (ins:institution {slug: {slug}})
   ON MATCH SET
     {if:address}
       ins.address      = {address},
+    {/if}
+    {if:short_country}
+      ins.short_country = {short_country},
+    {/if}
+    {if:city}
+      ins.city         = {city},
+    {/if}
+    {if:geocode_id}
+      ins.geocode_id   = {geocode_id},
     {/if}
     {if:lat}
       ins.lat          = {lat},

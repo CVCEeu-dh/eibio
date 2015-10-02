@@ -52,15 +52,41 @@ module.exports = {
   },
   
   geocode: {
-    key: 'YOUR-GEOCODE-KEY',
+    key: 'YOUR-GOOGLE-GEOCODING-API',
     search: {
       endpoint: 'https://maps.googleapis.com/maps/api/geocode/json'
     }
   },
+  
   yagoaida: {
     disambiguate: {
       endpoint: 'https://gate.d5.mpi-inf.mpg.de/aida/service/disambiguate' 
     }
+  },
+  /*
+    service for the endpoint:
+    e.g. https://www.wikidata.org/wiki/Special:EntityData/Q789848.json
+  */
+  wikidata: {
+    entity: {
+      endpoint: 'https://www.wikidata.org/wiki/Special:EntityData/'
+    }
+  },
+  /*
+    Import.io powered services... :D
+    Use the placeholder [[____]] that will contain the ISNI id or the worldcat id
+    somewhere inside the endpoint.
+    
+  */
+  alternatenames: {
+    /*
+    worldcat: {
+      endpoint: 'https://api.import.io/store/data/YOUR DATASET ID/_query?input/webpage/url=http%3A%2F%2Fwww.worldcat.org%2Fidentities%2F[[____]]%2F&_user=YOUR USER ID&_apikey=YOUR API KEY'
+    },
+    isni: {
+      endpoint: 'https://api.import.io/store/data/YOUR DATASET ID/_query?input/webpage/url=http%3A%2F%2Fisni.org%2Fisni%2F[[____]]&_user=YOUR USER ID&_apikey=YOUR API KEY'
+    }
+    */
   },
   /*
     

@@ -188,6 +188,9 @@ module.exports = {
       abstract_en:    properties.abstract_en,
       abstract_fr:    properties.abstract_fr,
       country:        properties.country || '',
+      city:           properties.city,
+      short_country:  properties.short_country,
+      geocode_id:     properties.geocode_id,
       wiki_id:        properties.wiki_id || '',
       address:        properties.address,
       location:       properties.location,
@@ -208,6 +211,9 @@ module.exports = {
       }
       next(null, node[0]);
     })
+  },
+  enrich: function(institution, next) {
+    
   },
   /*
     Use dbpedia lookup to determine which is the institution 

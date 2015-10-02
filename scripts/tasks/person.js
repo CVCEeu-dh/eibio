@@ -14,6 +14,22 @@ var settings  = require('../../settings'),
     Person    = require('../../models/person');
 
 module.exports = {
+  
+  getManyLinks: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.person.links'));
+    var query = helpers.cypher.query('MATCH (per:person) WHERE has(per.{:service}_id) RETURN per.slug, per.{:service}_id as {:service}_id', {
+      service: options.service
+    });
+    neo4j.query(query, function (err, nodes) {
+      options.fields = [
+        'slug', 
+        options.service + '_id'
+      ];
+      options.records = nodes;
+      callback(null, options)
+    });
+  },
+  
   getOne: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.getOne'));
     neo4j.query('MATCH (per:person) WHERE id(per) = {id} WITH per OPTIONAL MATCH (per)-[r]-(t)  RETURN per as person, count(r) as rels', {

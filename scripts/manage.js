@@ -44,6 +44,7 @@ var fs          = require('fs'),
         tasks.helpers.csv.stringify,
         tasks.helpers.tick.end
       ],
+      
       'remove-person': [
         tasks.helpers.tick.start,
         tasks.person.getOne,
@@ -54,6 +55,30 @@ var fs          = require('fs'),
       'get-person': [
         tasks.helpers.tick.start,
         tasks.person.getOne,
+        tasks.helpers.tick.end
+      ],
+      'viaf-people': [
+        tasks.helpers.tick.start,
+        tasks.person.getMany,
+        tasks.services.viaf,
+        tasks.helpers.tick.end
+      ],
+      'dbpedia-people': [
+        tasks.helpers.tick.start,
+        tasks.person.getMany,
+        tasks.services.dbpedia,
+        tasks.helpers.tick.end
+      ],
+      'wikidata-people': [
+        tasks.helpers.tick.start,
+        tasks.person.getMany,
+        tasks.services.wikidata,
+        tasks.helpers.tick.end
+      ],
+      'alternatenames-people': [
+        tasks.helpers.tick.start,
+        tasks.person.getMany,
+        tasks.services.alternatenames,
         tasks.helpers.tick.end
       ],
       /*
@@ -86,7 +111,61 @@ var fs          = require('fs'),
         tasks.helpers.csv.stringify,
         tasks.helpers.tick.end
       ],
+      
+      'stringify-institutions': [
+        tasks.helpers.checkTarget,
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.helpers.csv.stringify,
+        tasks.helpers.tick.end
+      ],
+      
       /*
+        Require a compiled address field for the institution
+      */
+      'geocode-institutions': [
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.services.geocode,
+        tasks.helpers.tick.end
+      ],
+      
+      'dbpedia-institutions': [
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.services.dbpedia,
+        tasks.helpers.tick.end
+      ],
+      
+      'viaf-institutions': [
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.services.viaf,
+        tasks.helpers.tick.end
+      ],
+      
+      'wikidata-institutions': [
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.services.wikidata,
+        tasks.helpers.tick.end
+      ],
+      
+      'alternatenames-institutions': [
+        tasks.helpers.tick.start,
+        tasks.institution.getMany,
+        tasks.services.alternatenames,
+        tasks.helpers.tick.end
+      ],
+      
+      'alternatenames-institution': [
+        tasks.helpers.tick.start,
+        tasks.institution.getOne,
+        tasks.services.alternatenames,
+        tasks.helpers.tick.end
+      ],
+      /*
+        BEWARE: FOR MIGRATION ONLY
         Require: id and slug field to be present. cfr stringify-activities.
         It writes a backup file in target
       */
