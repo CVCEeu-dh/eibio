@@ -151,6 +151,7 @@ module.exports = {
               var person = {
                 slug: d[0].slug,
                 uri: 'person/' + d[0].slug,
+                props: d[0].props,
                 score: _.sum(d, function(e) { // calculate also in term of time proximity
                   return e.activities? e.amount*2: e.amount;
                 }),
