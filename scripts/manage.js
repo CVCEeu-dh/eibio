@@ -170,6 +170,13 @@ var fs          = require('fs'),
         tasks.helpers.prompt.confirm,
         tasks.activity.mergeMany,
         
+      ],
+      
+      /*
+        Test query, BEWARE when testing SET or CREATE or MERGE statements!!
+      */
+      'query': [
+        tasks.helpers.cypher.raw,
       ]
     };
 

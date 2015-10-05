@@ -199,14 +199,22 @@ LIMIT {limit}
 //
 MATCH (per:person {slug: {slug}})
 OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)--(ins:institution)--(act2:activity)<-[r2:employed_as]-(per2:person)
+WHERE per <> per2
 RETURN {
   slug: per2.slug,
   props: per2,
   amount: count(DISTINCT ins),
+  genericity: sum(coalesce(ins.df,0)),
   institutions:  extract(n IN collect(DISTINCT ins) | {slug: n.slug, props: n}),
-  dt: min(abs(r1.start_time - r2.start_time))
+  dt: min(abs(r1.start_time - r2.start_time)),
+  det: min(abs(r1.end_time - r2.end_time))
 } as institution
-ORDER BY institution.amount DESC, institution.dt ASC
+{if:orderby}
+  ORDER BY {:orderby}
+{/if}
+{unless:orderby}
+   ORDER BY institution.genericity ASC, institution.amount DESC, institution.dt ASC, institution.det ASC
+{/unless}
 SKIP {offset}
 LIMIT {limit}
 

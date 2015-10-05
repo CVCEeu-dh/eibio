@@ -153,6 +153,14 @@ module.exports = {
             else 
               return '';
           })
+          .replace(/\{unless:([a-zA-Z_]+)\}((?:(?!\{\/unless).)*)\{\/unless\}/g, function (m, item, contents) {
+            // replace unless template.
+            // console.log(arguments)
+            if(!filters[item])
+              return module.exports.cypher.query(contents, filters);
+            else 
+              return '';
+          })
           .replace(/\{each:([a-zA-Z_]+)\sin\s([a-zA-Z_]+)\}((?:(?!\{\/each).)*)\{\/each\}/g, function (m, item, collection, contents) {
             // replace loop {each:language in languages} {:title_%(language)} = {{:title_%(language)}} {/each} with join.
             // produce something like

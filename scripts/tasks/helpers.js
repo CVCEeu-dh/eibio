@@ -112,5 +112,50 @@ module.exports = {
     }
   },
   
+  cypher: {
+    raw: function(options, callback) {
+      console.log(clc.yellowBright('\n   tasks.helpers.cypher.raw'));
+      if(!options.cypher) {
+        return callback(' Please specify the query path (decypher file without .cyp extension followed by / query name), e.g. --cypher=resource/count_related_users');
+      }
+      
+      var path = options.cypher.split('/');
+      
+      if(path.length != 2) {
+        return callback(' Please specify a valid query path, e.g. --cypher=resource/count_related_users, since you specified ' + options.cypher);
+      }
+        
+      
+      var neo4j     = require('seraph')(settings.neo4j.host),
+          queries   = require('decypher')('./queries/' + path[0] + '.cyp'),
+          helpers    = require('../../helpers.js'),
+          query;
+      
+      if(!queries[path[1]]) {
+        console.log(clc.blackBright('  queries available:'), _.keys(queries));
+        return callback(' Please specify a valid query name with --name=<queryname>');
+      
+      }
+      
+      console.log(clc.blackBright('   executing query: ', clc.magentaBright(options.cypher), '...\n'));
+      
+      
+      query = helpers.cypher.query(queries[path[1]], options);
+      console.log(query)
+      
+      
+      neo4j.query(query, options, function (err, result) {
+        console.log(clc.blackBright('\n   result: \n'));
+        if(err)
+          console.log(err);
+        else
+          console.log(result);
+        
+      callback(null, options);
+      })
+      
+    }
+    
+  }
 
 };
