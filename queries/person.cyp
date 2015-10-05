@@ -209,12 +209,9 @@ RETURN {
   dt: min(abs(r1.start_time - r2.start_time)),
   det: min(abs(r1.end_time - r2.end_time))
 } as institution
-{if:orderby}
-  ORDER BY {:orderby}
-{/if}
-{unless:orderby}
+
    ORDER BY institution.genericity ASC, institution.amount DESC, institution.dt ASC, institution.det ASC
-{/unless}
+
 SKIP {offset}
 LIMIT {limit}
 
