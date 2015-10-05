@@ -183,16 +183,25 @@ MERGE (per:person {original_slug: {original_slug}})
 MATCH (per:person {slug: {slug}})
 OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)-[r2:employed_as]-(per2:person)
 WHERE per <> per2
+WITH per2, {  
+  id: id(act),
+  slug: act.slug,
+  props: act,
+  rel: r2,
+  dt: abs(r1.start_time - r2.start_time),
+  det: abs(r1.end_time - r2.end_time),
+  genericity: act.df
+} as shared_activity
 RETURN {
    slug: per2.slug,
    props: per2,
-   amount: count(DISTINCT act),
-   genericity: sum(coalesce(act.df,0))/count(DISTINCT act),
-   activities:  extract(n IN collect(DISTINCT act) | {slug: n.slug, props: n}) ,
-   dt: min(abs(r1.start_time - r2.start_time)),
-   det: min(abs(r1.end_time - r2.end_time))
-  } as shared_activity
-ORDER BY shared_activity.dt ASC, shared_activity.genericity ASC, shared_activity.det ASC, shared_activity.amount DESC
+   amount: count(DISTINCT shared_activity),
+   genericity: min(shared_activity.genericity),
+   activities:  collect(shared_activity),
+   dt: min(shared_activity.dt),
+   det: min(shared_activity.det)
+  } as colleague
+ORDER BY colleague.dt ASC, colleague.genericity ASC, colleague.det ASC, colleague.amount DESC
 SKIP {offset}
 LIMIT {limit}
 
