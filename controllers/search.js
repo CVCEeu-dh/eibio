@@ -18,14 +18,23 @@ var settings   = require('../settings'),
 var prepare = function(query) {
   return ['(?i).*', query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),'.*'].join('')
 };
+
+// given a querystring, retun the correct lucene syntax
+// replace spaces with AND clause, comma with OR
+// e.g it should tranform query "winston churc" in "'name_search:*winston* AND name_search:*churc*'"
+var lucene = function(query) {
+  return 'name_search:' + query.split(' ').map(function(d){
+    return '*' + d + '*'
+  }).join(' AND name_search:');
+}
   
 module.exports = function(io) {
 
   return {
-    fuzzy: function(req, res) {
-        
-        
-    },
+    /*
+      Proper search method
+    */
+    
     suggest: function(req, res) {
       var form = validator.request(req, {
         limit: 10,
@@ -36,7 +45,7 @@ module.exports = function(io) {
       if(!form.isValid)
         return helpers.models.formError(form.errors, res);
       
-      var q = prepare(form.params.q);
+      var q = lucene(form.params.q);
       async.parallel({
         count_suggest: function(callback) {
           neo4j.query(queries.count_suggest, {
@@ -66,8 +75,8 @@ module.exports = function(io) {
           return helpers.models.cypherQueryError(err, res);
         return helpers.models.getMany(err, res, results.get_suggest, {
           total_count: results.count_suggest,
-          params: _.assign(form.params, {
-            regexp: q
+          params: _.assign({}, form.params, {
+            lucene: q
           })
         })
       })

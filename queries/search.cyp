@@ -1,12 +1,8 @@
-// name: get_suggest
-// suggest some results, along with their type..
-
-
-// name: count_suggest
+// name: count_regexp_suggest
 //
 MATCH (n) WHERE n.name =~ {query} RETURN count(*) as total_count
 
-// name: get_suggest
+// name: get_regexp_suggest
 //
 MATCH (n) WHERE n.name =~ {query}
 RETURN {
@@ -19,19 +15,19 @@ SKIP {offset}
 LIMIT {limit}
 
 
-// name: count_fuzzy
-//
-MATCH (n) WHERE n.name =~ {query} RETURN count(*) as total_count
+// name: count_suggest
+// by type
+START n=node:node_auto_index({query})
+RETURN count(n) as total_count
 
-// name: get_fuzzy
+// name: get_suggest
 // here a lucene search should be done.
-MATCH (n) WHERE n.name =~ {query}
+START n=node:node_auto_index({query})
 RETURN {
   type:  last(labels(n)),
   name:  n.name,
   props: n,
   slug:  n.slug
 } as matching
-ORDER BY matching.name ASC
 SKIP {offset}
 LIMIT {limit}
