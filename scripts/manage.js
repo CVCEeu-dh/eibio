@@ -32,40 +32,40 @@ var fs          = require('fs'),
         tasks.person.getOne,
         tasks.person.parseBio,
         tasks.helpers.csv.stringify,
-        
-        
       ],
       'stringify-people': [
         tasks.helpers.checkTarget,
         tasks.person.getMany,
         tasks.helpers.csv.stringify,
-        
       ],
       
       'remove-person': [
         tasks.person.getOne,
         tasks.helpers.prompt.confirm,
         tasks.person.removeOne,
-        
       ],
+      
       'get-person': [
         tasks.person.getOne,
-        
       ],
+      
+      'create-person': [
+        tasks.helpers.checkSource,
+      ],
+      
       'viaf-people': [
         tasks.person.getMany,
         tasks.services.viaf,
-        
       ],
+      
       'dbpedia-people': [
         tasks.person.getMany,
         tasks.services.dbpedia,
-        
       ],
+      
       'wikidata-people': [
         tasks.person.getMany,
         tasks.services.wikidata,
-        
       ],
       'alternatenames-people': [
         tasks.person.getMany,
@@ -153,6 +153,21 @@ var fs          = require('fs'),
         tasks.helpers.csv.parse,
         tasks.helpers.prompt.confirm,
         tasks.institution.updateMany,
+        
+      ],
+      /*
+        BEWARE: FOR MIGRATION ONLY
+        Require: id and slug field to be present. cfr stringify-institutions.
+        It writes a backup file in target
+      */
+      'merge-institutions': [
+        tasks.helpers.checkSource,
+        // tasks.helpers.checkTarget,
+        tasks.institution.getMany,
+        // tasks.helpers.csv.stringify,
+        tasks.helpers.csv.parse,
+        tasks.helpers.prompt.confirm,
+        tasks.institution.mergeMany,
         
       ],
       /*

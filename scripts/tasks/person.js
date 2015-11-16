@@ -262,6 +262,13 @@ module.exports = {
     callback(null, options)
   },
   
+  /*
+    Given a list of person and / or text
+    Return a cleaned list of birth_date and other stories
+  */
+  discoverMany: function(options, callback) {
+    
+  },
   
   parseBio: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.parseBio'));
