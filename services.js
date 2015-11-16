@@ -73,6 +73,30 @@ module.exports = {
     Viaf link provider (worldCat and ISNI among the others)
   */
   viaf: {
+    autosuggest: function(options, next) {
+      if(!settings.viaf) {
+        next('settings.viaf not found')
+        return;
+      }
+
+      request
+        .get({
+          url: settings.viaf.autosuggest.endpoint,//url,
+          json: true,
+          qs: {
+            query: options.query
+          },
+          headers: {
+            'Accept':  'application/json'
+          }
+        }, function (err, res, body) {
+          if(err) {
+            next(err);
+            return;
+          }
+          next(null, body)
+        });
+    },
     links: function(options, next) {
       if(!settings.viaf) {
         next('settings.viaf not found')

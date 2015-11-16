@@ -1,0 +1,10 @@
+<td>{{$index + 1}}</td>
+<td><b ng-click='setDBpedia(item)'>{{item.label}}</b>
+  <p>{{item.description}}</p>
+</td>
+<td>
+<a ng-href='{{item.uri}}'>{{item.wiki_id}}</a>
+</td>
+<td>
+  <input type="radio" ng-model='person.wiki_id' ng-value='item.wiki_id'/>
+</td>

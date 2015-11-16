@@ -1,0 +1,25 @@
+<uib-tabset>
+  <uib-tab heading="abstracts">
+    <h2>abstract</h2>
+    <p>
+     english version
+    </p>
+    <textarea class="form-control" rows="5" ng-model='person.abstract_en'></textarea>
+  
+    <p>
+     french version
+    </p>
+    <textarea class="form-control" rows="5" ng-model='person.abstract_fr'></textarea>
+  </uib-tab>
+
+  <uib-tab ng-repeat="tab in tabs" heading="{{$index+1}}. {{tab.title}}" active="tab.active" disable="tab.disabled">
+    <div ng-include='tab.templateUrl'></div>
+  </uib-tab>
+  
+</uib-tabset>
+
+
+  <pre>
+{{person}}
+  </pre>
+</form>

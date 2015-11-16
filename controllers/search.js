@@ -6,6 +6,7 @@
 */
 var settings   = require('../settings'),
     helpers    = require('../helpers'),
+    services   = require('../services'),
     validator  = require('../validator'),
     
     async      = require('async'),
@@ -31,6 +32,31 @@ var lucene = function(query) {
 module.exports = function(io) {
 
   return {
+    /*
+      viaf autosuggest
+    */
+    viaf: {
+      autosuggest: function(req, res) {
+        var form = validator.request(req, {
+          limit: 10,
+          offset: 0,
+          q: ''
+        });
+        if(!form.isValid)
+          return helpers.models.formError(form.errors, res);
+        services.viaf.autosuggest({
+          query: form.params.q
+        }, function (err, result){
+          if(err)
+            res.error();
+          else
+            res.ok({
+              items: result.result
+            },form.params);
+        })
+      }
+    },
+
     /*
       Proper search method
     */

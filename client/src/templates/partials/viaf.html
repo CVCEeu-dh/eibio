@@ -1,0 +1,16 @@
+<h2>viaf</h2>
+<p>
+  search your <b>person</b> viaf identifier
+</p>
+<form class='form-horizontal'>
+  <div class='input-group'>
+    <input class='form-control' ng-model='query' placeholder='search eibio'/>
+    <span class='input-group-btn'>
+      <button class='btn btn-default' ng-click='getViaf()'> search</button>
+    </span>
+  </div>
+</form>
+<table class="table">
+  <tr ng-repeat='item in viafItems' ng-include='"templates/partials/viaf-item.html"'></tr>
+</table>
+  

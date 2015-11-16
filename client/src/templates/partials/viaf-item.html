@@ -1,0 +1,8 @@
+<td>{{$index + 1}}</td>
+<td><b ng-click='setViaf(item)'>{{item.term}}</b></td>
+<td>
+<a ng-href='http://viaf.org/viaf/{{item.viafid}}'>{{item.viafid}}</a>
+</td>
+<td>
+  <input type="radio" ng-model='person.viaf_id' ng-value='item.viafid'/>
+</td>

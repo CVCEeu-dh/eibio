@@ -1,0 +1,11 @@
+<div>
+
+  <h3>{{item.props.name}}</h3>
+  <h4>links</h4>
+  <a ng-if='props.viaf_id' ng-href='http://viaf.org/viaf/{{item.props.viaf_id}}}'>{{item.props.viaf_id}}</a>
+  <a ng-if='props.wiki_id' >{{item.props.wiki_id}}</a>
+  <h4>abstract, english</h4>
+  <blockquote>{{item.props.abstract_en}}</blockquote>
+  <h4>abstract, french</h4>
+  <blockquote>{{item.props.abstract_fr}}</blockquote>
+</div>

@@ -218,4 +218,9 @@ apiRouter.route('/search/suggest')
   .get(ctrl.search.suggest)
 // apiRouter.route('/search/:model(person|activity|institution)')
 //   .get(ctrl.search.lookup)
+apiRouter.route('/search/viaf')
+  .get(ctrl.search.viaf.autosuggest)
+
+apiRouter.route('/search/distill')
+  .get(ctrl.search.distill)
   

@@ -74,7 +74,7 @@ describe('controller:search before', function() {
 
 
 describe('controller:search', function() {
-  it('shoudl provide some hint for the person just created', function(done) {
+  it('shoudl provide some hint for the person just created', function (done) {
     session
       .get('/api/search/suggest?q=test Velasco')
       .expect('Content-Type', /json/)
@@ -85,7 +85,7 @@ describe('controller:search', function() {
         done();
       });
   })
-  it('shoudl fail because of the length of the query parameter ', function(done) {
+  it('shoudl fail because of the length of the query parameter ', function (done) {
     session
       .get('/api/search/suggest')
       .expect('Content-Type', /json/)
@@ -99,6 +99,19 @@ describe('controller:search', function() {
   })
 });
 
+describe('controller:search viaf', function() {
+  it('shoudl look for viaf candidates for a specific person ', function (done) {
+    session
+      .get('/api/search/viaf?q=Lamfalussy')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err);
+        console.log(res.body);
+        done();
+      });
+  })
+});
 
 describe('controller:search after', function() {
   it('should remove a person', function (done) {
