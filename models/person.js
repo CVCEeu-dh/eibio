@@ -206,7 +206,12 @@ module.exports = {
   merge: function(properties, next) {
     var now = helpers.now(),
         query = helpers.cypher.query(queries.merge_person, properties);
-    neo4j.query(query, _.assign(properties, {
+
+    if(_.isEmpty(properties.name_search)) {
+      properties.name_search = (properties.name || '').toLowerCase(); // lowercase true
+    };
+    // create name_search if there isn't any
+    neo4j.query(query, _.assign({}, properties, {
       creation_date: now.date,
       creation_time: now.time
     }), function (err, node) {

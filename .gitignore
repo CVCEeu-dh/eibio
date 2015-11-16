@@ -30,6 +30,7 @@ node_modules
 settings.js
 
 # data
+*.lnk
 *.json
 *.csv
 *.tsv
@@ -37,6 +38,7 @@ settings.js
 *.zip
 *.txt
 __*.js
+__*.cyp
 
 #exceptions
 !package.json

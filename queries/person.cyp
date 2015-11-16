@@ -89,9 +89,10 @@ RETURN per.slug as slug
 
 // name: merge_person
 // simple merge person.
-MERGE (per:person {original_slug: {original_slug}})
+MERGE (per:person {slug: {slug}})
   ON CREATE SET
     per.name = {name},
+    per.name_search = {name_search},
     per.first_name  = {first_name},
     per.last_name   = {last_name},
     per.birth_date  = {birth_date},
@@ -129,16 +130,25 @@ MERGE (per:person {original_slug: {original_slug}})
     {/if}
     per.slug = {slug}
   ON MATCH SET
-    per.name = {name},
-    per.first_name  = {first_name},
-    per.last_name   = {last_name},
-    per.birth_date  = {birth_date},
-    per.birth_time  = {birth_time},
+    {if:name}
+      per.name = {name},
+    {/if}
+    {if:name_search}
+      per.name_search = {name_search},
+    {/if}
+    {if:first_name}
+      per.first_name  = {first_name},
+    {/if}
+    {if:last_name}
+      per.last_name   = {last_name},
+    {/if}
+    {if:birth_date}
+      per.birth_date  = {birth_date},
+      per.birth_time  = {birth_time},
+    {/if}
     {if:birth_place}
       per.birth_place = {birth_place},
     {/if}
-    per.creation_date = {creation_date},
-    per.creation_time = {creation_time},
     {if:doi}
       per.doi = {doi}
     {/if}
@@ -160,11 +170,13 @@ MERGE (per:person {original_slug: {original_slug}})
     {/if}
     {if:languages}
       per.languages   = {languages},
-      
       {each:language in languages}
         per.{:abstract_%(language)} = {{:abstract_%(language)}},
       {/each}
     {/if}
+    per.last_modification_date = {creation_date},
+    per.last_modification_time = {creation_time},
+    
     per.slug = {slug}
   RETURN per
 
@@ -188,8 +200,8 @@ WITH per2, {
   slug: act.slug,
   props: act,
   rel: r2,
-  dt: abs(r1.start_time - r2.start_time),
-  det: abs(r1.end_time - r2.end_time),
+  dt: min(abs(r1.start_time - r2.start_time)),
+  det: min(abs(r1.end_time - r2.end_time)),
   genericity: act.df
 } as shared_activity
 RETURN {
