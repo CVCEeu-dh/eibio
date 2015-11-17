@@ -22,6 +22,11 @@ Once neo4j is functional, __clone the eibio package__, then install the required
 
 Copy `settings.js.example` to `settings.js`, then modify neo4j section according to your configuration.
 
+Open neo4j shell in order to configure `node_auto_index` as full_text index
+
+	~/neo4j/bin/neo4j-shell
+	$ index --set-config node_auto_index type fulltext
+
 Execute the setup script that flushes all the constraints to the neo4j db
 
     npm run-script setup
