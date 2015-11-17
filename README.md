@@ -43,6 +43,9 @@ to run eibio from another port than 8000, change the value of the `port` variabl
 
 Eibio API service should now be available in localhost [http://localhost:8000/api](http://localhost:8000/api)
 
+If you want to user forever to serve the application
+	
+	forever start --uid "eibio" --sourceDir /path/to/eibio server.js >>  /path/to/eibio/logs/eibio.log 2>&1
 
 # External sources
 Eurovoc basename (name disambiguation in english)
