@@ -1,0 +1,10 @@
+<h2>distill</h2>
+
+If you have select a valid <b>viaf</b> and/or <b>dbpedia</b> identifier, click on the enrich button to obtain the ready made biography
+<button class='btn btn-default bnt-block' ng-click='getDistill()'>enrich</button>
+
+
+<textarea rows='5'style='font-family: monospace; font-size: 12px' class='form-control' ng-bind-html='person|tsv:personFields'></textarea>
+<p>
+  Once done, copy the lines above and past them in your favourite sheet editor.
+</p>

@@ -31,3 +31,17 @@ RETURN {
 } as matching
 SKIP {offset}
 LIMIT {limit}
+
+
+// name: get_identified_node
+// get person with the list of its activities. By SLUG
+MATCH (n)
+  WHERE n.viaf_id = {viaf_id}
+     OR n.wiki_id = {wiki_id}
+
+RETURN {
+  slug: n.slug,
+  uri: last(labels(n)) + '/' + n.slug,
+  props: n
+}
+LIMIT 1

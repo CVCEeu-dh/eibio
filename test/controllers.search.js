@@ -113,6 +113,35 @@ describe('controller:search viaf', function() {
   })
 });
 
+
+describe('controller:search distill viaf', function() {
+  it('distill a person by viaf_id', function (done) {
+    session
+      .get('/api/search/distill?viaf_id=34470968')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err);
+        // should.equal('34470968', res.body.result.viaf.viafID);
+        done();
+      });
+  })
+});
+
+describe('controller:search distill wiki', function() {
+  it('distill a person by wiki_id AND viaf_id', function (done) {
+    session
+      .get('/api/search/distill?viaf_id=34470968&wiki_id=Konrad_Adenauer')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err);
+        console.log(res.body);
+        done();
+      });
+  })
+});
+
 describe('controller:search after', function() {
   it('should remove a person', function (done) {
     Person.remove({

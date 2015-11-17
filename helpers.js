@@ -256,6 +256,23 @@ module.exports = {
     result.time = +now.format('X');
     return result;
   },
+  /*
+    Transform a date in the current db format and return a dict of date and time
+    @date   - string e.g "1921-11-27"
+    @format - the parser e.g "MM-DD-YYYY"
+    @next [optional] - callback. if it is not provided, send back the result.
+  */
+  reconcileDate: function(date, format, next) {
+    var d = moment.utc(date, format),
+        result = {
+          date: d.format(),
+          time: d.format('X')
+        };
+    if(next)
+      next(null, result);
+    else
+      return result;
+  },
   extract:{
     slug: function(text) {
       return text.toLowerCase()

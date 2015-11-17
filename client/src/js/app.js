@@ -21,3 +21,13 @@ angular.module('eibio', [
         redirectTo: '/'
       });
   })
+
+  .filter('tsv', function($sce) {
+    return function(input, fields) {
+      return $sce.trustAsHtml(fields.map(function  (f) {
+        return f
+      }).join('&#9;') + '\n' + fields.map(function  (f) {
+        return input[f]
+      }).join('&#9;') + '\n');
+    }
+  })

@@ -61,6 +61,14 @@ module.exports = {
         
         fields     = [
           {
+            field: 'viaf_id',
+            check: 'isInt',
+            args: [
+              0
+            ],
+            error: 'viaf identifier is not valid'
+          },
+          {
             field: 'id',
             check: 'isInt',
             args: [

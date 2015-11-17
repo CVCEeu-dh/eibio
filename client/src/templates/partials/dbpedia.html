@@ -4,12 +4,13 @@
 </p>
 <form class='form-horizontal'>
   <div class='input-group'>
-    <input class='form-control' ng-model='query' placeholder='search eibio'/>
+    <input class='form-control' ng-model='query' placeholder='search dbpedia database'/>
     <span class='input-group-btn'>
-      <button class='btn btn-default' ng-click='getDbpedia()'> search</button>
+      <button class='btn btn-default' ng-click='getDbpedia(query)'>{{status == 'BUSY'? 'searching ...': 'search'}}</button>
     </span>
   </div>
 </form>
+<div ng-if='status == "DONE" && dbpediaItems.length == 0'>no result found for {{query}}</div>
 <table class="table">
   <tr ng-repeat='item in dbpediaItems' ng-include='"templates/partials/dbpedia-item.html"'></tr>
 </table>
