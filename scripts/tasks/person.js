@@ -44,12 +44,71 @@ module.exports = {
         return
       }
       options.person = nodes[0].person;
-      console.log(options.person)
+      options.records = _.map(nodes, 'person');
+      // console.log(options.person)
       console.log(clc.blackBright('\n   this person has', clc.magentaBright(nodes[0].rels), 'relationships'));
       callback(null, options)
     })
   },
   
+  getActivities: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.person.getActivities'));
+
+    // set new options.fields
+    options.fields = [
+      'person_id',
+      'activity_id',
+      'country',
+      'description_fr', 
+      'description_en',
+      'start_date',
+      'end_date',
+      'institution_id',
+      'institution_name',
+      'institution_viaf_id'
+    ];
+
+    var records = [];
+
+    var q = async.queue(function (person, nextPerson) {
+      console.log(person.slug)
+      neo4j.query('MATCH (per:person)-[r:employed_as]-(act:activity) WHERE id(per) = {id} WITH per, r, act OPTIONAL MATCH (act)-[:appears_in]-(ins) WITH per, r, act, ins  RETURN {activity: act, rel: r, institution: ins} as result', person, function (err, tuples) {
+        if(err) {
+          q.kill()
+          callback(err)
+          return;
+        }
+        
+        // organize activities by year
+        records = records.concat(_.sortByOrder(_.map(tuples, function (tuple) {
+          return {
+            person_id:            person.id,
+            person_name:          person.name,
+            person_slug:          person.slug,
+            activity_id:          tuple.activity.id,
+            country:              tuple.activity.country,
+            description_fr:       tuple.activity.description_fr,
+            description_en:       tuple.activity.description_en,
+            start_date:           tuple.rel.properties.start_date,
+            end_date:             tuple.rel.properties.end_date,
+            institution_id:       tuple.institution? tuple.institution.id: '',
+            institution_name:     tuple.institution? tuple.institution.name: '',
+            institution_viaf_id:  tuple.institution? tuple.institution.viaf_id: '',
+            
+          }
+        }), ['start', 'end'], ['asc', 'asc']));
+        nextPerson();
+      })
+    }, 1); // ONE BY ONE
+    q.push(options.records);
+    q.drain = function() {
+      options.records = records;
+      callback(null, options)
+    }
+  },
+
+
+
   removeOne: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.removeOne'));
     neo4j.query('MATCH (per:person) WHERE id(per) = {id} DELETE per', {
@@ -109,7 +168,9 @@ module.exports = {
               'birth_place',
               'death_place',
               'viaf_id',
-              'wiki_id',
+              'worldcat_id',
+              'wikidata_id',
+              'isni_id',
               'last_name',
               'first_name',
               'name',
@@ -118,7 +179,7 @@ module.exports = {
         
         updatable.forEach(function (d) {
           if(person[d] && person[d] != node[d]) {
-            if(d == 'dois') {
+            if(d == 'dois') { // do not replace dois?
               // if(_.difference(person.dois, node.dois).length > 0) {
               //   console.log(d, 'DOIS replace', node[d], ' with', person[d], 'diff', _.difference(person.dois, node.dois))
               //   needupdate = true;
@@ -170,6 +231,65 @@ module.exports = {
       callback(null, options);
     };
   },
+
+  /*
+    Require a list of doi provided as source
+  */
+  getManyByDoi: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.person.getManyByDoi'));
+    var records = [];
+    options.fields = [
+      'id',
+      'slug',
+      'name',
+      'first_name',
+      'last_name',
+      'birth_date',
+      'death_date',
+      'birth_place',
+      'death_place',
+      'wiki_id',
+      'viaf_id',
+      'wikidata_id',
+      'worldcat_id',
+      'isni_id',
+      'dois',
+      'activity',
+      'match'
+    ];
+    var q = async.queue(function (doi, nextDoi) {
+      console.log('doi', doi)
+      
+
+      neo4j.query('MATCH (p:person) WHERE LOWER(p.last_name) = {last_name} WITH p OPTIONAL MATCH (p)--(act:activity) WHERE length(p.slug) > 0 RETURN p as per, LAST(collect(act.description_en)) as first_act ORDER BY p.last_name skip {offset} LIMIT {limit} ', {
+          last_name: doi.toLowerCase(),
+          limit: 1,
+          offset: 0
+        }, function (err, nodes) {
+        if(err) {
+          callback(err);
+          return;
+        }
+        console.log(clc.blackBright('   records: '), nodes.length);
+
+        var record = {
+          match: doi
+        };
+
+        if(nodes.length)
+          _.assign(record, nodes[0].per);
+
+        records.push(record);
+        nextDoi();
+      })
+    }, 1);
+
+    q.push(_.map(_.map(options.data, 'last_name'), _.trim));
+    q.drain = function() {
+      options.records = records;
+      callback(null, options)
+    }
+  },
   
   getMany: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.getMany'));
@@ -192,10 +312,13 @@ module.exports = {
         'death_date',
         'birth_place',
         'death_place',
-        'viaf_id',
         'wiki_id',
-        'activity',
-        'dois'
+        'viaf_id',
+        'wikidata_id',
+        'worldcat_id',
+        'isni_id',
+        'dois',
+        'activity'
       ];
       options.records = nodes.map(function (d) {
         d.per.activity = d.first_act;

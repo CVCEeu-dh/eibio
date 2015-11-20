@@ -45,10 +45,26 @@ var fs          = require('fs'),
         tasks.person.removeOne,
       ],
       
+      'find-people-by-doi': [
+        tasks.helpers.checkSource,
+        tasks.helpers.checkTarget,
+        tasks.helpers.csv.parse,
+        tasks.person.getManyByDoi,
+
+        tasks.helpers.csv.stringify,
+      ],
       'get-person': [
         tasks.person.getOne,
       ],
       
+      'get-person-activities': [
+      tasks.helpers.checkTarget,
+        tasks.person.getOne,
+        tasks.person.getActivities,
+       tasks.helpers.csv.stringify
+      ],
+      
+
       'create-person': [
         tasks.helpers.checkSource,
       ],

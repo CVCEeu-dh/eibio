@@ -28,9 +28,9 @@ angular.module('eibio')
       'wikidata_id',
       'worldcat_id',
       'isni_id',
+      'dois',
       'abstract_en',
-      'abstract_fr',
-      'dois'
+      'abstract_fr'
     ];
 
 
