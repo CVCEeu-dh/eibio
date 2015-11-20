@@ -6,5 +6,5 @@
 <a ng-href='{{item.uri}}'>{{item.wiki_id}}</a>
 </td>
 <td>
-  <input type="radio" ng-model='person.wiki_id' ng-value='item.wiki_id'/>
+  <input type="radio" ng-model='person.wiki_id' ng-value='item.wiki_id' ng-change='getDistill(item)'/>
 </td>

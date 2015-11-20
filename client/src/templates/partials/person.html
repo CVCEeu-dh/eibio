@@ -1,0 +1,29 @@
+<div class='person'>
+
+  <h3>{{item.props.name}} <a class='btn btn-small btn-default' clipboard text='item.props|tsv:personFields'>copy to clipboard</a></h3>
+  <div>{{item.props|datesOfAPerson}}</div>
+
+  <div ng-if='item.props.viaf_id'>
+    <label>viaf:</label> 
+    <a target='_blank' ng-href='http://viaf.org/viaf/{{item.props.viaf_id}}'>{{item.props.viaf_id}}</a>
+  </div>
+  <div ng-if='item.props.wiki_id'>
+    <label>dbpedia:</label> 
+    <a target='_blank' ng-href='http://dbpedia.org/resource/{{item.props.wiki_id}}'>{{item.props.wiki_id}}</a>
+  </div>
+  <div ng-if='item.props.wikidata_id'>
+    <label>wikidata:</label> 
+    <a target='_blank' ng-href='https://www.wikidata.org/wiki/{{item.props.wikidata_id}}'>{{item.props.wikidata_id}}</a>
+  </div>
+  <div ng-if='item.props.worldcat_id'>
+    <label>worldcat:</label> 
+    <a target='_blank' ng-href='http://www.worldcat.org/identities/{{item.props.worldcat_id}}'>{{item.props.worldcat_id}}</a>
+  </div>
+  <div ng-if='item.props.isni_id'>
+    <label>isni:</label> 
+    <a target='_blank' ng-href='http://isni.oclc.nl/DB=1.2/SET=1/TTL=1/CMD?ACT=SRCH&IKT=8006&SRT=&TRM=ISN%3A{{item.props.isni_id}}'>{{item.props.isni_id}}</a>
+  </div>
+  <p>{{item.props.abstract_en}}</p>
+  <p>{{item.props.abstract_fr}}</p>
+  
+</div>

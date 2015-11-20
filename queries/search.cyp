@@ -36,8 +36,13 @@ LIMIT {limit}
 // name: get_identified_node
 // get person with the list of its activities. By SLUG
 MATCH (n)
-  WHERE n.viaf_id = {viaf_id}
-     OR n.wiki_id = {wiki_id}
+  WHERE last(labels(n)) in ['person', 'institution']
+    {if:wiki_id}
+      AND n.wiki_id = {wiki_id}
+    {/if}
+    {if:viaf_id}
+      AND n.viaf_id = {viaf_id}
+    {/if}
 
 RETURN {
   slug: n.slug,

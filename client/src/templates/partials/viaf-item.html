@@ -4,5 +4,5 @@
 <a ng-href='http://viaf.org/viaf/{{item.viafid}}'>{{item.viafid}}</a>
 </td>
 <td>
-  <input type="radio" ng-model='person.viaf_id' ng-value='item.viafid'/>
+  <input type="radio" ng-model='person.viaf_id' ng-value='item.viafid' ng-change='getDistill(item)'/>
 </td>

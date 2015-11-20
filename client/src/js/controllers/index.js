@@ -20,29 +20,23 @@ angular.module('eibio')
     }
   })
 
-  .controller('CreatePersonCtrl', function ($scope, $log, $q, viafFactory, dbpediaFactory, distillFactory) {
+  .controller('PersonCtrl', function ($scope, $log, $q, $filter, viafFactory, dbpediaFactory, distillFactory) {
     $scope.query;
 
     $scope.status = 'READY'
 
-    $scope.person = {"wiki_id":"Tommaso_Padoa-Schioppa","viaf_id":"22113496"};
-
+    
+    // $scope.person = {}//"wiki_id":"Tommaso_Padoa-Schioppa","viaf_id":"22113496"};
+    $scope.person = {
+      name: 'unknown person'
+    };
     // csv fields
-    $scope.personFields = [
-      'name',
-      'first_name',
-      'last_name',
-      'birth_date',
-      'birth_place',
-      'death_date',
-      'death_place',
-      'wiki_id',
-      'viaf_id',
-      'wikidata_id',
-      'worldcat_id',
-      'abstract_en',
-      'abstract_fr'
-    ];
+    
+    $scope.reset = function() {
+      $scope.person = {
+        name: 'unknown person'
+      }
+    }
 
     $scope.tabs = [
       {
@@ -52,8 +46,6 @@ angular.module('eibio')
       {
         title: 'dbpedia',
         templateUrl: 'templates/partials/dbpedia.html',
-       
-        
       },
       {
         title: 'distill',
@@ -78,8 +70,11 @@ angular.module('eibio')
       })
     }
 
-    $scope.getDistill = function() {
-       $scope.status = 'BUSY'
+    $scope.getDistill = function(item) {
+      $scope.status = 'BUSY'
+      
+      if(!$scope.person.name)
+        $scope.person.name = item.term || item.label;
       var per = {};
       if($scope.person.viaf_id)
         per.viaf_id = $scope.person.viaf_id;
@@ -89,18 +84,55 @@ angular.module('eibio')
       if(per.wiki_id || per.viaf_id){
         distillFactory.get(per, function (res) {
           console.log(res)
+          var person = angular.copy($scope.person);
           // if there is eibio, add those before
-          if(res.result.eibio.slug)
-            $scope.person = angular.extend({
-              id: res.result.eibio.id,
-              slug: res.result.eibio.slug
-            },  res.result.eibio.props, angular.copy($scope.person));
+          // signale link
+          // if(res.result.eibio.slug)
+          //   $scope.person = angular.extend({
+          //     id: res.result.eibio.id,
+          //     slug: res.result.eibio.slug
+          //   },  res.result.eibio.props, angular.copy($scope.person));
+          if(res.result.dbpedia) { // complete
+            [
+              'first_name',
+              'last_name',
+              'thumbnail',
+              'birth_place',
+              'death_place'
+            ].map(function (f) {
+              if(res.result.dbpedia[f])
+                person[f] = res.result.dbpedia[f];
+            });
+
+            [
+              'birth_time',
+              'death_time'
+            ].map( function (f) {
+              if(res.result.dbpedia[f]) {
+                var datetime = moment.utc(res.result.dbpedia[f], 'X');
+                person[f] = datetime.format('X');
+                person[f.split('_')[0] + '_date'] = datetime.format('YYYY-MM-DD')
+              }
+            });
+          }
+          if(res.result.viaf.viafID) {
+            // check isni
+            if(res.result.viaf.ISNI)
+              person.isni_id = res.result.viaf.ISNI[0];
+            if(res.result.viaf.WKP)
+              person.wikidata_id = res.result.viaf.WKP[0];
+            if(res.result.viaf.LC)
+              person.worldcat_id = 'lccn-' + res.result.viaf.LC[0]
+          }
+
+          $scope.person = person;
+          $scope.status = 'DONE';
         });
       }
     }
 
     $scope.getDbpedia = function(query) {
-       $scope.status = 'BUSY'
+      $scope.status = 'BUSY'
       $scope.query = query;
       dbpediaFactory.get({
         QueryClass: '',
@@ -117,12 +149,4 @@ angular.module('eibio')
       })
     }
     
-    $scope.next = function(){
-        $scope.step++;
-      }
-      
-      $scope.restart = function(){
-        $scope.step = 0;
-      }
-      
-    })
+  })

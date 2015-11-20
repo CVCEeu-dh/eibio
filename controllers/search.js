@@ -153,9 +153,12 @@ module.exports = function(io) {
           if(!form.params.viaf_id && !form.params.wiki_id)
             callback(null, {});
           else
-            neo4j.query(queries.get_identified_node, {
-              viaf_id: form.params.viaf_id || '',
-              wiki_id: form.params.wiki_id || ''
+            neo4j.query(helpers.cypher.query(queries.get_identified_node, {
+              viaf_id: form.params.viaf_id,
+              wiki_id: form.params.wiki_id
+            }),{
+              viaf_id: form.params.viaf_id,
+              wiki_id: form.params.wiki_id
             }, function (err, nodes) {
               if(err) {
                 callback(err);

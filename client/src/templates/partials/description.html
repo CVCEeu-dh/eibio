@@ -1,0 +1,21 @@
+<h2>viaf</h2>
+<p>
+  search your <b>person</b> viaf identifier {{query}}
+</p>
+<form class='form-horizontal'>
+  <p>
+    <label>Name</label>
+    (english version)
+    <input class="form-control" type='text' ng-model='person.name'>
+  </p>
+  <p>
+    <label>English description</label>
+    (Markdown)
+    <textarea class="form-control" rows="5" ng-model='person.abstract_en'></textarea>
+  </p>
+  <p>
+    <label>French description</label>
+    (Markdown)
+    <textarea class="form-control" rows="5" ng-model='person.abstract_fr'></textarea>
+  </p>
+</form>
