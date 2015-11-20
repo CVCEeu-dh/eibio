@@ -29,8 +29,9 @@ angular.module('eibio')
       'worldcat_id',
       'isni_id',
       'abstract_en',
-      'abstract_fr'
+      'abstract_fr',
+      'dois'
     ];
 
-    
+
   });

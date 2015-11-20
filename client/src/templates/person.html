@@ -63,6 +63,8 @@
     <div  ng-if='person.abstract_en' marked='person.abstract_en'></div>
     <label ng-if='person.abstract_fr'>fr</label> 
     <div  ng-if='person.abstract_fr' marked='person.abstract_fr'></div>
+    <label ng-if='person.dois'>DOIs</label> 
+    <div ng-if='person.dois'>{{person.dois}}</div>
   </div>
   <a class='btn btn-small btn-primary btn-block' clipboard text='person|tsv:personFields'>copy to clipboard</a>
 </div>

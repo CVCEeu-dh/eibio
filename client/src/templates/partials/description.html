@@ -1,6 +1,6 @@
-<h2>viaf</h2>
+<h2>description</h2>
 <p>
-  search your <b>person</b> viaf identifier {{query}}
+  
 </p>
 <form class='form-horizontal'>
   <p>
@@ -17,5 +17,10 @@
     <label>French description</label>
     (Markdown)
     <textarea class="form-control" rows="5" ng-model='person.abstract_fr'></textarea>
+  </p>
+  <p>
+    <label>DOI links</label>
+    (comma separated dois)
+    <textarea class="form-control" rows="5" ng-model='person.dois'></textarea>
   </p>
 </form>
