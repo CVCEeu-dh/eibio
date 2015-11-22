@@ -208,7 +208,14 @@ var fs          = require('fs'),
       */
       'query': [
         tasks.helpers.cypher.raw,
-      ]
+      ],
+
+      /*
+        perform index installation
+      */
+      'setup': [
+        tasks.setup.indexes,
+      ],
     };
 
 console.log(clc.whiteBright( "\n\n +-+-+ "));
