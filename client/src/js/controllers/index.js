@@ -5,7 +5,6 @@ angular.module('eibio')
   .controller('IndexCtrl', function ($scope, $log, $q, suggestFactory) {
     $log.debug('IndexCtrl')
     $scope.items = [];
-    $scope.query = 'adenauer';
       
     $scope.getEibio = function() {
       $log.debug('getEibio')

@@ -17,18 +17,7 @@ angular.module('eibio', [
         controller: 'IndexCtrl'
       })
 
-      .state('person', {
-        url: '/person/{slug:[a-z-0-9]{2,64}}',
-        templateUrl: 'templates/person.html',
-        controller: 'PersonCtrl',
-        resolve: {
-          person: function(personFactory, $stateParams) {
-            return personFactory.get({
-              slug: $stateParams.slug
-            }).$promise
-          }
-        }
-      })
+      
 
       .state('createPerson', {
         abstract: true,
@@ -53,7 +42,20 @@ angular.module('eibio', [
           url: '/description',
           templateUrl: 'templates/partials/description.html',
           // controller: 'ViafCtrl'
-        })    
+        })   
+
+      .state('person', {
+        url: '/person/{slug:[a-z-0-9]{2,64}}',
+        templateUrl: 'templates/person.html',
+        controller: 'PersonCtrl',
+        resolve: {
+          person: function(personFactory, $stateParams) {
+            return personFactory.get({
+              slug: $stateParams.slug
+            }).$promise
+          }
+        }
+      }) 
 
 
   })

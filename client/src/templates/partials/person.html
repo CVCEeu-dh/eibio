@@ -1,16 +1,17 @@
 <div class='person'>
 
   <h3><a ng-href='/#/person/{{item.props.slug}}'>{{item.props.name}}</a></h3>
-  <div>{{item.props|datesOfAPerson}}</div>
+  <div class='dates'>{{item.props|datesOfAPerson}}</div>
 
-  <div class='input-group' style='margin:20px auto'>
-    <div class="input-group-btn">
-      <a class='btn btn-small btn-default' clipboard text='item.props|tsv:personFields'>copy to clipboard</a>
-      <a ng-if='item.activities' class='btn btn-small btn-default' clipboard text='item.activities|tsvs:activityFields'>copy activities to clipboard</a>
-      <a ng-if='item.nationalities' class='btn btn-small btn-default' clipboard text='item.nationalities|tsvs:nationalityFields'>copy nationalities to clipboard</a>
+  <div class='i'>
+    <p>copy to clipboard:</p>
+    <div class="input-group"><div class='input-group-btn'>
+      <a class='btn btn-small btn-default' clipboard text='item.props|tsv:personFields'>person information</a>
+      <a ng-if='item.activities' class='btn btn-small btn-default' clipboard text='item.activities|tsvs:activityFields'>activities</a>
+      <a ng-if='item.nationalities' class=' btn btn-small btn-default' clipboard text='item.nationalities|tsvs:nationalityFields'>nationalities</a></div>
     </div>
   </div>
-  <div style='background: #f0f0f0; padding: 10px 15px'>
+  <div class='links'>
     <div ng-if='item.props.viaf_id'>
       <label>viaf:</label> 
       <a target='_blank' ng-href='http://viaf.org/viaf/{{item.props.viaf_id}}'>{{item.props.viaf_id}}</a>

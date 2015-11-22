@@ -1,10 +1,11 @@
-<div>
+<div class='activity'>
   <h4>{{activity.description_en}} ({{activity.country_long}})</h4>
-  <div ng-if='activity.institution_slug'>
-    at <b>{{activity.institution_name}}</b>
-
+  <div>
+    <span ng-if='activity.institution_slug'>
+    at <em>{{activity.institution_name}}</em>,</span>
+    {{activity.start_date}} to {{activity.end_date}}
   </div>
-  {{activity.start_date}} to {{activity.end_date}}
+  
   
 </pre>
 </div>

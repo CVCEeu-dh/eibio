@@ -3,16 +3,27 @@ html
   head
     title eibio
     link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css', rel='stylesheet')
+    link(href='https://fonts.googleapis.com/css?family=Cousine:400,700,400italic' rel='stylesheet' type='text/css')
     style(type='text/css').
 
-      html{
+      html, body, .ctrl{
         height: 100%
       }
 
-      #view{
-        margin-top:2em
+      body{
+        font-family: 'Cousine', ;
+        font-size: 13px;
+        background-color: #fff;
       }
 
+      #view{
+        padding: 100px 0 50px 0;
+        background: #ffffff;
+      }
+
+      .btn-default{
+        font-style: italic;
+      }
       
       .person-lite{
         margin-bottom: 10px;
@@ -22,46 +33,136 @@ html
         border-radius: 5px;
       }
 
-  body(ng-app='eibio')
-    div(ng-controller='CoreCtrl')
-      div.container-fluid
-        div.row
-          div.col-md-8.col-md-offset-2
-            h1 eibio
-            nav.navbar.navbar-default
-              div.navbar-header
-                button.navbar-toggle.collapsed(type="button", data-toggle="collapse", data-target="#navbar-collapse" aria-expanded="false")
-                  span menu
-                
-              div.collapse.navbar-collapse#navbar-collapse
-                ul.nav.navbar-nav
-                  li(ui-sref-active='active')
-                    a(ui-sref='index') search
-                  li(ui-sref-active='active')
-                    a(ui-sref='createPerson') create
+      h3, h2, h1, h4, h5, h6{
+        font-size: 1em;
+        font-weight: bold;
+      }
 
-        div.row#view(ui-view='')
-          
-            //- div(ng-if='step==0')
-            //-   h2 viaf
-            //-   p type the name of the person
-            //-   form.form-horizontal
-            //-     div.input-group
-            //-       input.form-control(ng-model='query', placeholder='search viaf')
-            //-       span.input-group-btn
-            //-         button.btn.btn-default(ng-click='getViaf()') search
-            //-   div(ng-if='viafItems.length')
-            //-     p choose the proper viaf identifier
-            //-     div(ng-repeat='item in viafItems')
-            //-       h3
-            //-         a(ng-href='http://viaf.org/viaf/{{item.viafid}}'){{item.term}}
-            //-       pre {{item.viafid}}
-            //- div(ng-if='step==1')
-            //-   h2 dbpedia
-            //-   button(ng-click='next()') next
-            //- div(ng-if='step==2')
-            //-   pre result
-            //-   button(ng-click='restart()') restart
+      .navbar-default {
+        margin-bottom: 10px;
+        background: none;
+        border: none;
+      }
+
+      .navbar-nav{
+        padding-top: 11px;
+      }
+      .navbar-default .navbar-collapse{
+        
+      }
+
+      .navbar-default .navbar-brand{
+        float: left;
+        height: auto;
+        padding: 20px 15px 10px 15px;
+        font-size: 13px;
+        line-height: 24px;
+        font-weight: bold;
+        color: #151515;
+        text-decoration: none;
+      }
+
+      .nav>li>a{
+        padding: 10px 15px 10px 15px;
+      }
+      a{
+        text-decoration: underline;
+        color: #565656
+      }
+      #header{
+        background: #f0f0f0;
+      }
+      .btn.btn-default{
+        font-size:13px;
+        text-decoration: none;
+      }
+
+      .activity {
+        margin: 10px 0;
+        padding: 5px 15px;
+        border-top: 1px solid #d8d8d8;
+      }
+
+      .person .i{
+        margin: 0 0 15px 0;
+        padding: 90px 15px 20px;
+        border-bottom: 1px solid #363636;
+        color: #636363;
+      }
+
+      .person h3, .person .dates{
+        padding: 0 15px;
+      }
+
+      .item {
+        border: 1px solid #ccc;
+        margin: 50px 0;
+      }
+
+      .item .person .i {
+        padding: 10px 15px 10px;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 5px;
+      }
+
+      .links{
+        padding: 20px 15px;
+      }
+
+      footer.footer{
+        background-color: #363636;
+        color: #a9a9a9;
+        background: #363636;
+        
+      }
+
+      footer.footer .copyright{
+        margin: 40px 15px;
+      }
+
+      .form-control{
+        font-size: 13px;
+        line-height:24px;
+      }
+
+      .wrapper {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        margin: 0 auto -100px;
+      }
+      .footer, .push {
+        height: 100px;
+      }
+
+  body(ng-app='eibio')
+    div.ctrl(ng-controller='CoreCtrl')
+      div.wrapper
+        div.container-fluid
+          div.row#header
+            div.col-md-8.col-md-offset-2
+              nav.navbar.navbar-default
+                div.navbar-header
+                  button.navbar-toggle.collapsed(type="button", data-toggle="collapse", data-target="#navbar-collapse" aria-expanded="false")
+                    span menu
+                  a.navbar-brand(href="/#/") eibio
+
+                div.collapse.navbar-collapse#navbar-collapse
+                  ul.nav.navbar-nav
+                    li(ui-sref-active='active')
+                      a(ui-sref='index') search
+                    li(ui-sref-active='active')
+                      a(ui-sref='createPerson.viaf') create
+
+          div.row#view(ui-view='')
+        div.push
+
+      footer.footer
+        div.container-fluid
+          div.row
+            div.col-md-8.col-md-offset-2
+              div.copyright @cvce 2016
+
 
     script(src='http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-resource.min.js')
