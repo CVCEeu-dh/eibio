@@ -196,4 +196,11 @@ describe('controllers:institution finish', function() {
       done()
     })
   });
+
+  it('should remove the institution', function (done) {
+    Institution.remove(__institution, function (err) {
+      should.not.exist(err);
+      done()
+    })
+  });
 });

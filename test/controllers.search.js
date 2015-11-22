@@ -81,6 +81,7 @@ describe('controller:search', function() {
       .expect(200)
       .end(function (err, res) { //
         should.not.exist(err);
+        console.log(res.body.result)
         should.equal(res.body.result.items[0].slug, __person.slug)
         done();
       });

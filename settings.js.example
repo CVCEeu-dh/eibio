@@ -30,6 +30,16 @@ module.exports = {
       pass: ''
     }
   },
+
+  /*
+
+    supported languages
+    ---
+  */
+  languages:[
+    'en',
+    'fr'
+  ],
   /*
     
     services section
@@ -70,6 +80,15 @@ module.exports = {
   wikidata: {
     entity: {
       endpoint: 'https://www.wikidata.org/wiki/Special:EntityData/'
+    }
+  },
+
+  viaf: {
+    links: {
+      endpoint: 'http://www.viaf.org/viaf/'
+    },
+    autosuggest: {
+      endpoint: 'http://www.viaf.org/viaf/AutoSuggest/'
     }
   },
   /*
