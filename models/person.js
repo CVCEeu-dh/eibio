@@ -89,15 +89,17 @@ module.exports = {
             uri:  nodes[0].uri,
             props: nodes[0].props
           };
-      
+      console.log(nodes[0].activities)
       // re write activities
-      per.activities = nodes[0].activities.map(function (d) {
+      per.activities = nodes[0].activities.filter(function(d) {
+        return d.id;
+      }).map(function (d) {
         var _d =  {
           slug: d.slug,
           uri: d.uri,
           props: d.props,
-          timeline: d.rel.properties,
-          institutions: _.filter(d.institutions, 'id')
+          timeline: d.rel? d.rel.properties : [],
+          institutions: _.filter(d.institutions || [], 'id')
         };
         _d.props.country_code = ''+d.props.country;
         _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;

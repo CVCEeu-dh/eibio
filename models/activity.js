@@ -129,7 +129,7 @@ module.exports = {
         query = helpers.cypher.query(queries.merge_activity, properties);
     
     neo4j.query(queries.merge_activity, {
-      slug: helpers.extract.smartSlug(properties.position + ' ' + properties.country),
+      slug: properties.slug || helpers.extract.smartSlug(properties.position + ' ' + properties.country),
       person_slug:    properties.person.slug,
       position:       properties.position,
       description_en: properties.description_en,

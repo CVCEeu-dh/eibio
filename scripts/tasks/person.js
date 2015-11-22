@@ -11,7 +11,8 @@ var settings  = require('../../settings'),
     fs        = require('fs'),
     
     neo4j     = require('seraph')(settings.neo4j.host),
-    Person    = require('../../models/person');
+    Person    = require('../../models/person'),
+    Activity  = require('../../models/activity');
 
 module.exports = {
   
@@ -107,6 +108,51 @@ module.exports = {
     }
   },
 
+  setActivities: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.person.setActivities'));
+    
+    // get all person slugs
+    // todo
+    var records = [];
+
+    var q = async.queue(function (record, nextRecord) {
+      // use the validator to validate: todo
+      record.start_time = helpers.extract.dates(record.start_date + '-01-01', 'YYYY-MM-DD', true).time;
+      record.end_time = helpers.extract.dates(record.end_date + '-01-01', 'YYYY-MM-DD', true).time;
+
+      var params = {
+        person:{
+          slug: record.person_slug
+        }
+      };
+
+      if(record.activity_slug) {
+        // update instead
+        params.slug = record.activity_slug;
+      }
+      record.position = record.description_en.trim();
+      console.log(clc.blackBright('    merging'), clc.yellowBright(record.person_slug));
+      
+      Activity.merge(_.assign(params, record), function (err, node) {
+        if(err){
+          q.kill();
+          callback(err)
+        } else {
+          console.log(clc.greenBright('    merged'), clc.yellowBright(node.slug));
+          record.activity_slug = node.slug;
+          nextRecord()
+        }
+      })
+      
+      
+      // nextCouple();
+    }, 1)
+    q.push(options.data);
+    q.drain = function() {
+      callback(null, options)
+    };
+    
+  },
 
 
   removeOne: function(options, callback) {
@@ -372,54 +418,7 @@ module.exports = {
   },
   
   
-  linkActivities: function(options, callback) {
-    console.log(clc.yellowBright('\n   tasks.person.linkActivities'));
-    
-    var couples = _.values(_.groupBy(_.filter(options.data, function (d) {
-      return d.slug.length > 0
-    }), function (d) {
-      return _.compact([
-        d.slug,
-        d.start_date,
-        d.end_date
-      ]).join('-')
-    }));
-    
-    
-    var q = async.queue(function (couple, nextCouple) {
-      var en = _.find(couple, {language: 'en'}),
-          fr = _.find(couple, {language: 'fr'}),
-          activity = {};
-      
-      if(!en.end_date.length) {
-        en.end_date = '' + start_date; // clone, same year
-      }
-      
-      activity.description_en = en.description;
-      activity.country = en.country;
-      
-      if(en.start_date.length != 4) {
-        console.log(d)
-        throw 'pos_' + j + '_start date, line ' + i + ' is not valid, found "' + start_date +'"';
-      }
-      if(end_date.length && end_date.length!= 4) {
-        console.log(d)
-        throw 'pos_' + j + '_end date, line ' + i + ' is not valid, found "' + end_date +'"';
-      }
-      
-      var start = helpers.extract.dates(en.start_date + '-01-01', 'YYYY-MM-DD', true);
-      var end   = helpers.extract.dates(en.end_date + '-12-31', 'YYYY-MM-DD', true);
-           
-      
-      
-      // nextCouple();
-    }, 1)
-    
-    q.drain = function() {
-      callback(null, options)
-    };
-    q.push(couples)
-  },
+  
   
   
   discoverBio: function(options, callback) {

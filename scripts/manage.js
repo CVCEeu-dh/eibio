@@ -23,6 +23,31 @@ var fs          = require('fs'),
                   }),
     
     availableTasks = {
+
+      'create-people': [
+        tasks.helpers.checkSource,
+        tasks.helpers.csv.parse,
+        tasks.person.createMany
+      ],
+
+      'get-person-activities': [
+        tasks.helpers.checkTarget,
+        tasks.person.getOne,
+        tasks.person.getActivities,
+        tasks.helpers.csv.stringify
+      ],
+
+      'set-people-activities': [
+        tasks.helpers.checkSource,
+        tasks.helpers.csv.parse,
+        tasks.person.setActivities,
+        // tasks.person.checkActivities,
+        tasks.activity.setInstitutions
+      ],
+      
+
+
+
       'demo': [
         
       ],
@@ -65,11 +90,6 @@ var fs          = require('fs'),
       ],
       
 
-      'create-people': [
-        tasks.helpers.checkSource,
-        tasks.helpers.csv.parse,
-        tasks.person.createMany
-      ],
       
       'viaf-people': [
         tasks.person.getMany,

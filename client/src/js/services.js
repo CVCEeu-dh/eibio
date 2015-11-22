@@ -12,6 +12,9 @@ angular.module('eibio')
   .factory('suggestFactory', function ($resource) {
     return $resource('/api/search/suggest');
   })
+  .factory('personFactory', function ($resource) {
+    return $resource('/api/person/:slug');
+  })
   .factory('distillFactory', function ($resource) {
     return $resource('/api/search/distill');
   })

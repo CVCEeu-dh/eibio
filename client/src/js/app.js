@@ -18,24 +18,38 @@ angular.module('eibio', [
       })
 
       .state('person', {
-        abstract: true,
-        url: '/person',
+        url: '/person/{slug:[a-z-0-9]{2,64}}',
         templateUrl: 'templates/person.html',
-        controller: 'PersonCtrl'
+        controller: 'PersonCtrl',
+        resolve: {
+          person: function(personFactory, $stateParams) {
+            return personFactory.get({
+              slug: $stateParams.slug
+            }).$promise
+          }
+        }
       })
-        .state('person.viaf', {
+
+      .state('createPerson', {
+        abstract: true,
+        url: '/person/new',
+        templateUrl: 'templates/person.create.html',
+        controller: 'CreatePersonCtrl'
+      })
+        
+        .state('createPerson.viaf', {
           url: '',
           templateUrl: 'templates/partials/viaf.html',
           // controller: 'ViafCtrl'
         })
 
-        .state('person.dbpedia', {
+        .state('createPerson.dbpedia', {
           url: '/dbpedia',
           templateUrl: 'templates/partials/dbpedia.html',
           // controller: 'ViafCtrl'
         })    
 
-        .state('person.description', {
+        .state('createPerson.description', {
           url: '/description',
           templateUrl: 'templates/partials/description.html',
           // controller: 'ViafCtrl'
@@ -51,7 +65,7 @@ angular.module('eibio', [
       // }).join('&#9;') + '\n' + 
 
       return fields.join('\t') + '\n' + fields.map(function  (f) {
-        if(input[f])
+        if(input && input[f])
           if( typeof input[f] != 'string')
             return input[f]
           else
@@ -62,10 +76,34 @@ angular.module('eibio', [
       }).join('\t') + '\n';
     }
   })
+  /*
+    @param inputs - array of items
+  */
+  .filter('tsvs', function($sce) {
+    return function(inputs, fields) {
+      // return $sce.trustAsHtml(fields.map(function  (f) {
+      //   return f
+      // }).join('&#9;') + '\n' + 
+
+      return fields.join('\t') + '\n' + inputs.map(function  (input) {
+        return fields.map(function (f) {
+          if(input && input[f])
+            if( typeof input[f] != 'string')
+              return input[f]
+            else
+              return (input[f]||'').split(/\n/).join(' -/- ')
+          else
+            return ''; 
+        }).join('\t')
+        
+      }).join('\n');
+    }
+  })
 
   .filter('datesOfAPerson', function() {
     return function(props) {
-      
+      if(! props)
+        return '( ? - ... )';
       var start_date_a = moment.utc(props.birth_time, 'X'),
           start_date_b = moment.utc(props.death_time, 'X'),
           delta = moment.duration(start_date_b.diff(start_date_a));

@@ -20,11 +20,21 @@ WITH per, {
   institutions: collect(DISTINCT institutions)
 } as activities
 
+WITH per, activities
+  OPTIONAL MATCH (per)-[r2:has_nationality]->(nat:nationality)
+WITH per, activities, {
+  id: id(nat),
+  slug: nat.slug,
+  uri: 'nationality/' + nat.slug,
+  rel: r
+} as nationalities
+
 RETURN {
   slug: per.slug,
   uri: 'person/' + per.slug,
   props: per,
-  activities: collect(DISTINCT activities)
+  activities: collect(DISTINCT activities),
+  nationalities: collect(DISTINCT nationalities)
 }
 
 

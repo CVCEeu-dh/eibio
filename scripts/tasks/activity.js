@@ -10,10 +10,75 @@ var settings  = require('../../settings'),
     path      = require('path'),
     fs        = require('fs'),
     
-    neo4j     = require('seraph')(settings.neo4j.host);
+    neo4j     = require('seraph')(settings.neo4j.host),
+
+    Institution = require('../../models/institution');
     
 module.exports = {
-  
+  /*
+    JOIN activity_slug and institution_slug (or institution_name)
+    from options.data
+  */
+  setInstitutions: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.activity.setInstitutions'));
+    
+    
+    var q = async.queue(function (record, nextRecord) {
+      if(_.isEmpty(record.institution_slug) && _.isEmpty(record.institution_name)){
+        console.log(clc.blackBright('    skipping (no institution)'), clc.yellowBright(record.activity_slug));
+        nextRecord();
+        return;
+      }
+      var params = {
+        name: record.institution_name
+      };
+
+      if(!_.isEmpty(record.institution_slug))
+        params.slug = record.person_slug
+
+      if(!_.isEmpty(record.institution_viaf_id))
+        params.viaf_id = record.institution_viaf_id
+
+      if(!_.isEmpty(record.institution_country))
+        params.country = record.institution_country
+
+      console.log(clc.blackBright('    merging'), clc.yellowBright(record.institution_slug || record.institution_name));
+      console.log(record)
+      Institution.merge(params, function (err, node) {
+        if(err) {
+          q.kill();
+          callback(err);
+          return;
+        }
+
+        // assign to activity
+        Institution.addRelatedActivity({
+          slug: node.slug
+        }, {
+          slug: record.activity_slug 
+        }, function (err) {
+          if(err) {
+            q.kill();
+            callback(err);
+            return;
+          }
+          nextRecord();
+        })
+        
+      })  
+      
+
+      
+      
+      // nextCouple();
+    }, 1)
+
+    q.push(_.filter(options.data, 'activity_slug'));
+    q.drain = function() {
+      callback(null, options)
+    };
+  },
+
   mergeMany: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.activity.mergeMany'));
     
