@@ -210,6 +210,16 @@ module.exports = {
     if(_.isEmpty(properties.name_search)) {
       properties.name_search = (properties.name || '').toLowerCase(); // lowercase true
     };
+    // birth_time
+    if(properties.birth_date && !properties.birth_time) {
+      properties.birth_time = helpers.reconcileDate(properties.birth_date, 'YYYY-MM-DD').time
+      properties.birth_date = helpers.reconcileDate(properties.birth_date, 'YYYY-MM-DD').date
+    }
+    // death_time
+    if(properties.death_date && !properties.death_time) {
+      properties.death_time = helpers.reconcileDate(properties.death_date, 'YYYY-MM-DD').time
+      properties.death_date = helpers.reconcileDate(properties.death_date, 'YYYY-MM-DD').date
+    }
     // create name_search if there isn't any
     neo4j.query(query, _.assign({}, properties, {
       creation_date: now.date,

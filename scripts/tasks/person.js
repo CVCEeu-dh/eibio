@@ -123,6 +123,48 @@ module.exports = {
     })
   },
   
+
+
+  /*
+    Main entry point.
+    Require options.data to be properly filled
+  */
+  createMany: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.person.createMany'));
+
+    // verify fields @todo
+
+
+    // verify that there are no duplicate slugs
+    var slugGroups = _.values(_.groupBy(options.data, 'slug')),
+        duplicates = _.filter(slugGroups, function(d) {return d.length > 1});
+
+    if(duplicates.length) {
+      console.log(duplicates);
+      callback('duplicate "slug"are not allowed, check the line above')
+      return
+    }
+
+    var q = async.queue(function (person, nextPerson) {
+      console.log(clc.blackBright('    adding'), clc.yellowBright(person.slug));
+      Person.merge(person, function (err, node) {
+        if(err){
+          q.kill();
+          callback(err);
+        } else {
+          console.log(clc.greenBright('    added'), clc.yellowBright(node.slug));
+          nextPerson()
+        }
+      })
+    }, 1);
+
+    q.push(options.data);
+    q.drain = function(){
+      callback(null, options)
+    }
+    
+  },
+
   updateMany: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.updateMany'));
     

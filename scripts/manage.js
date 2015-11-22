@@ -65,8 +65,10 @@ var fs          = require('fs'),
       ],
       
 
-      'create-person': [
+      'create-people': [
         tasks.helpers.checkSource,
+        tasks.helpers.csv.parse,
+        tasks.person.createMany
       ],
       
       'viaf-people': [

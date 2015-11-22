@@ -259,7 +259,7 @@ module.exports = {
   /*
     Transform a date in the current db format and return a dict of date and time
     @date   - string e.g "1921-11-27"
-    @format - the parser e.g "MM-DD-YYYY"
+    @format - the parser e.g "YYYY-MM-DD"
     @next [optional] - callback. if it is not provided, send back the result.
   */
   reconcileDate: function(date, format, next) {

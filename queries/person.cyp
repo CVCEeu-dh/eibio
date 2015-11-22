@@ -103,10 +103,10 @@ MERGE (per:person {slug: {slug}})
     per.creation_date = {creation_date},
     per.creation_time = {creation_time},
     {if:doi}
-      per.doi = {doi}
+      per.doi = {doi},
     {/if}
     {if:dois}
-      per.dois = {dois}
+      per.dois = {dois},
     {/if}  
     {if:death_date}
       per.death_date  = {death_date},
@@ -150,10 +150,10 @@ MERGE (per:person {slug: {slug}})
       per.birth_place = {birth_place},
     {/if}
     {if:doi}
-      per.doi = {doi}
+      per.doi = {doi},
     {/if}
     {if:dois}
-      per.dois = {dois}
+      per.dois = {dois},
     {/if}  
     {if:death_date}
       per.death_date  = {death_date},
