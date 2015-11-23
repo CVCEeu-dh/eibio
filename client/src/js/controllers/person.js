@@ -113,10 +113,17 @@ angular.module('eibio')
 
     $scope.status = 'READY'
 
-    
+    $scope.copyfail = function() {
+        console.log('copyfail!');
+    }
+
+    $scope.copied = function() {
+        console.log('Copied!');
+      alert('the biography has been copied to your clipboard and can be pasted in google spreadsheet')
+    }
     // $scope.person = {}//"wiki_id":"Tommaso_Padoa-Schioppa","viaf_id":"22113496"};
     $scope.person = {
-      name: 'unknown person'
+      
     };
     // csv fields
     

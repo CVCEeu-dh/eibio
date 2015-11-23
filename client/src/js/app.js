@@ -42,6 +42,10 @@ angular.module('eibio', [
           url: '/description',
           templateUrl: 'templates/partials/description.html',
           // controller: 'ViafCtrl'
+        })  
+        .state('createPerson.review', {
+          url: '/review',
+          templateUrl: 'templates/partials/review.html'
         })   
 
       .state('person', {
@@ -199,6 +203,7 @@ angular.module('eibio', [
         }
 
         function copyText(text) {
+          console.log('hey')
             var node = createNode(text);
             $document[0].body.appendChild(node);
             copyNode(node);
@@ -206,10 +211,13 @@ angular.module('eibio', [
         }
 
         element.on('click', function (event) {
+
             try {
                 copyText(scope.text);
                 if (angular.isFunction(scope.onCopied)) {
                     scope.$evalAsync(scope.onCopied());
+                } else {
+                  console.log('is not a function')
                 }
             } catch (err) {
                 if (angular.isFunction(scope.onError)) {

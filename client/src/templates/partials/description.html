@@ -4,9 +4,19 @@
 </p>
 <form class='form-horizontal'>
   <p>
-    <label>Name</label>
-    (english version)
+    <label>Full Name</label>
+    (english version only)
     <input class="form-control" type='text' ng-model='person.name'>
+  </p>
+  <p>
+    <label>First Name</label>
+    (english version)
+    <input class="form-control" type='text' ng-model='person.first_name'>
+  </p>
+  <p>
+    <label>Last Name</label>
+    (english version)
+    <input class="form-control" type='text' ng-model='person.last_name'>
   </p>
   <p>
     <label>English description</label>
@@ -19,7 +29,7 @@
     <textarea class="form-control" rows="5" ng-model='person.abstract_fr'></textarea>
   </p>
   <p>
-    <label>DOI links</label>
+    <label>featured DOI links</label>
     (comma separated dois)
     <textarea class="form-control" rows="5" ng-model='person.dois'></textarea>
   </p>

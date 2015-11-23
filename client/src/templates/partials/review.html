@@ -1,0 +1,6 @@
+<h2>copy to spreadsheet</h2>
+<p>
+  copy the collected data and go to google spreadsheet
+</p>
+<textarea rows='5' class='form-control'>{{person|tsv:personFields}}</textarea>
+<a class='btn btn-small btn-default' on-copied='copied()' clipboard text='person|tsv:personFields'>copy to clipboard</a>

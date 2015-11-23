@@ -1,9 +1,10 @@
 <div class='col-md-5 col-md-offset-2'>
 
   <ul class="nav nav-tabs">
-    <li role="presentation" ui-sref-active='active'><a ui-sref='createPerson.viaf'>Viaf</a></li>
-    <li role="presentation" ui-sref-active='active'><a ui-sref='createPerson.dbpedia'>DBPEDIA</a></li>
-    <li role="presentation" ui-sref-active='active'><a  ui-sref='createPerson.description'>description</a></li>
+    <li role="presentation" ui-sref-active='active'><a ui-sref='createPerson.viaf'>a) Viaf</a></li>
+    <li role="presentation" ui-sref-active='active'><a ui-sref='createPerson.dbpedia'>b) DBPEDIA</a></li>
+    <li role="presentation" ui-sref-active='active'><a  ui-sref='createPerson.description'>c) fill the description</a></li>
+    <li role="presentation" ui-sref-active='active'><a  ui-sref='createPerson.review'>d) Copy and refine</a></li>
   </ul>
 
   <div ui-view></div>
@@ -33,7 +34,11 @@
 </div>
 <div class='col-md-3'>
   <h4>preview</h4>
-  <a ng-click='reset()'>(reset)</a>
+  <p>
+    This area displays the preview of the biography you're building.
+    By providing VIAF and DBPEDIA identifier some information can be automatically imported.
+  </p>
+  <!-- <a ng-click='reset()'>(reset)</a> -->
  <!-- <input type='checkbox' class='form-control' ng-model='withOutHeaders' value='true'> <label>without headers </label> -->
   <div class='person-lite'>
     <h5>{{person.name}}</h5>
@@ -66,5 +71,6 @@
     <label ng-if='person.dois'>DOIs</label> 
     <div ng-if='person.dois'>{{person.dois}}</div>
   </div>
-  <a class='btn btn-small btn-primary btn-block' clipboard text='person|tsv:personFields'>copy to clipboard</a>
+
+  <a class='btn btn-small btn-default btn-block' clipboard text='person|tsv:personFields'>copy to clipboard</a>
 </div>
