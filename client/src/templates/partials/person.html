@@ -2,7 +2,6 @@
 
   <h3><a ng-href='/#/person/{{item.props.slug}}'>{{item.props.name}}</a></h3>
   <div class='dates'>{{item.props|datesOfAPerson}}</div>
-
   <div class='i'>
     <p>copy to clipboard:</p>
     <div class="input-group"><div class='input-group-btn'>
@@ -31,6 +30,9 @@
     <div ng-if='item.props.isni_id'>
       <label>isni:</label> 
       <a target='_blank' ng-href='http://isni.oclc.nl/DB=1.2/SET=1/TTL=1/CMD?ACT=SRCH&IKT=8006&SRT=&TRM=ISN%3A{{item.props.isni_id}}'>{{item.props.isni_id}}</a>
+    </div>
+    <div class='nationalities' ng-if='item.nationalities'>
+      <div ng-repeat='nat in item.nationalities'><b>{{nat.description_en}}</b> {{nat|datesOfANationality}} {{nat.reference}}</div>
     </div>
     <p ng-if='item.props.abstract_en'>{{item.props.abstract_en}}</p>
     <p ng-if='item.props.abstract_fr'>{{item.props.abstract_fr}}</p>

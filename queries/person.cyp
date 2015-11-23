@@ -26,7 +26,8 @@ WITH per, activities, {
   id: id(nat),
   slug: nat.slug,
   uri: 'nationality/' + nat.slug,
-  rel: r
+  props: nat,
+  rel: r2
 } as nationalities
 
 RETURN {

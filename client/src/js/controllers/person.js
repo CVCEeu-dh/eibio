@@ -53,15 +53,29 @@ angular.module('eibio')
       }]
     } else {
       $scope.item.nationalities = person.result.item.nationalities.map(function (d) {
-        console.log(d)
+        // console.log(d)
+        var start_date = d.timeline.start_date,
+            end_date = d.timeline.end_date;
+
+        if(!start_date) {
+          start_date = moment.utc(person.result.item.props.birth_time, 'X', true);
+          start_date = start_date.isValid()? start_date.format('YYYY'): '';
+        }
+
+        if(!end_date) {
+          end_date = moment.utc(person.result.item.props.death_time, 'X', true);
+          end_date = end_date.isValid()? end_date.format('YYYY'): '';
+        }
+
         return {
           person_slug: person.result.item.slug,
-          activity_slug: d.props.slug,
-          country: d.props.country_code,
-          description_fr: d.props.description_fr,
-          description_en: d.props.description_en,
-          start_date: d.timeline.start_date,
-          end_date: d.timeline.end_date
+          country: d.slug,
+          country_long: d.country.value,
+          description_fr: d.country.nationality_fr,
+          description_en: d.country.nationality_en,
+          start_date: start_date,
+          end_date: end_date,
+          reference: d.reference
         }
       })
     }
@@ -83,6 +97,7 @@ angular.module('eibio')
     ];
 
     $scope.nationalityFields = [
+    'action',
       'person_slug',
       'country',
       'start_date',

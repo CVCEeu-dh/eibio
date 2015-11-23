@@ -91,7 +91,22 @@ module.exports = {
           };
       console.log(nodes[0].activities)
       // re write activities
-      per.activities = nodes[0].activities.filter(function(d) {
+      per.nationalities = nodes[0].nationalities.filter(function (d) {
+        return d.id;
+      }).map(function (d) {
+        var _d =  {
+          slug: d.slug,
+          uri: d.uri,
+          props: d.props,
+          reference: d.rel? (d.rel.reference || ''): '',
+          timeline: d.rel? d.rel.properties : [],
+          country: _.find(COUNTRIES, {code: d.slug})
+        };
+        return _d
+      });
+
+
+      per.activities = nodes[0].activities.filter(function (d) {
         return d.id;
       }).map(function (d) {
         var _d =  {

@@ -71,7 +71,7 @@ angular.module('eibio', [
           if( typeof input[f] != 'string')
             return input[f]
           else
-            return (input[f]||'').split(/\n/).join(' -/- ')
+            return (input[f]||'').split(/\n/).join('        ')
         else
           return ''; 
         
@@ -93,7 +93,7 @@ angular.module('eibio', [
             if( typeof input[f] != 'string')
               return input[f]
             else
-              return (input[f]||'').split(/\n/).join(' -/- ')
+              return (input[f]||'').split(/\n/).join('        ')
           else
             return ''; 
         }).join('\t')
@@ -115,6 +115,24 @@ angular.module('eibio', [
           start_date_a.isValid()? start_date_a.format('ll'): ' ? ',
         ' — ',
           start_date_b.isValid()? start_date_b.format('ll'): ' ... ',
+        ')'
+      ].join(''); // count years
+    };
+  })
+
+  .filter('datesOfANationality', function() {
+    return function(props) {
+      if(! props)
+        return '( ? - ... )';
+      var start_date_a = moment.utc(props.start_date, 'YYYY'),
+          start_date_b = moment.utc(props.end_date, 'YYYY'),
+          delta = moment.duration(start_date_b.diff(start_date_a));
+      
+      return [
+        '(', 
+          start_date_a.isValid()? start_date_a.format('YYYY'): ' ? ',
+        ' — ',
+          start_date_b.isValid()? start_date_b.format('YYYY'): ' ... ',
         ')'
       ].join(''); // count years
     };
