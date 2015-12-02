@@ -5,7 +5,7 @@
   
   usage from command line:
   cd eibio
-  mocha -g 'models:person' 
+  mocha -g 'model:person' 
 */
 'use strict';
 
@@ -14,7 +14,7 @@ var helpers = require('../helpers'),
     Person  = require('../models/person'),
     should  = require('should');
     
-describe('models:person', function() {
+describe('model:person', function() {
   var __person,
       __homonymn,
       __homonymnOfHomonym,
@@ -64,6 +64,22 @@ describe('models:person', function() {
     }, function (err, pers) {
       should.not.exist(err);
       
+      //console.log(pers)
+      done()
+    })
+  })
+  
+
+  it('should return some media attached', function (done) {
+    Person.getRelatedMedia({
+      slug: 'egon-bahr'
+    }, {
+      limit:  10,
+      offset: 0
+    }, function (err, results) {
+      should.not.exist(err);
+      should.exist(results.total_count);
+      should.exist(results.items.length);  
       //console.log(pers)
       done()
     })

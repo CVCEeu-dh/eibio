@@ -136,6 +136,23 @@ module.exports = {
     }, next);
   },
   
+  getRelatedMedia: function(person, params, next) {
+    var params = _.assign({
+      offset: 0,
+      limit: 10
+    }, params, {
+      slug:  person.slug
+    });
+
+    models.getMany({
+      queries:{
+        items: queries.get_related_medias,
+        total_count: queries.count_related_medias
+      },
+      params: params
+    }, next);
+  },
+
   getRelatedPersons: function(person, params, next) {
     async.parallel({
       by_activity: function(callback) {

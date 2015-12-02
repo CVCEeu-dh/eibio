@@ -51,7 +51,8 @@ module.exports = function(io) {
       if(!form.isValid)
         return helpers.formError(form.errors, res);
       var related = {
-        person: 'getRelatedPersons'
+        person: 'getRelatedPersons',
+        media: 'getRelatedMedia'
       }
       
       Person[related[form.params.model]]({

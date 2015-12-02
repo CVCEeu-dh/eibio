@@ -259,6 +259,32 @@ RETURN DISTINCT {
 }
 
 
+
+// name: get_related_medias
+//
+MATCH (per:person {slug: {slug}})-[r:has_media]->(med:media)
+WITH r, med
+ORDER BY r.tfidf DESC, r.tf DESC
+SKIP {offset}
+LIMIT {limit}
+
+WITH med
+RETURN {
+  id: id(med),
+  props: med,
+  type: last(labels(med))
+} AS res
+
+
+
+
+// name: count_related_medias
+//
+MATCH (per:person {slug: {slug}})-[r:has_media]->(med:media)
+RETURN count(DISTINCT med) as total_count
+
+
+
 // name: remove_person
 // delete a person and its links, completely
 MATCH (per:person {slug: {slug}})
