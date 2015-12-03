@@ -264,17 +264,33 @@ RETURN DISTINCT {
 //
 MATCH (per:person {slug: {slug}})-[r:has_media]->(med:media)
 WITH r, med
-ORDER BY r.tfidf DESC, r.tf DESC
+ORDER BY r.rating DESC, r.tfidf DESC, r.tf DESC
 SKIP {offset}
 LIMIT {limit}
 
-WITH med, {tf: r.tf, tfidf: r.tfidf, rating: COALESCE(r.starred,0)} as rel
-RETURN {
+WITH med, r
+
+OPTIONAL MATCH (med)<-[r1:has_media]-(per:person)
+WHERE per.slug <> {slug}
+WITH med, r, {
+  id: id(per),
+  props: per,
+  tf: r1.tf,
+  tfidf: r1.tfidf,
+  rating: COALESCE(r1.starred,0)
+} as relatedItem
+WITH med, r, filter(x in collect(relatedItem) WHERE has(x.id)) as persons
+RETURN
+{
   id: id(med),
   props: med,
   type: last(labels(med)),
-  rel: rel
-} AS res
+  tf: r.tf,
+  tfidf: r.tfidf,
+  rating: COALESCE(r.starred,0),
+  persons: persons
+} as item
+ORDER BY item.rating DESC, item.tfidf DESC, item.tf DESC
 
 
 
