@@ -279,7 +279,7 @@ WITH med, r, {
   tfidf: r1.tfidf,
   rating: COALESCE(r1.starred,0)
 } as relatedItem
-WITH med, r, filter(x in collect(relatedItem) WHERE has(x.id)) as persons
+WITH med, r, filter(x in collect(relatedItem) WHERE x.id IS NOT NULL) as persons
 RETURN
 {
   id: id(med),
