@@ -40,12 +40,12 @@ module.exports = {
         item: item
       }, info || {});
     },
-    getMany: function (err, res, items, info) {
+    getMany: function (err, res, results, info) {
       if(err && err != IS_EMPTY)
         return module.exports.models.cypherQueryError(err, res);
       
       var response = {
-            items: items || []
+            items: results? (results.items? results.items: results) : []
           },
           _info = {};
       
@@ -55,8 +55,8 @@ module.exports = {
         _info.params      = info.params;
       if(info.warnings)
         _info.warnings    = info.warnings;
-      if(info.total_count !== undefined)
-        _info.total_count = info.total_count;
+      if(results && results.total_count !== undefined)
+        _info.total_count = results.total_count;
       return res.ok(response, _info);
     },
     /**

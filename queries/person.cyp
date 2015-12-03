@@ -268,11 +268,12 @@ ORDER BY r.tfidf DESC, r.tf DESC
 SKIP {offset}
 LIMIT {limit}
 
-WITH med
+WITH med, {tf: r.tf, tfidf: r.tfidf, rating: COALESCE(r.starred,0)} as rel
 RETURN {
   id: id(med),
   props: med,
-  type: last(labels(med))
+  type: last(labels(med)),
+  rel: rel
 } AS res
 
 

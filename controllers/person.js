@@ -35,8 +35,8 @@ module.exports = function(io) {
       if(!form.isValid)
         return helpers.formError(err, res);
         
-      Person.getMany(form.params, function (err, items) {
-        return helpers.models.getMany(err, res, items, {params: form.params});
+      Person.getMany(form.params, function (err, results) {
+        return helpers.models.getMany(err, res, results, {params: form.params});
       });
     },
     
