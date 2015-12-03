@@ -1,6 +1,8 @@
 // name: get_person
 // get person with the list of its activities. By SLUG
-MATCH (per:person {slug: {slug}})
+MATCH (per:person)
+WHERE per.slug = {slug} OR {slug} in per.dois
+WITH per
   OPTIONAL MATCH (per)-[r:employed_as]->(act:activity)
   OPTIONAL MATCH (ins:institution)-[r2:appears_in]->(act)
 

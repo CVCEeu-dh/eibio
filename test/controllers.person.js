@@ -49,7 +49,7 @@ describe('controllers:person init', function() {
       first_name: 'Simone',
       last_name: 'Veil',
       name: 'Simone Veil',
-      doi: '',
+      doi: '5647',
       birth_date: '1927-07-13',
       birth_time: -1355961180,
       birth_place: 'Nice, Provence, France',
@@ -100,7 +100,18 @@ describe('controllers:person API', function() {
         done();
       });
   });
-  it('should show person activities', function (done) {
+  it('should show person detail by slug', function (done) {
+    session
+      .get('/api/person/test-slug-handle-with-care')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err)
+        should.equal(res.body.result.item.slug, __person.slug);
+        done();
+      });
+  });
+  it('should show person detail by DOI', function (done) {
     session
       .get('/api/person/test-slug-handle-with-care')
       .expect('Content-Type', /json/)
