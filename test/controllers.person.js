@@ -49,7 +49,7 @@ describe('controllers:person init', function() {
       first_name: 'Simone',
       last_name: 'Veil',
       name: 'Simone Veil',
-      doi: '5647',
+      dois: ['5647'],
       birth_date: '1927-07-13',
       birth_time: -1355961180,
       birth_place: 'Nice, Provence, France',
@@ -113,7 +113,7 @@ describe('controllers:person API', function() {
   });
   it('should show person detail by DOI', function (done) {
     session
-      .get('/api/person/test-slug-handle-with-care')
+      .get('/api/person/5647')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function (err, res) { //
