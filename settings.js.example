@@ -113,5 +113,15 @@ module.exports = {
   */
   logs: {
     access: 'logs/access.log'
+  },
+  /*
+    
+    Custom task for manage.js
+    ---
+  */
+  availableTasks: {
+    'your-custom-task-series': [
+    
+    ]
   }
 };

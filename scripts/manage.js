@@ -11,7 +11,8 @@
   
   task=
 */
-var fs          = require('fs'),
+var settings    = require('../settings'),
+    fs          = require('fs'),
     options     = require('minimist')(process.argv.slice(2));
     async       = require('async'),
     _           = require('lodash'),
@@ -22,7 +23,7 @@ var fs          = require('fs'),
                     filter  :  /(.*).js$/
                   }),
     
-    availableTasks = {
+    availableTasks = _.assign({
 
       'create-people': [
         tasks.helpers.checkSource,
@@ -238,7 +239,7 @@ var fs          = require('fs'),
       'setup': [
         tasks.setup.indexes,
       ],
-    };
+    },  settings.availableTasks || {});
 
 console.log(clc.whiteBright( "\n\n +-+-+ "));
 console.log(clc.whiteBright( " |EIBIO| "));
@@ -259,7 +260,15 @@ async.waterfall([
   },
   tasks.helpers.tick.start
   
-].concat(availableTasks[options.task]).concat([tasks.helpers.tick.end]), function (err) {
+].concat(availableTasks[options.task].map(function (d) {
+  if(typeof d == 'function')
+    return d;
+  var fn = _.get(tasks, d.replace('tasks.', ''));
+  if(typeof fn != 'function') {
+    console.log(clc.blackBright('\n task'), clc.whiteBright(d), clc.redBright('not found in task list'))
+  }
+  return fn
+})).concat([tasks.helpers.tick.end]), function (err) {
   if(err) {
     console.warn(err);
     console.log(clc.blackBright('\n task'), clc.whiteBright(options.task), clc.redBright('exit with error'));
