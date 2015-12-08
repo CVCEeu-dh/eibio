@@ -118,7 +118,7 @@ module.exports = {
         _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
         
         return _d
-      }),['end_date', 'start_date'], ['asc', 'asc']);
+      }),['start_date', 'end_date'], ['asc', 'asc']);
 
       //per.activities = per.activities ['start_date', 'end_date'],['desc', 'desc']);
       
