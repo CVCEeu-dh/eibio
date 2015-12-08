@@ -245,6 +245,21 @@ module.exports = {
             if(!node.name_en)
               enrich.name_en = enrich.wikidata_name_en;
           }
+
+          if(entity.descriptions.en) {
+            enrich.wikidata_description_en = entity.descriptions.en.value;
+            if(!node.title_en)
+              enrich.title_en = enrich.wikidata_description_en;
+          }
+
+          if(entity.descriptions.fr) {
+            enrich.wikidata_description_fr = entity.descriptions.fr.value;
+            if(!node.title_fr)
+              enrich.title_fr = enrich.wikidata_description_fr;
+          }
+
+          // description
+          //console.log(entity.descriptions)
           
           if(_.isEmpty(enrich)) {
             console.log(clc.blackBright('   nothing to add, skipping. Remaining', q.length()));

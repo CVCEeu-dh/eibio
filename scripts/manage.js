@@ -102,6 +102,11 @@ var settings    = require('../settings'),
         tasks.services.dbpedia,
       ],
       
+
+      'wikidata-person': [
+        tasks.person.getOne,
+        tasks.services.wikidata,
+      ],
       'wikidata-people': [
         tasks.person.getMany,
         tasks.services.wikidata,
