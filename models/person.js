@@ -106,21 +106,21 @@ module.exports = {
       });
 
 
-      per.activities = nodes[0].activities.filter(function (d) {
-        return d.id;
-      }).map(function (d) {
-        var _d =  {
+      per.activities = _.sortByOrder(_.map(_.filter(nodes[0].activities, 'id'), function (d) {
+        var _d =  _.assign({
           slug: d.slug,
           uri: d.uri,
           props: d.props,
-          timeline: d.rel? d.rel.properties : [],
           institutions: _.filter(d.institutions || [], 'id')
-        };
+        }, (d.rel? d.rel.properties : {}));
+
         _d.props.country_code = ''+d.props.country;
         _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
         
         return _d
-      });
+      }),['end_date', 'start_date'], ['desc', 'desc']);
+
+      //per.activities = per.activities ['start_date', 'end_date'],['desc', 'desc']);
       
       next(null, per)
     });
