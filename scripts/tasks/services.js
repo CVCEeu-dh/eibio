@@ -247,14 +247,14 @@ module.exports = {
           }
 
           if(entity.descriptions.en) {
-            enrich.wikidata_description_en = entity.descriptions.en.value;
-            if(!node.title_en)
+            enrich.wikidata_description_en = _.capitalize(entity.descriptions.en.value);
+            // if(!node.title_en)
               enrich.title_en = enrich.wikidata_description_en;
           }
 
           if(entity.descriptions.fr) {
-            enrich.wikidata_description_fr = entity.descriptions.fr.value;
-            if(!node.title_fr)
+            enrich.wikidata_description_fr = _.capitalize(entity.descriptions.fr.value);
+            // if(!node.title_fr)
               enrich.title_fr = enrich.wikidata_description_fr;
           }
 
