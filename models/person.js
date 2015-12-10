@@ -180,7 +180,7 @@ module.exports = {
     }, function (err, results) {
       if(err)
         return next(err);
-      var persons = _.values(_.groupBy(results.by_activity.concat(results.by_institution), 'slug'))
+      var persons = _.values(_.groupBy(_.filter(results.by_activity, 'id').concat(results.by_institution), 'slug'))
             .map(function (d) {
               var person = {
                 slug: d[0].slug,
@@ -189,7 +189,7 @@ module.exports = {
                 score: _.sum(d, function(e) { // calculate also in term of time proximity
                   return e.activities? e.amount*2: e.amount;
                 }),
-                activities: _.flatten(_.compact(_.map(d, 'activities'))).map(function (d) {
+                activities: _.filter(_.flatten(_.compact(_.map(d, 'activities'))), 'id').map(function (d) {
                   var _d =  _.assign({
                     slug: d.slug,
                     uri: d.uri,
