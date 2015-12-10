@@ -118,7 +118,7 @@ module.exports = {
         _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
         
         return _d
-      }),['start_date', 'end_date'], ['asc', 'asc']);
+      }), ['start_date', 'end_date'], ['asc', 'asc']);
 
       //per.activities = per.activities ['start_date', 'end_date'],['desc', 'desc']);
       
@@ -201,7 +201,7 @@ module.exports = {
                   _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
                   return _d;
                 }),
-                institution: _.flatten(_.compact(_.map(d, 'institutions')))
+                institutions: _.flatten(_.compact(_.map(d, 'institutions')))
               };
               return person;
             });
