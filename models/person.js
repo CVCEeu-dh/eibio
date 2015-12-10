@@ -189,7 +189,18 @@ module.exports = {
                 score: _.sum(d, function(e) { // calculate also in term of time proximity
                   return e.activities? e.amount*2: e.amount;
                 }),
-                activities: _.flatten(_.compact(_.map(d, 'activities'))),
+                activities: _.flatten(_.compact(_.map(d, 'activities'))).map(function (d) {
+                  var _d =  _.assign({
+                    slug: d.slug,
+                    uri: d.uri,
+                    props: d.props,
+                    institutions: _.filter(d.institutions || [], 'id')
+                  }, (d.rel? d.rel.properties : {}));
+
+                  _d.props.country_code = ''+d.props.country;
+                  _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
+                  return _d;
+                }),
                 institution: _.flatten(_.compact(_.map(d, 'institutions')))
               };
               return person;
