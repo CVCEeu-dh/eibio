@@ -218,6 +218,7 @@ WITH per2, {
   genericity: act.df
 } as shared_activity
 RETURN {
+   id: id(per2),
    slug: per2.slug,
    props: per2,
    amount: count(DISTINCT shared_activity),

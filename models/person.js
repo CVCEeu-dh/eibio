@@ -160,22 +160,14 @@ module.exports = {
           slug:   person.slug,
           offset: params.offset,
           limit:  params.limit
-        }, function(err, nodes) {
-          if(err)
-            return callback(err);
-          return callback(err, nodes);
-        })
+        }, callback)
       },
       by_institution: function(callback) {
         neo4j.query(queries.get_related_persons_by_institution, {
           slug:   person.slug,
           offset: params.offset,
           limit:  params.limit
-        }, function(err, nodes) {
-          if(err)
-            return callback(err);
-          return callback(err, nodes);
-        })
+        }, callback)
       }
     }, function (err, results) {
       if(err)
