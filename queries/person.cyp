@@ -233,8 +233,7 @@ LIMIT {limit}
 
 // name: get_related_persons_by_institution
 //
-MATCH (per:person {slug: {slug}})
-OPTIONAL MATCH (per)-[r1:employed_as]->(act:activity)--(ins:institution)--(act2:activity)<-[r2:employed_as]-(per2:person)
+MATCH (per:person {slug: {slug}})-[r1:employed_as]->(act:activity)--(ins:institution)--(act2:activity)<-[r2:employed_as]-(per2:person)
 WHERE per <> per2
 RETURN {
   slug: per2.slug,
