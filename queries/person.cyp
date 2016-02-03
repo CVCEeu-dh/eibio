@@ -203,6 +203,44 @@ MERGE (per:person {original_slug: {original_slug}})
     per.dois        = {dois}
   RETURN per
 
+
+// name: count_related_persons_by_media
+//
+MATCH (per:person {slug: {slug}})-[r_kno:has_media]->(m:media)<-[r_unk:has_media]-(per2:person)
+RETURN count(per) as total_count
+
+// name: get_related_persons_by_media
+// get the top 3 person who shared most resources with you
+MATCH (per:person {slug: {slug}})-[r_kno:has_media]->(med:media)<-[r_unk:has_media]-(per2:person)
+WHERE id(per) <> id(per2)
+WITH per, per2, count(med) as intersection
+ORDER BY intersection DESC
+SKIP {offset}
+LIMIT {limit}
+WITH per, per2, intersection
+MATCH (per)-[r_kno:has_media]->(med:media)<-[r_unk:has_media]-(per2)
+WITH per, r_kno, per2, med, r_unk, intersection
+ORDER BY r_kno.starred DESC, r_unk.starred DESC, r_kno.tf DESC, r_unk.tf DESC
+WITH per, per2, intersection, collect({
+  id: id(med),
+  props: med,
+  type: last(labels(med)),
+  tf: r_unk.tf,
+  tfidf: r_unk.tfidf,
+  rating: COALESCE(r_unk.starred,0)
+})[0..5] as medias
+
+RETURN {
+  id: id(per2),
+  props: per2,
+  media: medias,
+  intersections: intersection
+} as item
+ORDER BY item.intersections DESC
+
+
+
+
 // name: get_related_persons_by_activity
 // by activity only
 MATCH (per:person {slug: {slug}})

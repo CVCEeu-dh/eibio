@@ -165,7 +165,9 @@ apiRouter.route('/person')
   .get(ctrl.person.getItems)
 apiRouter.route('/person/:slug([\\da-z-]+)')
   .get(ctrl.person.getItem)
-apiRouter.route('/person/:slug([\\da-z-]+)/related/:model(person|activity|media)')
+// @todo apiRouter.route('/person/:identity(viaf|isni)/:link([\\da-z-A-Z]+)')
+//   .get(ctrl.person.getItemByIdentity)
+apiRouter.route('/person/:slug([\\da-z-]+)/related/:model(person|activity|media|person-by-media)')
   .get(ctrl.person.getRelatedItems)
   
 /*

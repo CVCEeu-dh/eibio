@@ -153,6 +153,23 @@ module.exports = {
     }, next);
   },
 
+  getRelatedPersonsByMedia: function(person, params, next) {
+    var params = _.assign({
+      offset: 0,
+      limit: 10
+    }, params, {
+      slug:  person.slug
+    });
+    
+    models.getMany({
+      queries:{
+        items: queries.get_related_persons_by_media,
+        total_count: queries.count_related_persons_by_media
+      },
+      params: params
+    }, next);
+  },
+
   getRelatedPersons: function(person, params, next) {
     async.parallel({
       by_activity: function(callback) {
