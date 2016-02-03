@@ -89,7 +89,7 @@ module.exports = {
             uri:  nodes[0].uri,
             props: nodes[0].props
           };
-      console.log(nodes[0].activities)
+      // console.log(nodes[0].activities)
       // re write activities
       per.nationalities = nodes[0].nationalities.filter(function (d) {
         return d.id;

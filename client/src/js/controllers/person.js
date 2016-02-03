@@ -23,8 +23,8 @@ angular.module('eibio')
             country_long: d.props.country,
             description_fr: d.props.description_fr,
             description_en: d.props.description_en,
-            start_date: d.timeline.start_date,
-            end_date: d.timeline.end_date
+            start_date: d.start_date,
+            end_date: d.end_date
             
           };
           if(ins.id) {
