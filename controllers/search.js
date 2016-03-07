@@ -113,7 +113,7 @@ module.exports = function(io) {
                 };
             // find fields and complete the properties dict
             _.forIn(props, function (v, k, o) {
-              o[k] = _.flattenDeep(_.compact(_.pluck(wiki, v)))
+              o[k] = _.flattenDeep(_.compact(_.map(wiki, v)))
               if(k != 'abstracts')
                 o[k] =_.first(o[k]);
             });
@@ -144,7 +144,7 @@ module.exports = function(io) {
             });
             //console.log(props)
             // abstract languages
-            props.languages = _.unique(languages); 
+            props.languages = _.uniq(languages); 
             callback(null, props);
           });
         },

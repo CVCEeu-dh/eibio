@@ -202,7 +202,7 @@ module.exports = {
             return;
           }
           
-          var redirect = _.first(_.flattenDeep(_.compact(_.pluck(body, 'http://dbpedia.org/ontology/wikiPageRedirects'))));
+          var redirect = _.first(_.flattenDeep(_.compact(_.map(body, 'http://dbpedia.org/ontology/wikiPageRedirects'))));
           
           if(redirect && redirect.value && level < 1) {
             var link = redirect.value.split('/').pop();

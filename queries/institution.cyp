@@ -153,7 +153,7 @@ DELETE ins, r
 // name: get_related_institutions_by_activity
 // by activity only
 MATCH (ins:institution {slug: {slug}})-[r1:appears_in]->(act:activity)<-[r2:appears_in]-(ins2:institution)
-WHERE id(ins) <> id(ins2)
+WHERE ins.slug <> ins2.slug
 RETURN {
    slug: ins2.slug,
    props: ins2,

@@ -41,7 +41,7 @@ module.exports = {
         neo4j.query(query, options.params, function (err, result) {
           if(err)
             return callback(err);
-          callback(null, result.total_count)
+          callback(null, result[0].total_count)
         })
       },
       items: function (callback) {

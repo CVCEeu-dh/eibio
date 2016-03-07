@@ -91,7 +91,7 @@ module.exports = {
           },
           rels = _.groupBy(nodes[0].rels, 'start');
       // console.log(nodes[0].rels)
-      act.persons = _.values(_.indexBy(nodes[0].persons.map(function (d) {
+      act.persons = _.values(_.keyBy(nodes[0].persons.map(function (d) {
         var _d = {
           slug:           d.slug,
           props:          d,

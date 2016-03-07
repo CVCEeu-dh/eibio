@@ -151,7 +151,7 @@ module.exports = {
     }, function (err, results) {
       if(err)
         return next(err);
-      var institutions = _.sortByOrder(_.values(_.groupBy(results.by_activity.concat(results.by_person), 'slug'))
+      var institutions = _.orderBy(_.values(_.groupBy(results.by_activity.concat(results.by_person), 'slug'))
             .map(function (d) {
               var institution = {
                 slug: d[0].slug,

@@ -51,7 +51,7 @@ module.exports = {
           props: person.props
         },
         rels = _.groupBy(person.rels, 'end');
-    per.activities = _.values(_.indexBy(person.activities.map(function (d) {
+    per.activities = _.values(_.keyBy(person.activities.map(function (d) {
       var _d = {
         slug:           d.slug,
         country_code:   d.country,
@@ -106,7 +106,7 @@ module.exports = {
       });
 
 
-      per.activities = _.sortByOrder(_.map(_.filter(nodes[0].activities, 'id'), function (d) {
+      per.activities = _.orderBy(_.map(_.filter(nodes[0].activities, 'id'), function (d) {
         var _d =  _.assign({
           slug: d.slug,
           uri: d.uri,
@@ -215,7 +215,7 @@ module.exports = {
               return person;
             });
       
-      next(null, _.sortByOrder(persons, 'score', 'desc'));
+      next(null, _.orderBy(persons, 'score', 'desc'));
     })
     
   },

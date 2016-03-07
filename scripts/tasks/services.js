@@ -181,7 +181,7 @@ module.exports = {
             console.log(clc.blackBright('   total:',  clc.magentaBright(alternatenames.length)));
            
             if(node.name_search)
-              alternatenames = _.unique(node.name_search.split(' || ').concat(alternatenames));
+              alternatenames = _.uniq(node.name_search.split(' || ').concat(alternatenames));
             console.log(clc.blackBright('   merged with previous alternates:',  clc.magentaBright(alternatenames.length)));
             // console.log(alternatenames)
             // save alternate names as field in name_search autoindex.

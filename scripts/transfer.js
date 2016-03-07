@@ -84,7 +84,7 @@ var q = async.queue(function (entity, nextEntity) {
           startingPos: entity.startingPos,
           endingPos: entity.endingPos,
           entityId: entity.entityId,
-          type: _.unique(entity.abstract_type),
+          type: _.uniq(entity.abstract_type),
           wikiLink: entity.wikiLink
         }
       });

@@ -80,7 +80,7 @@ async.waterfall([
       persons[person.original_slug] = person;
       
       console.log(clc.yellowBright(person.original_slug));
-      person.nationalities = _.unique(_.flatten(person.nationalities.map(function (nationality) {
+      person.nationalities = _.uniq(_.flatten(person.nationalities.map(function (nationality) {
         var _nationalities = [],
             lookup = {};
             lookup[nationality.key] = nationality.value,
@@ -154,7 +154,7 @@ async.waterfall([
               nodes[0].doi = (nodes[0].doi || person.doi || '').trim();
               nodes[0].abstract_fr = nodes[0].abstract_fr || person.abstract_fr
               nodes[0].abstract_en = nodes[0].abstract_en || person.abstract_en
-              nodes[0].dois = _.unique((nodes[0].dois || [])
+              nodes[0].dois = _.uniq((nodes[0].dois || [])
                 .concat([nodes[0].doi.trim()] || [])
                 .concat(person.dois)
                 .concat([person.doi.trim()]))

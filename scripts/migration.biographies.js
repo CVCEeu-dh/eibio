@@ -51,7 +51,7 @@ var LANGUAGES = ['en', 'fr', 'de']
 
 async.waterfall([
   /*
-    Give a unique, complete structure to every person in biographies.
+    Give a uniq, complete structure to every person in biographies.
     There could be multiple doi - that is, multiple resources - for each person.
     this function concatenates all information about the person.
     This funcion also generates two distinct files:
@@ -128,7 +128,7 @@ async.waterfall([
                 qii.push(LANGUAGES);
                 qii.drain = function() {
                   // resolve and sort languages
-                  person.languages = _.unique(person.languages).sort()
+                  person.languages = _.uniq(person.languages).sort()
                   if(aliases.length > 1)
                     specials[person.original_slug] = person
                   
@@ -192,7 +192,7 @@ async.waterfall([
               })));
               
               qi.drain = function() {
-                person.nationalities = _.compact(_.unique(person.nationalities));
+                person.nationalities = _.compact(_.uniq(person.nationalities));
                 console.log('         nationality: ',clc.greenBright(person.nationalities.join('')))
                 nodes[0].doi = person.doi;
                 nodes[0].dois = person.dois;

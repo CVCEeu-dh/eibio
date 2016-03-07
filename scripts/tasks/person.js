@@ -81,7 +81,7 @@ module.exports = {
         }
         
         // organize activities by year
-        records = records.concat(_.sortByOrder(_.map(tuples, function (tuple) {
+        records = records.concat(_.orderBy(_.map(tuples, function (tuple) {
           return {
             person_id:            person.id,
             person_name:          person.name,
@@ -536,7 +536,7 @@ module.exports = {
         'end_date'
       ];
       
-      options.records = _.sortByOrder(options.records, ['start_date', 'end_date', 'language'], ['asc', 'asc', 'asc'])
+      options.records = _.orderBy(options.records, ['start_date', 'end_date', 'language'], ['asc', 'asc', 'asc'])
       callback(null, options);
     }
     q1.push(options.person.languages);

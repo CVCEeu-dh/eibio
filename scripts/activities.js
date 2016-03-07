@@ -329,7 +329,7 @@ if(options.FOOparse) {
                   location: disambiguated_position[0]['institution-location'],
                   url:      disambiguated_position[0]['url']
                 };
-              if(disambiguated_position.length == 1) { // unique disambiguatin, fine
+              if(disambiguated_position.length == 1) { // uniq disambiguatin, fine
                 d.slug == 'anthony-eden' && console.log(clc.greenBright(' V '), clc.blackBright('~>', d.position), start_date, end_date );
               } else { // further disambiguation needed
                 d.slug == 'anthony-eden' && console.log(clc.blackBright('~>', d.position), start_date, end_date, clc.yellowBright('need disambiguation'), disambiguated_position.length);
@@ -564,7 +564,7 @@ if(options.FOOparse) {
             }, 4);
         
         //console.log(people)
-        q.push(_.unique(_.map(aligned, 'slug'))); // q.push(['anthony-eden']) // 
+        q.push(_.uniq(_.map(aligned, 'slug'))); // q.push(['anthony-eden']) // 
         q.drain = function() {
           fs.writeFileSync('script.activities.missing-people.json', JSON.stringify(notyetaperson.map(function(slug) { return people[slug] }), null, 2));
           fs.writeFileSync('script.activities.missing-positions.json', JSON.stringify(missing_positions, null, 2));
