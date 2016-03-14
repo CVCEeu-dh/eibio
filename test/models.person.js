@@ -115,7 +115,7 @@ describe('model:person', function() {
     }, function (err, per) {
       should.exist(err); // err is duplicate
 
-      should.exist(err.neo4jCause.exception)
+      should.exist(err.code)
       // console.log(err, per)
       done()
     })
