@@ -39,6 +39,7 @@ settings.js
 *.txt
 __*.js
 __*.cyp
+*.DS_Store
 
 #exceptions
 !package.json

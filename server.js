@@ -116,7 +116,7 @@ express.response.ok = function(result, info, warnings) {
   if(warnings)
     res.warnings = warnings
   
-  return this.json(res, null, 2);
+  return this.jsonp(res);
 };
 
 express.response.error = function(statusCode, err) {
