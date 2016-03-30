@@ -85,6 +85,14 @@ module.exports = {
             error: 'ids should contain only numbers and commas'
           },
           {
+            field: 'dois',
+            check: 'matches',
+            args: [
+              /[a-zA-Z\-\d,]+/
+            ],
+            error: 'dois should contain valid uuid characters'
+          },
+          {
             field: 'limit',
             check: 'isInt',
             args: [
@@ -160,6 +168,12 @@ module.exports = {
       safeParams.ids = _.compact(safeParams.ids.split(',')).map(function(d) {
         return +d;
       });
+    
+    if(safeParams.dois)
+      safeParams.dois = _.compact(safeParams.dois.split(',')).map(function(d) {
+        return d.trim();
+      });
+
     if(safeParams.limit)
       safeParams.limit = +safeParams.limit;
     if(safeParams.offset)

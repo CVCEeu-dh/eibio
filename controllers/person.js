@@ -63,6 +63,18 @@ module.exports = function(io) {
           params: form.params
         });
       });
+    },
+
+    update: function(req, res) {
+      var form = validator.request(req, {
+        limit: 10,
+        offset: 0, 
+        dois: ''
+      });
+      
+      Person.merge(form.params, function (err, item) {
+        return helpers.models.getOne(err, res, item, form.params);
+      });
     }
   }
 };

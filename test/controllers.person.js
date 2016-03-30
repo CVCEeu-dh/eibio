@@ -111,6 +111,26 @@ describe('controllers:person API', function() {
         done();
       });
   });
+
+  it('should edit an array field and return the edited person', function (done) {
+    session
+      .post('/api/person/test-slug-handle-with-care')
+      .send({
+        dois: 'test-duplicated-doi,5647',
+        last_name: 'veilo'
+      })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) { //
+        should.not.exist(err)
+        
+        should.equal(res.body.result.item.slug, __person.slug);
+
+        should.equal(res.body.result.item.dois.join(), [ 'test-duplicated-doi', '5647' ].join());
+        done();
+      });
+  });
+
   it('should show person detail by DOI', function (done) {
     session
       .get('/api/person/5647')
