@@ -180,6 +180,22 @@ describe('controllers:person API', function() {
         done();
       });
   });
+
+  // it('should create a brand new person, with minimal fields', function (done) {
+  //   session
+  //     .post('/api/person')
+  //     .send({
+  //       first_name: 'Marcello',
+  //       last_name: 'Mastroianni' 
+  //     })
+  //     .expect('Content-Type', /json/)
+  //     .expect(200)
+  //     .end(function (err, res) { //
+  //       should.not.exist(err);
+  //       should.equal(res.body.info.params.limit, 5);
+  //       done();
+  //     });
+  // });
 });
 
 describe('controllers:person finish', function() {

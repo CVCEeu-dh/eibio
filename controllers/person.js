@@ -68,9 +68,22 @@ module.exports = function(io) {
     update: function(req, res) {
       var form = validator.request(req, {
         limit: 10,
-        offset: 0, 
-        dois: ''
+        offset: 0
       });
+
+      Person.merge(form.params, function (err, item) {
+        return helpers.models.getOne(err, res, item, form.params);
+      });
+    },
+
+    create: function(req, res) {
+      var form = validator.request(req, {
+        limit: 10,
+        offset: 0, 
+        first_name: '',
+        last_name: ''
+      });
+      // build slug from form params, then merge.
       
       Person.merge(form.params, function (err, item) {
         return helpers.models.getOne(err, res, item, form.params);
