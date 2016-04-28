@@ -5,6 +5,9 @@
 */
 var settings  = require('../../settings'),
     helpers   = require('../../helpers'),
+
+    // task helpers, e.g. print csv
+    thelpers  = require('./helpers'),
     inquirer     = require('inquirer'),
     async     = require('async'),
     path      = require('path'),
@@ -14,7 +17,7 @@ var settings  = require('../../settings'),
     Person    = require('../../models/person'),
     Activity  = require('../../models/activity');
 
-module.exports = {
+var task = {
   
   getManyLinks: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.person.links'));
@@ -345,12 +348,12 @@ module.exports = {
       'activity',
       'match'
     ];
-    var q = async.queue(function (doi, nextDoi) {
-      console.log('doi', doi)
+    var q = async.queue(function (candidate, nextCandidate) {
+      console.log('doi', candidate.name, candidate.doi)
       
 
-      neo4j.query('MATCH (p:person) WHERE LOWER(p.last_name) = {last_name} WITH p OPTIONAL MATCH (p)--(act:activity) WHERE length(p.slug) > 0 RETURN p as per, LAST(collect(act.description_en)) as first_act ORDER BY p.last_name skip {offset} LIMIT {limit} ', {
-          last_name: doi.toLowerCase(),
+      neo4j.query('MATCH (p:person) WHERE length(p.slug) > 0 AND {doi} in p.dois WITH p OPTIONAL MATCH (p)--(act:activity)  RETURN p as per, LAST(collect(act.description_en)) as first_act ORDER BY p.last_name', {
+          doi: candidate.doi.trim(),
           limit: 1,
           offset: 0
         }, function (err, nodes) {
@@ -361,18 +364,19 @@ module.exports = {
         console.log(clc.blackBright('   records: '), nodes.length);
 
         var record = {
-          match: doi
+          match: candidate.doi,
+          name: candidate.name
         };
 
         if(nodes.length)
           _.assign(record, nodes[0].per);
 
         records.push(record);
-        nextDoi();
+        nextCandidate();
       })
     }, 1);
 
-    q.push(_.map(_.map(options.data, 'last_name'), _.trim));
+    q.push(options.data);
     q.drain = function() {
       options.records = records;
       callback(null, options)
@@ -543,3 +547,21 @@ module.exports = {
     
   }
 };
+
+module.exports = {
+  getActivities: [
+    thelpers.checkTarget,
+    task.getOne,
+    task.getActivities,
+    thelpers.csv.stringify
+  ],
+
+  getManyByDoi: [
+    thelpers.checkTarget,
+    thelpers.checkSource,
+    thelpers.csv.parse,
+    task.getManyByDoi,
+    thelpers.csv.stringify
+  ],
+  task: task
+}

@@ -38,8 +38,9 @@ settings.js
 *.zip
 *.txt
 __*.js
+__*
 __*.cyp
 *.DS_Store
-
+*.rdb
 #exceptions
 !package.json

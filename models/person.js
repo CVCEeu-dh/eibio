@@ -115,7 +115,8 @@ module.exports = {
         }, (d.rel? d.rel.properties : {}));
 
         _d.props.country_code = ''+d.props.country;
-        _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
+        if(_.find(COUNTRIES, {code: d.props.country}))
+          _d.props.country = _.find(COUNTRIES, {code: d.props.country}).value;
         
         return _d
       }), ['start_date', 'end_date'], ['asc', 'asc']);

@@ -12,7 +12,7 @@ var settings  = require('../../settings'),
     clc       = require('cli-color'),
     queries   = require('decypher')('./queries/setup.cyp');
 
-module.exports = {
+var task = {
   indexes: function(options, callback) {
     console.log(clc.yellowBright('\n   tasks.setup.indexes'));
       
@@ -40,3 +40,7 @@ module.exports = {
   },
   
 }
+
+module.exports = [
+  task.indexes,
+];
