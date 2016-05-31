@@ -28,7 +28,9 @@ async.waterfall([
     callback(null, options);
   },
   tasks.common.tick.start
-].concat(_.isArray(task)? task: [task])
+].concat(_.map(_.isArray(task)? task: [task], function(t){
+    return typeof t != 'function'? _.get(tasks, t): t;
+  }))
  .concat([tasks.common.tick.end]), function (err) {
   if(err) {
     console.warn(err);

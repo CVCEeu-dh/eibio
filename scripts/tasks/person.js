@@ -545,6 +545,44 @@ var task = {
     }
     q1.push(options.person.languages);
     
+  },
+
+  getManyActivities: function(options, callback) {
+    console.log(clc.yellowBright('\n   tasks.activity.getMany'));
+    neo4j.query(
+      ' MATCH (act:activity)-[r]-(per:person) \n'+
+      ' OPTIONAL MATCH (act)-[r2]-(ins:institution)\n' +
+      ' RETURN act, LAST(collect(ins)) as ins\n'+
+      ' SKIP {offset} LIMIT {limit}', {
+      limit: +options.limit || 100000,
+      offset: +options.offset || 0
+    }, function (err, nodes) {
+      if(err) {
+        callback(err);
+        return;
+      }
+      options.fields = [
+        'id',
+        'slug',
+        'country',
+        'institution_country',
+        'institution_name',
+        'position',
+        'description_en',
+        'description_fr',
+        'critical'
+      ];
+      options.records = nodes.map(function (d) {
+        d.act.institution_country = d.ins? d.ins.country : '';
+        d.act.institution_name    = d.ins? d.ins.name: '';
+        if(_.isEmpty(d.act.position))
+          d.act.position = d.act.description_en;
+        d.act.critical = d.act.institution_country != d.act.country && !_.isEmpty(d.act.institution_country)? 1: 0;
+        return d.act;
+      });
+      callback(null, options)
+      
+    })
   }
 };
 
