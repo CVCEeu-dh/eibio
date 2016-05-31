@@ -7,7 +7,8 @@
 */
 var express       = require('express'),        // call express
     session       = require('express-session'),
-    
+    compress      = require('compression'),
+    cors          = require('cors'),
     settings      = require('./settings'),
 
     app           = exports.app = express(),                 // define our app using express
@@ -54,6 +55,9 @@ var sessionMiddleware = session({
   ---
   
 */
+app.use(cors());
+app.use(compress());
+
 // configure logger
 app.use(morgan('combined', {
   stream: fs.createWriteStream(settings.logs.access, {flags: 'a'})
